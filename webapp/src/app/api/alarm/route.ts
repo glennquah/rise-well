@@ -1,7 +1,7 @@
 import { auth } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
 import { getCollection } from '../../lib/mongodb';
-import { AlarmSchema } from '../models/alarm';
+import { AlarmSchema } from '../dtos/alarm';
 
 const COLLECTION_NAME = 'alarm';
 

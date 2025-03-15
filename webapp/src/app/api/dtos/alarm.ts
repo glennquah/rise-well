@@ -6,4 +6,4 @@ export const AlarmSchema = z.object({
   time: z.string(),
 });
 
-export type Alarm = z.infer<typeof AlarmSchema>;
+export type AlarmDto = z.infer<typeof AlarmSchema>;
