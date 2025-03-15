@@ -38,11 +38,16 @@ export default function RootLayout({
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
           <main>
-            <NavigationBar />
             <SignedOut>
-              <SignIn routing="hash" />
+              <div className="flex items-center justify-center min-h-screen">
+                <SignIn routing="hash" />
+              </div>
             </SignedOut>
-            <SignedIn>{children}</SignedIn>
+            <SignedIn>
+              {' '}
+              <NavigationBar />
+              {children}
+            </SignedIn>
           </main>
         </body>
       </html>
