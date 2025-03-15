@@ -14,7 +14,7 @@ const NavigationBar = () => {
   const closeMenu = () => setMenuOpen(false);
 
   return (
-    <nav className="bg-black-900 text-white sticky top-0 w-full z-50">
+    <nav className="bg-black text-white sticky top-0 w-full z-50">
       <ResponsiveContainer>
         <div className="flex justify-between items-center h-16">
           <Link href="/">
