@@ -15,7 +15,7 @@ export async function POST(req: Request) {
     );
   }
 
-  const { difficulty, words } = parsed.data;
+  const { difficulty, numberOfWords } = parsed.data;
 
   try {
     const completion = await openai.chat.completions.create({
@@ -23,7 +23,7 @@ export async function POST(req: Request) {
       messages: [
         {
           role: 'system',
-          content: `Generate a tongue twister sentence containing exactly ${words} words, suitable for ${difficulty} difficulty.`,
+          content: `Generate a tongue twister sentence containing exactly ${numberOfWords} words, suitable for ${difficulty} difficulty.`,
         },
       ],
       temperature:

@@ -6,11 +6,7 @@ import { AlarmHistorySchema } from '../dtos/alarm-history';
 const COLLECTION_NAME = 'alarm-history';
 
 export async function POST(req: Request) {
-  // IMPT!! Make sure u add this to protect the route
-  const { userId } = await auth();
-  if (!userId) {
-    return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
-  }
+  // TODO: Find a way to protect this route so only iot device can call this
 
   try {
     const json = await req.json();
@@ -44,6 +40,7 @@ export async function POST(req: Request) {
 }
 
 export async function GET() {
+  // IMPT!! Make sure u add this to protect the route
   const { userId } = await auth();
   if (!userId) {
     return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
