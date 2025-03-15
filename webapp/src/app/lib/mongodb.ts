@@ -1,3 +1,5 @@
+// FIXME: Fix this, anot eslint friendly
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Collection, Db, MongoClient } from "mongodb";
 
 const uri = process.env.MONGODB_URI as string;
@@ -8,16 +10,13 @@ const options = {};
 let client: MongoClient;
 let clientPromise: Promise<MongoClient>;
 
-declare global {
-  var _mongoClientPromise: Promise<MongoClient>;
-}
-
-if (!global._mongoClientPromise) {
+if (!("mongoClientPromise" in globalThis)) {
   client = new MongoClient(uri, options);
-  global._mongoClientPromise = client.connect();
+  (globalThis as any)._mongoClientPromise = client.connect();
 }
 
-clientPromise = global._mongoClientPromise;
+// eslint-disable-next-line prefer-const
+clientPromise = (globalThis as any)._mongoClientPromise;
 
 export async function getDatabase(): Promise<Db> {
   const client = await clientPromise;
