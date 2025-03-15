@@ -14,7 +14,7 @@ const NavigationBar = () => {
   const closeMenu = () => setMenuOpen(false);
 
   return (
-    <header className="bg-black-900 text-white fixed w-full z-50">
+    <nav className="bg-black-900 text-white sticky top-0 w-full z-50">
       <ResponsiveContainer>
         <div className="flex justify-between items-center h-16">
           <Link href="/">
@@ -97,7 +97,7 @@ const NavigationBar = () => {
           <UserButton showName={false} />
         </SignedIn>
       </nav>
-    </header>
+    </nav>
   );
 };
 
