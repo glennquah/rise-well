@@ -17,14 +17,10 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "RiseWell",
   description:
-    "Your personalised IOT Alarm Clock, designed to help you wake up feeling refreshed and ready to take on the day.",
+    "Your personalised IOT Alarm Clock, designed to help you wake up feeling refreshed and ready for the day.",
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <ClerkProvider>
       <html lang="en">
