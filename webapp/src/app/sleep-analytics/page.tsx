@@ -14,6 +14,7 @@ export default async function Dashboard() {
           Sleep analytics will be displayed here.
         </p>
       </div>
+      <p>{authData.userId}</p>
     </ResponsiveContainer>
   );
 }

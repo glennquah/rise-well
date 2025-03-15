@@ -42,11 +42,11 @@ const NavigationBar = () => {
               Sleep Analytics
             </Link>
             <Link
-              href="/wake-up-analytics"
+              href="/alarm-clock-analytics"
               className="px-4 py-2 rounded hover:bg-gray-700"
               onClick={closeMenu}
             >
-              Wake Up Analytics
+              Alarm Clock Analytics
             </Link>
             <SignedIn>
               <UserButton showName={false} />
