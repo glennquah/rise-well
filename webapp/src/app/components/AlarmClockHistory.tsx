@@ -61,12 +61,22 @@ export const AlarmClockHistory = () => {
             </TableHeader>
             <TableBody>
               {alarms.map((alarm) => (
-                <TableRow key={alarm.alarmTime}>
+                <TableRow key={alarm.alarmTime.toString()}>
                   <TableCell className="w-32">
                     {alarm.alarmType.toUpperCase()}
                   </TableCell>
-                  <TableCell className="w-48">{alarm.alarmTime}</TableCell>
-                  <TableCell className="w-48">{alarm.resolvedTime}</TableCell>
+                  <TableCell className="w-48">
+                    {new Date(alarm.alarmTime).toLocaleString('en-US', {
+                      dateStyle: 'short',
+                      timeStyle: 'short',
+                    })}
+                  </TableCell>
+                  <TableCell className="w-48">
+                    {new Date(alarm.resolvedTime).toLocaleString('en-US', {
+                      dateStyle: 'short',
+                      timeStyle: 'short',
+                    })}
+                  </TableCell>
                   <TableCell className="w-96">
                     {alarm.alarmType === 'speech' ? (
                       <details className="group w-full">

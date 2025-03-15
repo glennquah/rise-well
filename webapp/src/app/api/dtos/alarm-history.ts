@@ -1,10 +1,16 @@
 import { z } from 'zod';
 
+const DateString = z.preprocess((arg) => {
+  if (typeof arg === 'string' || arg instanceof Date) {
+    return new Date(arg);
+  }
+}, z.date());
+
 const BaseAlarmHistorySchema = z.object({
   userId: z.string(),
   alarmType: z.enum(['speech', 'math', 'shake']),
-  alarmTime: z.string(),
-  resolvedTime: z.string(),
+  alarmTime: DateString,
+  resolvedTime: DateString,
 });
 
 const SpeechHistorySchema = BaseAlarmHistorySchema.extend({
