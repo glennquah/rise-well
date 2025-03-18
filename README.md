@@ -43,6 +43,11 @@ cd webapp
 
 3. Install dependencies:
 
+---
+### Running the Docker Application (currently on rabbitmq server)
+1. Navigate to root folder
+2. docker-compose up -d
+
 ```bash
 npm install
 ```
