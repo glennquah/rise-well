@@ -24,10 +24,11 @@ export const AlarmClockHistory = () => {
           credentials: 'include',
         });
         const data = await res.json();
+        const alarms = data.alarms as AlarmHistoryDto[];
         if (!res.ok) {
           setError(data.message || 'Error fetching alarms');
         } else {
-          setAlarms(data.alarms);
+          setAlarms(alarms);
         }
       } catch (err) {
         console.error('Error fetching alarms:', err);
