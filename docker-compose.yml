@@ -1,0 +1,19 @@
+version: "3.8"
+
+services:
+  rabbitmq:
+    image: "rabbitmq:3-management"
+    container_name: rabbitmq
+    hostname: rabbitmq
+    restart: always
+    ports:
+      - "5672:5672"   # AMQP
+      - "15672:15672" # Management UI
+      - "1883:1883"   # MQTT
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    command: >
+      sh -c "rabbitmq-plugins enable rabbitmq_mqtt &&
+             rabbitmq-plugins enable rabbitmq_management &&
+             rabbitmq-server"
