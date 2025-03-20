@@ -1,47 +1,42 @@
 import tkinter as tk
 from tkinter import ttk
+from gui.alarm_configs.math_window import math_window
+from gui.start_window import start_window
 
-def add_alarm_window(alarm_manager):
-    win = tk.Toplevel()
-    win.title("Add Alarm")
-    tk.Label(win, text="Time (HH:MM)").pack()
-    time_entry = tk.Entry(win)
-    time_entry.pack()
-    tk.Label(win, text="Alarm Type").pack()
-    alarm_type = tk.StringVar()
+def add_alarm_window(alarm_manager, root):
+    # Clear current widgets on root (we’re reusing the same window)
+    for widget in root.winfo_children():
+        widget.destroy()
+
+    root.title("Add Alarm")
+
+    # Time Entry
+    tk.Label(root, text="Time (HH:MM)", bg="white").pack(pady=5)
+    time_entry = tk.Entry(root)
+    time_entry.pack(pady=5)
+
+    # Alarm type selection using radio buttons
+    tk.Label(root, text="Select Alarm Type", bg="white").pack(pady=5)
+    alarm_type = tk.StringVar(value="Math")
     options = ["Math", "Nothing", "Shake It", "Speech", "Image Recognition"]
-    alarm_type.set(options[0])
-    ttk.OptionMenu(win, alarm_type, options[0], *options, command=lambda v: show_math_options(v, config_frame)).pack()
-    config_frame = tk.Frame(win)
-    config_frame.pack()
-    math_config = {}
-    def show_math_options(val, frame):
-        for widget in frame.winfo_children():
-            widget.destroy()
-        if val == "Math":
-            tk.Label(frame, text="Difficulty").pack()
-            diff = tk.StringVar()
-            diff.set("Easy")
-            ttk.OptionMenu(frame, diff, "Easy", "Easy", "Medium").pack()
-            tk.Label(frame, text="Operation").pack()
-            op = tk.StringVar()
-            op.set("Addition")
-            ttk.OptionMenu(frame, op, "Addition", "Addition", "Subtraction", "Multiplication", "Division").pack()
-            tk.Label(frame, text="Number of Questions").pack()
-            num_q = tk.Spinbox(frame, from_=1, to=10, width=5)
-            num_q.pack()
-            math_config["difficulty"] = diff
-            math_config["operation"] = op
-            math_config["num_questions"] = num_q
-    show_math_options(alarm_type.get(), config_frame)
-    def submit_alarm():
-        alarm = {"time": time_entry.get(), "type": alarm_type.get(), "triggered": False}
+    for opt in options:
+        ttk.Radiobutton(root, text=opt, variable=alarm_type, value=opt).pack()
+
+    # Next button: When pressed, create a temporary alarm_data and route accordingly
+    def next_action():
+        alarm_data = {
+            "time": time_entry.get(),
+            "type": alarm_type.get(),
+            "triggered": False
+        }
+        # Route to the specific config screen
         if alarm_type.get() == "Math":
-            alarm["config"] = {
-                "difficulty": math_config["difficulty"].get(),
-                "operation": math_config["operation"].get(),
-                "num_questions": int(math_config["num_questions"].get())
-            }
-        alarm_manager.add_alarm(alarm)
-        win.destroy()
-    tk.Button(win, text="Submit Alarm", command=submit_alarm).pack()
+            math_window(alarm_manager, root, alarm_data, lambda: go_back(alarm_manager, root))
+        # else:
+        #     show_generic_config(alarm_manager, root, alarm_data, lambda: go_back(root, alarm_manager))
+
+    ttk.Button(root, text="Next", command=next_action).pack(pady=10)
+    ttk.Button(root, text="Back", command=lambda: start_window(root, alarm_manager)).pack(pady=5)
+
+def go_back(alarm_manager, root):
+    add_alarm_window(alarm_manager, root)
