@@ -37,7 +37,11 @@ def count_down_window(alarm_manager, root, alarm_data, go_back_callback):
             root.after(1000, update_countdown)
         else:
             countdown_label.config(text="Time's up!")
-            # You can trigger the alarm sound here if needed
+            if not alarm_data.get("triggered"):
+              alarm_data["triggered"] = True
+              if alarm_data["type"] == "Math":
+                    math_alarm.trigger(alarm_data, root)
+            
 
     update_countdown()
 
