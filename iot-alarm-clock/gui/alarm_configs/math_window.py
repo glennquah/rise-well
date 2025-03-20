@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
+from gui.count_down_window import count_down_window
 
 def math_window(alarm_manager, root, alarm_data, go_back_callback):
     # Clear the root's current content
@@ -37,7 +38,7 @@ def math_window(alarm_manager, root, alarm_data, go_back_callback):
         # Submit alarm
         alarm_manager.add_alarm(alarm_data)
         # Return to start screen
-        go_back_callback()
+        count_down_window(alarm_manager, root, alarm_data, lambda: go_back(alarm_manager, root))
 
     ttk.Button(root, text="Submit Alarm", command=next_action).pack(pady=10)
     ttk.Button(root, text="Back", command=go_back_callback).pack(pady=5)

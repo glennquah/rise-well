@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 import datetime
+import alarm.math_alarm as math_alarm
 
 def count_down_window(alarm_manager, root, alarm_data, go_back_callback):
     # Clear current widgets on the root
@@ -24,7 +25,7 @@ def count_down_window(alarm_manager, root, alarm_data, go_back_callback):
         alarm_time = now
 
     # Create a label to show the countdown
-    countdown_label = ttk.Label(root, text="", font=("Arial", 24))
+    countdown_label = ttk.Label(root, text="", font=("Arial", 48), background="white")
     countdown_label.pack(pady=20)
 
     def update_countdown():
@@ -36,7 +37,7 @@ def count_down_window(alarm_manager, root, alarm_data, go_back_callback):
             countdown_label.config(text=str(diff).split('.')[0])
             root.after(1000, update_countdown)
         else:
-            countdown_label.config(text="Time's up!")
+            countdown_label.config(text="Time's up!", font=("Arial", 24, "bold"), background="white")
             if not alarm_data.get("triggered"):
               alarm_data["triggered"] = True
               if alarm_data["type"] == "Math":

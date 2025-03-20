@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import ttk
 from alarm.alarm_manager import AlarmManager
 from gui.start_window import start_window
 

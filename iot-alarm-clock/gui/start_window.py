@@ -4,9 +4,6 @@ from PIL import Image, ImageTk
 from gui.add_alarm_window import add_alarm_window
 
 def start_window(root, alarm_manager):
-    for widget in root.winfo_children():
-        widget.destroy()
-        
     root.title("RiseWell")
     root.geometry("500x400")
     root.configure(bg="white")

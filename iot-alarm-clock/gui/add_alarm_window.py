@@ -5,26 +5,27 @@ from gui.alarm_configs.shake_it_window import shake_it_window
 from gui.alarm_configs.speech_window import speech_window
 from gui.alarm_configs.image_recognition_window import image_recognition_window
 from gui.count_down_window import count_down_window
-# Do NOT import start_window at the top!
+from utils import play_alarm_sound 
+from utils import stop_alarm_sound 
 
 def add_alarm_window(alarm_manager, root):
-    # Clear current widgets on root (we’re reusing the same window)
     for widget in root.winfo_children():
         widget.destroy()
         
     root.title("Add Alarm")
 
-    # Time Entry
     tk.Label(root, text="Time (HH:MM)", bg="white").pack(pady=5)
     time_entry = tk.Entry(root)
     time_entry.pack(pady=5)
 
-    # Alarm type selection using radio buttons
     tk.Label(root, text="Select Alarm Type", bg="white").pack(pady=5)
     alarm_type = tk.StringVar(value="Math")
     options = ["Math", "Nothing", "Shake It", "Speech", "Image Recognition"]
     for opt in options:
         ttk.Radiobutton(root, text=opt, variable=alarm_type, value=opt, style="White.TRadiobutton").pack()
+
+    ttk.Button(root, text="Play Alarm Ring Tone", command=play_alarm_sound).pack(pady=5)
+    ttk.Button(root, text="Stop Alarm Ring Tone", command=stop_alarm_sound).pack(pady=5)
 
     # Next button: When pressed, create a temporary alarm_data and route accordingly
     def next_action():

@@ -2,6 +2,7 @@ import tkinter as tk
 import random
 import pygame
 import os
+import datetime
 
 def init_sound():
     pygame.mixer.init()
@@ -22,44 +23,45 @@ def stop_alarm_sound(sound):
         sound.stop()
 
 def trigger(alarm, root):
-    # Clear the current Tk screen (reuse the same window)
+    # Reuse the same window and set background to white
+    root.configure(bg="white")
     for widget in root.winfo_children():
         widget.destroy()
 
     root.title("Math Challenge Alarm")
 
-    # Start playing the alarm sound and keep a reference to stop it later
+    # Start playing the alarm sound
     sound_obj = play_alarm_sound()
 
-    # Retrieve math configuration from alarm data (if provided)
+    # Retrieve math configuration from alarm data
     config = alarm.get("config", {})
     difficulty = config.get("difficulty", "Easy")
     operation = config.get("operation", "Addition")
     num_questions = config.get("num_questions", 3)
 
-    # Setup UI for the math challenge on the same root
+    # Initialize score, attempts, and question counter
     score = {"correct": 0}
+    attempts = {"total": 0}
     current_q = {"question": None, "answer": None}
     questions_asked = [0]
 
-    question_label = tk.Label(root, text="", font=("Arial", 18))
+    # Create UI elements with white backgrounds
+    question_label = tk.Label(root, text="", font=("Arial", 18), bg="white")
     question_label.pack(pady=10)
 
-    answer_entry = tk.Entry(root, font=("Arial", 14))
+    answer_entry = tk.Entry(root, font=("Arial", 14), bg="white")
     answer_entry.pack(pady=10)
 
-    result_label = tk.Label(root, text="", font=("Arial", 14))
+    result_label = tk.Label(root, text="", font=("Arial", 14), bg="white")
     result_label.pack(pady=10)
 
     def generate_question():
-        # Generate numbers based on difficulty
         if difficulty == "Easy":
             a = random.randint(1, 10)
             b = random.randint(1, 10)
         else:
             a = random.randint(10, 50)
             b = random.randint(10, 50)
-        # Create question based on selected operation
         if operation == "Addition":
             q = f"{a} + {b} = ?"
             ans = a + b
@@ -81,12 +83,7 @@ def trigger(alarm, root):
 
     def next_question():
         if questions_asked[0] >= num_questions:
-            question_label.config(text="Challenge completed!")
-            answer_entry.destroy()
-            submit_button.destroy()
-            result_label.config(text=f"Score: {score['correct']} / {num_questions}")
-            # Stop the alarm sound when the challenge is done
-            stop_alarm_sound(sound_obj)
+            finish_challenge()
             return
         q, ans = generate_question()
         current_q["question"] = q
@@ -96,22 +93,37 @@ def trigger(alarm, root):
         questions_asked[0] += 1
 
     def submit_answer():
+        attempts["total"] += 1
         try:
             user_ans = float(answer_entry.get())
             if abs(user_ans - current_q["answer"]) < 0.01:
                 score["correct"] += 1
-                result_label.config(text="Correct!")
+                result_label.config(text="Correct!", bg="white")
+                next_question()
             else:
-                result_label.config(text=f"Wrong! Answer: {current_q['answer']}")
+                result_label.config(text="Wrong! Try again.", bg="white")
+                # Do not advance to the next question; allow user to try again.
         except:
-            result_label.config(text="Invalid input")
-        next_question()
+            result_label.config(text="Invalid input. Please enter a number.", bg="white")
+            # Allow user to retry without moving on.
 
-    submit_button = tk.Button(root, text="Submit", command=submit_answer)
+    submit_button = tk.Button(root, text="Submit", command=submit_answer, bg="white")
     submit_button.pack(pady=10)
 
-    # Start the challenge with the first question
+    # Record the start time for measuring duration
+    start_time = datetime.datetime.now()
+
+    def finish_challenge():
+        question_label.config(text="Challenge completed!")
+        answer_entry.destroy()
+        submit_button.destroy()
+        end_time = datetime.datetime.now()
+        time_taken = end_time - start_time
+        result_label.config(text=f"Score: {score['correct']} / {num_questions}\nTime taken: {str(time_taken).split('.')[0]}\nTotal attempts: {attempts['total']}", bg="white")
+        # Stop the alarm sound when the challenge is complete
+        stop_alarm_sound(sound_obj)
+
     next_question()
 
-    # Optionally add a Back button that stops the alarm sound and goes back
-    tk.Button(root, text="Back", command=lambda: [stop_alarm_sound(sound_obj), root.destroy()]).pack(pady=10)
+    # Optionally, add a Back button that stops the alarm sound and exits the challenge.
+    tk.Button(root, text="Back", command=lambda: [stop_alarm_sound(sound_obj), root.destroy()], bg="white").pack(pady=10)
