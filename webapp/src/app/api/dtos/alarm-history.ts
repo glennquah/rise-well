@@ -8,7 +8,7 @@ const DateString = z.preprocess((arg) => {
 
 const BaseAlarmHistorySchema = z.object({
   userId: z.string(),
-  alarmType: z.enum(['speech', 'math', 'shake']),
+  alarmType: z.enum(['speech', 'math', 'shake', 'image']),
   alarmTime: DateString,
   resolvedTime: DateString,
 });
@@ -28,10 +28,19 @@ const ShakeHistorySchema = BaseAlarmHistorySchema.extend({
   alarmType: z.literal('shake'),
 });
 
+const ImageHistorySchema = BaseAlarmHistorySchema.extend({
+  alarmType: z.literal('image'),
+  taskType: z.enum(['preset', 'prompt']),
+  imageUrl: z.string().optional(),
+  promptType: z.string().optional(),
+  prompt: z.string().optional(),
+});
+
 export const AlarmHistorySchema = z.discriminatedUnion('alarmType', [
   SpeechHistorySchema,
   MathHistorySchema,
   ShakeHistorySchema,
+  ImageHistorySchema,
 ]);
 
 export type AlarmHistoryDto = z.infer<typeof AlarmHistorySchema>;
