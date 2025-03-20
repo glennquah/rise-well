@@ -1,4 +1,7 @@
-def add_alarm_window():
+import tkinter as tk
+from tkinter import ttk
+
+def add_alarm_window(alarm_manager):
     win = tk.Toplevel()
     win.title("Add Alarm")
     tk.Label(win, text="Time (HH:MM)").pack()
