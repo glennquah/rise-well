@@ -41,7 +41,7 @@ def count_down_window(root, alarm_data, go_back_callback):
             if not alarm_data.get("triggered"):
               alarm_data["triggered"] = True
               if alarm_data["type"] == "Math":
-                    math_alarm.trigger(alarm_data, root)
+                    math_alarm.trigger(alarm_data, root, go_back_callback)
             
 
     update_countdown()

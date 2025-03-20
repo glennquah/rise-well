@@ -86,10 +86,8 @@ def trigger(alarm, root, go_back_callback):
                 next_question()
             else:
                 result_label.config(text="Wrong! Try again.", bg="white")
-                # Do not advance to the next question; allow user to try again.
         except:
             result_label.config(text="Invalid input. Please enter a number.", bg="white")
-            # Allow user to retry without moving on.
 
     submit_button = tk.Button(root, text="Submit", command=submit_answer, bg="white")
     submit_button.pack(pady=10)
@@ -104,10 +102,7 @@ def trigger(alarm, root, go_back_callback):
         end_time = datetime.datetime.now()
         time_taken = end_time - start_time
         result_label.config(text=f"Score: {score['correct']} / {num_questions}\nTime taken: {str(time_taken).split('.')[0]}\nTotal attempts: {attempts['total']}", bg="white")
-        # Stop the alarm sound when the challenge is complete
+        tk.Button(root, text="Back", command=go_back_callback, bg="white").pack(pady=10)
         stop_alarm_sound()
 
     next_question()
-
-    # Optionally, add a Back button that stops the alarm sound and exits the challenge.
-    tk.Button(root, text="Back", command=go_back_callback, bg="white").pack(pady=10)
