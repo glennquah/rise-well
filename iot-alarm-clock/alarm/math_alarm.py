@@ -3,26 +3,10 @@ import random
 import pygame
 import os
 import datetime
+from utils import play_alarm_sound 
+from utils import stop_alarm_sound 
 
-def init_sound():
-    pygame.mixer.init()
-
-def play_alarm_sound():
-    if not pygame.mixer.get_init():
-        init_sound()
-    # Adjust the path as necessary. Here it assumes a "ringtones" folder is in the same folder as this file.
-    sound_file = os.path.join(os.path.dirname(__file__), "ringtones", "alarm1.wav")
-    if os.path.exists(sound_file):
-        sound = pygame.mixer.Sound(sound_file)
-        sound.play(loops=-1)  # Play indefinitely until stopped
-        return sound
-    return None
-
-def stop_alarm_sound(sound):
-    if sound:
-        sound.stop()
-
-def trigger(alarm, root):
+def trigger(alarm, root, go_back_callback):
     # Reuse the same window and set background to white
     root.configure(bg="white")
     for widget in root.winfo_children():
@@ -121,9 +105,9 @@ def trigger(alarm, root):
         time_taken = end_time - start_time
         result_label.config(text=f"Score: {score['correct']} / {num_questions}\nTime taken: {str(time_taken).split('.')[0]}\nTotal attempts: {attempts['total']}", bg="white")
         # Stop the alarm sound when the challenge is complete
-        stop_alarm_sound(sound_obj)
+        stop_alarm_sound()
 
     next_question()
 
     # Optionally, add a Back button that stops the alarm sound and exits the challenge.
-    tk.Button(root, text="Back", command=lambda: [stop_alarm_sound(sound_obj), root.destroy()], bg="white").pack(pady=10)
+    tk.Button(root, text="Back", command=go_back_callback, bg="white").pack(pady=10)

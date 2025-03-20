@@ -3,7 +3,7 @@ from tkinter import ttk
 import datetime
 import alarm.math_alarm as math_alarm
 
-def count_down_window(alarm_manager, root, alarm_data, go_back_callback):
+def count_down_window(root, alarm_data, go_back_callback):
     # Clear current widgets on the root
     for widget in root.winfo_children():
         widget.destroy()
@@ -25,7 +25,7 @@ def count_down_window(alarm_manager, root, alarm_data, go_back_callback):
         alarm_time = now
 
     # Create a label to show the countdown
-    countdown_label = ttk.Label(root, text="", font=("Arial", 48), background="white")
+    countdown_label = ttk.Label(root, text="", font=("Arial", 64), background="white")
     countdown_label.pack(pady=20)
 
     def update_countdown():
