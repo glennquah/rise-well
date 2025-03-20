@@ -11,9 +11,9 @@ def speech_window(alarm_manager, root, alarm_data, go_back_callback):
 
     tk.Label(root, text="Select Difficulty", bg="white").pack(pady=5)
     difficulty = tk.StringVar(value="Easy")
-    ttk.Radiobutton(root, text="Easy", variable=difficulty, value="Easy", bg="white").pack()
-    ttk.Radiobutton(root, text="Medium", variable=difficulty, value="Medium", bg="white").pack()
-    ttk.Radiobutton(root, text="Hard", variable=difficulty, value="Hard", bg="white").pack()
+    ttk.Radiobutton(root, text="Easy", variable=difficulty, value="Easy", style="White.TRadiobutton").pack()
+    ttk.Radiobutton(root, text="Medium", variable=difficulty, value="Medium", style="White.TRadiobutton").pack()
+    ttk.Radiobutton(root, text="Hard", variable=difficulty, value="Hard", style="White.TRadiobutton").pack()
 
     def next_action():
         alarm_data["config"]["difficulty"] = difficulty.get()

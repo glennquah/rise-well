@@ -13,17 +13,17 @@ def math_window(alarm_manager, root, alarm_data, go_back_callback):
     # Difficulty selection
     tk.Label(root, text="Select Difficulty", bg="white").pack(pady=5)
     difficulty = tk.StringVar(value="Easy")
-    ttk.Radiobutton(root, text="Easy", variable=difficulty, value="Easy").pack()
-    ttk.Radiobutton(root, text="Medium", variable=difficulty, value="Medium").pack()
-    ttk.Radiobutton(root, text="Hard", variable=difficulty, value="Hard").pack()
+    ttk.Radiobutton(root, text="Easy", variable=difficulty, value="Easy", style="White.TRadiobutton").pack()
+    ttk.Radiobutton(root, text="Medium", variable=difficulty, value="Medium", style="White.TRadiobutton").pack()
+    ttk.Radiobutton(root, text="Hard", variable=difficulty, value="Hard", style="White.TRadiobutton").pack()
 
     # Operation selection (only for Math)
     tk.Label(root, text="Select Operation", bg="white").pack(pady=5)
     operation = tk.StringVar(value="Addition")
-    ttk.Radiobutton(root, text="Addition", variable=operation, value="Addition").pack()
-    ttk.Radiobutton(root, text="Subtraction", variable=operation, value="Subtraction").pack()
-    ttk.Radiobutton(root, text="Multiplication", variable=operation, value="Multiplication").pack()
-    ttk.Radiobutton(root, text="Division", variable=operation, value="Division").pack()
+    ttk.Radiobutton(root, text="Addition", variable=operation, value="Addition", style="White.TRadiobutton").pack()
+    ttk.Radiobutton(root, text="Subtraction", variable=operation, value="Subtraction", style="White.TRadiobutton").pack()
+    ttk.Radiobutton(root, text="Multiplication", variable=operation, value="Multiplication", style="White.TRadiobutton").pack()
+    ttk.Radiobutton(root, text="Division", variable=operation, value="Division", style="White.TRadiobutton").pack()
 
     # Number of Questions
     tk.Label(root, text="Number of Questions", bg="white").pack(pady=5)
