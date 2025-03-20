@@ -32,6 +32,7 @@ const ImageHistorySchema = BaseAlarmHistorySchema.extend({
   alarmType: z.literal('image'),
   taskType: z.enum(['preset', 'prompt']),
   imageUrl: z.string().optional(),
+  promptType: z.string().optional(),
   prompt: z.string().optional(),
 });
 
