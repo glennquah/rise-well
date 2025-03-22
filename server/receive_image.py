@@ -1,9 +1,13 @@
+import joblib
 import paho.mqtt.client as mqtt
 import base64
 
 BROKER = "192.168.50.83"
 PORT = 1883
 TOPIC = "image_data"
+
+def load_model():
+    loaded_model = joblib.load('')
 
 
 def on_message(client, userdata, msg):
@@ -21,3 +25,5 @@ client.on_message = on_message
 client.connect(BROKER, PORT)
 client.subscribe(TOPIC)
 client.loop_forever()
+
+

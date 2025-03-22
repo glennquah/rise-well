@@ -29,6 +29,7 @@ def extract_landmarks(image_path):
         print("Error: Could not load image.")
         return None
 
+
     results = pose.process(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
     if not results.pose_landmarks:
         return None  # No landmarks detected
