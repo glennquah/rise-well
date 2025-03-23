@@ -15,7 +15,7 @@ pose = mp_pose.Pose(static_image_mode=True)
 # Function to capture an image using the Raspberry Pi camera
 def capture_image():
     """Captures an image using the Raspberry Pi camera and saves it."""
-    image_path = "/home/pi/image.jpg"
+    image_path = "./image.jpg"
 
     # Initialize the camera (using OpenCV)
     cap = cv2.VideoCapture(0)  # 0 is typically the default camera
@@ -48,11 +48,8 @@ def extract_landmarks(image_path):
     if result.pose_world_landmarks:
         landmarks = []
         for landmark in result.pose_world_landmarks.landmark:
-            landmarks.append({
-                "x": landmark.x,
-                "y": landmark.y,
-                "visibility": landmark.visibility
-            })
+            landmarks.extend([landmark.x, landmark.y, landmark.visibility])
+
         return landmarks
     return None
 
@@ -98,11 +95,13 @@ while True:
         print("No pose detected. Skipping entry.")
         continue
 
+    print(landmarks)
     landmarks = scaler.transform([landmarks])
     prediction = predict(landmarks)
+    print(prediction)
 
     # Encode landmarks to JSON, then base64
-    encoded_landmarks = base64.b64encode(prediction.encode('utf-8'))
+    encoded_landmarks = base64.b64encode(prediction)
 
     # Send encoded landmarks data over MQTT
     send_data(encoded_landmarks)

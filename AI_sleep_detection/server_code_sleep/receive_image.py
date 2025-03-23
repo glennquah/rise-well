@@ -10,7 +10,7 @@ TOPIC = "image_data"
 
 def on_message(client, userdata, msg):
     print("Image data received!")
-    prediction = base64.b64decode(msg.payload).decode('utf-8')
+    prediction = base64.b64decode(msg.payload)
     #
     # decoded_list = [json.loads(json_data)]
 
