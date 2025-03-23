@@ -11,11 +11,6 @@ TOPIC = "image_data"
 def on_message(client, userdata, msg):
     print("Image data received!")
     prediction = base64.b64decode(msg.payload)
-    #
-    # decoded_list = [json.loads(json_data)]
-
-    # process json_data
-    # print(decoded_list)
 
     print("sleep" if prediction[0] == 0 else "awake")
 
