@@ -16,7 +16,7 @@ def post_alarm_history(payload):
         print(f"Failed to post alarm history: {e}")
         
 # TODO: TechDebt
-def get_all_users():
+# def get_all_users():
     
 def post_speech_sentences(payload):
     try:

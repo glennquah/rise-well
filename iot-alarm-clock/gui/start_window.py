@@ -8,7 +8,7 @@ def start_window(root):
         widget.destroy()
         
     root.title("RiseWell")
-    root.geometry("500x400")
+    root.geometry("500x450")
     root.configure(bg="white")
 
     title_label = ttk.Label(root, text="Welcome to RiseWell", font=("Arial", 24, "bold"), background="white")
