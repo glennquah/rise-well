@@ -54,4 +54,4 @@ def _go_to_start(root):
     start_window(root)
 
 def go_back(root):
-    add_alarm_window(root)
+    add_alarm_window(root, alarm_data.get("userId"))

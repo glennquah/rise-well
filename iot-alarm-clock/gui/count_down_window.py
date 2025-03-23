@@ -42,6 +42,14 @@ def count_down_window(root, alarm_data, go_back_callback):
               alarm_data["triggered"] = True
               if alarm_data["type"] == "Math":
                     math_alarm.trigger(alarm_data, root, go_back_callback)
+                elif alarm_data["type"] == "Nothing":
+                    payload = {
+                        "userId": alarm.get("userId"),
+                        "alarmType": "Nothing",
+                        "alarmTime": start_time.isoformat(),
+                        "resolvedTime": end_time.isoformat(),
+                    }
+                    post_alarm_history(payload)
             
 
     update_countdown()
