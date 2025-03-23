@@ -9,13 +9,11 @@ from apis.api_client import post_alarm_history
 from sensors.audio_sensor import AudioSensor
 
 def clean_sentence(s):
-    # Remove punctuation, lowercase, and strip extra whitespace
     return re.sub(r'[^\w\s]', '', s).lower().strip()
 
 def calculate_similarity(expected_sentence, user_sentence):
     a = clean_sentence(expected_sentence)
     b = clean_sentence(user_sentence)
-    # Ratio gives a 0–1 value, multiply by 100 for percentage
     return SequenceMatcher(None, a, b).ratio() * 100
 
 def trigger(alarm, root, go_back_callback, sentence):
@@ -24,8 +22,6 @@ def trigger(alarm, root, go_back_callback, sentence):
         widget.destroy()
 
     root.title("Speech Challenge Alarm")
-    
-    # Start the alarm sound as soon as we show this screen
     sound_obj = play_alarm_sound()
 
     config = alarm.get("config", {})
@@ -34,11 +30,10 @@ def trigger(alarm, root, go_back_callback, sentence):
 
     attempts = 0
     final_passed = False
+    challenge_finished = False  # Flag to prevent UI updates after challenge ends
 
-    # Record start time
     start_time = datetime.datetime.now()
 
-    # UI Elements
     tk.Label(root, text="Repeat the sentence below:", font=("Arial", 14), bg="white").pack(pady=5)
     sentence_label = tk.Label(root, text=sentence["sentence"], wraplength=400, font=("Arial", 16), bg="white", justify="center")
     sentence_label.pack(pady=10)
@@ -53,47 +48,51 @@ def trigger(alarm, root, go_back_callback, sentence):
     transcript_label.pack(pady=5)
 
     finish_btn = tk.Button(root, text="Finish", bg="white", state="disabled")
-    finish_btn.pack_forget()  # Hide it for now
+    finish_btn.pack_forget()
 
-    # Modify AudioSensor so we can patch in the custom similarity logic
+    # Patch AudioSensor with custom similarity logic.
+    # Also, pass a device_index if needed (e.g., device_index=0)
     class CustomAudioSensor(AudioSensor):
         @staticmethod
         def calculate_similarity(expected_sentence, user_sentence):
             return calculate_similarity(expected_sentence, user_sentence)
 
-    sensor = CustomAudioSensor()
+    sensor = CustomAudioSensor()  # You can pass device_index=<number> here if needed
 
     def callback(recognizer, audio):
+        if challenge_finished or not transcript_label.winfo_exists():
+            return
         try:
             transcript = recognizer.recognize_google(audio)
             sensor.collected_transcripts.append(transcript)
-            # Update transcript in the main thread
-            root.after(0, lambda: transcript_label.config(text="Heard: " + " ".join(sensor.collected_transcripts)))
+            # Only update if widget still exists
+            if transcript_label.winfo_exists():
+                root.after(0, lambda: transcript_label.config(text="Heard: " + " ".join(sensor.collected_transcripts)))
         except sr.UnknownValueError:
-            root.after(0, lambda: transcript_label.config(text="Could not understand audio."))
+            if transcript_label.winfo_exists():
+                root.after(0, lambda: transcript_label.config(text="Could not understand audio."))
         except sr.RequestError as e:
-            root.after(0, lambda: transcript_label.config(text=f"Request error: {e}"))
+            if transcript_label.winfo_exists():
+                root.after(0, lambda: transcript_label.config(text=f"Request error: {e}"))
 
     def start_recording():
         nonlocal sound_obj
-        # Stop the alarm sound so it's quiet while recording
         stop_alarm_sound()
         sound_obj = None
-
-        # Clear transcripts for this attempt
         sensor.collected_transcripts = []
         transcript_label.config(text="Recording... (Click 'Stop Recording' to finish)")
         sensor.start_listening(callback)
-        
         start_btn.pack_forget()
         stop_btn.pack(pady=10)
 
     def stop_recording():
         nonlocal attempts, final_passed, sound_obj
-        sensor.stop_listening_func()
-        transcript_label.config(text="Transcribing... Please wait.")
+        try:
+            sensor.stop_listening_func()
+        except Exception as e:
+            print("Error in stop_recording:", e)
+        transcript_label.config(text="Transcribing... Please wait!")
         
-        # Combine the user's speech from all transcripts
         user_transcription = " ".join(sensor.collected_transcripts)
         transcript_label.config(text="You said: " + user_transcription)
 
@@ -101,39 +100,38 @@ def trigger(alarm, root, go_back_callback, sentence):
         similarity = sensor.calculate_similarity(sentence["sentence"], user_transcription)
         
         if similarity >= 80:
-            final_passed = True
             result_label.config(text=f"✅ {similarity:.1f}% matched — Correct!", fg="green")
             score_label.config(text=f"Attempts: {attempts} | Score: 100%")
-            # Enable the "Finish" button so the user can finalize
             finish_btn.config(state="normal")
         else:
-            # Resume alarm since user didn't pass
             if sound_obj is None:
                 sound_obj = play_alarm_sound()
-                
             result_label.config(text=f"❌ {similarity:.1f}% matched — Try again.", fg="red")
             score_label.config(text=f"Attempts: {attempts} | Score: 0%")
 
         stop_btn.pack_forget()
-        # Show Start button again if not passed
         if not final_passed:
             start_btn.pack(pady=10)
 
     def finish_challenge():
-        # They only can press this if final_passed==True
+        nonlocal challenge_finished
+        challenge_finished = True
+        # Stop the listener if not already stopped.
+        sensor.stop_listening_func()
+        # Delay UI cleanup a bit longer (e.g., 300ms) to let any in-flight callbacks finish.
+        root.after(300, perform_finish)
+
+    def perform_finish():
         end_time = datetime.datetime.now()
         time_taken = end_time - start_time
-
-        # Stop alarm sound in case it's still playing
         stop_alarm_sound()
-
         start_btn.pack_forget()
         stop_btn.pack_forget()
         finish_btn.pack_forget()
 
         result_label.config(text="✅ Challenge Passed!", fg="green")
-        
-        tk.Label(root, text=f"Time taken: {str(time_taken).split('.')[0]}", bg="white", font=("Arial", 12)).pack(pady=5)
+        tk.Label(root, text=f"Time taken: {str(time_taken).split('.')[0]}", 
+                 bg="white", font=("Arial", 12)).pack(pady=5)
         tk.Button(root, text="Back", command=go_back_callback, bg="white").pack(pady=10)
         
         payload = {
@@ -152,7 +150,4 @@ def trigger(alarm, root, go_back_callback, sentence):
     finish_btn.config(command=finish_challenge)
 
     start_btn.pack(pady=10)
-    # The Finish button is initially disabled and hidden; we’ll show it only if similarity >= 80
     finish_btn.pack(pady=10)
-
-    # End of trigger function.
