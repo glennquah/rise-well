@@ -109,7 +109,7 @@ def trigger(alarm, root, go_back_callback):
         try:
             response = requests.post("http://192.168.23.239:3000/api/alarm-history", json={
                 "userId": "user_2uLEgW40wSAAR9BWMfSDX5cue22",
-                "alarmType": "math",
+                "alarmType": "Math",
                 "alarmTime": start_time.isoformat(),
                 "resolvedTime": end_time.isoformat(),
                 "difficulty": difficulty,
