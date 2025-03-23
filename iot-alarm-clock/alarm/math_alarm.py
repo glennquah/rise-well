@@ -3,9 +3,9 @@ import random
 import pygame
 import os
 import datetime
-import requests
 from utils import play_alarm_sound 
-from utils import stop_alarm_sound 
+from utils import stop_alarm_sound
+from apis.api_client import post_alarm_history
 
 def trigger(alarm, root, go_back_callback):
     # Reuse the same window and set background to white
@@ -105,19 +105,15 @@ def trigger(alarm, root, go_back_callback):
         result_label.config(text=f"Score: {score['correct']} / {num_questions}\nTime taken: {str(time_taken).split('.')[0]}\nTotal attempts: {attempts['total']}", bg="white")
         tk.Button(root, text="Back", command=go_back_callback, bg="white").pack(pady=10)
         stop_alarm_sound()
-        
-        try:
-            response = requests.post("http://192.168.23.239:3000/api/alarm-history", json={
-                "userId": "user_2uLEgW40wSAAR9BWMfSDX5cue22",
-                "alarmType": "Math",
-                "alarmTime": start_time.isoformat(),
-                "resolvedTime": end_time.isoformat(),
-                "difficulty": difficulty,
-                "mathOperations": operation,
-                "numberOfQuestions": num_questions
-            })
-            print(f"POST status: {response.status_code} | Response: {response.text}")
-        except Exception as e:
-            print(f"Failed to post alarm history: {e}")
+        payload = {
+            "userId": "user_2uLEgW40wSAAR9BWMfSDX5cue22",
+            "alarmType": "Math",
+            "alarmTime": start_time.isoformat(),
+            "resolvedTime": end_time.isoformat(),
+            "difficulty": difficulty,
+            "mathOperations": operation,
+            "numberOfQuestions": num_questions
+        }
+        post_alarm_history(payload)
 
     next_question()

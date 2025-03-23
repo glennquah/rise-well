@@ -79,7 +79,7 @@ export const AlarmClockHistory = () => {
                     })}
                   </TableCell>
                   <TableCell className="w-96">
-                    {alarm.alarmType === 'speech' ? (
+                    {alarm.alarmType === 'Speech' ? (
                       <details className="group w-full">
                         <summary
                           className="block cursor-pointer text-blue-600 underline w-full m-0"
@@ -100,7 +100,7 @@ export const AlarmClockHistory = () => {
                           </p>
                         </div>
                       </details>
-                    ) : alarm.alarmType === 'math' ? (
+                    ) : alarm.alarmType === 'Math' ? (
                       <details className="group w-full">
                         <summary
                           className="block cursor-pointer text-blue-600 underline w-full m-0"
