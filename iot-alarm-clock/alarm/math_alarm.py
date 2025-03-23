@@ -109,7 +109,7 @@ def trigger(alarm, root, go_back_callback):
         tk.Button(root, text="Back", command=go_back_callback, bg="white").pack(pady=10)
         stop_alarm_sound()
         payload = {
-            "userId": "user_2uLEgW40wSAAR9BWMfSDX5cue22",
+            "userId": alarm.get("userId"),
             "alarmType": "Math",
             "alarmTime": start_time.isoformat(),
             "resolvedTime": end_time.isoformat(),
