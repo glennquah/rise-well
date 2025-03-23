@@ -43,6 +43,8 @@ def add_alarm_window(root, userId):
             speech_window(root, alarm_data, lambda: go_back(root))
         elif alarm_type.get() == "Image Recognition":
             image_recognition_window(root, alarm_data, lambda: go_back(root))
+        elif alarm_type.get() == "Nothing":
+            count_down_window(root, alarm_data, lambda: go_back(root))
         else:
             count_down_window(root, alarm_data, lambda: go_back(root))
 

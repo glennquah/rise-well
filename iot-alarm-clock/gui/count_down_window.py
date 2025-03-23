@@ -2,6 +2,8 @@ import tkinter as tk
 from tkinter import ttk
 import datetime
 import alarm.math_alarm as math_alarm
+from apis.api_client import post_alarm_history
+from apis.api_client import post_speech_sentences
 
 def count_down_window(root, alarm_data, go_back_callback):
     # Clear current widgets on the root
@@ -50,6 +52,14 @@ def count_down_window(root, alarm_data, go_back_callback):
                         "resolvedTime": end_time.isoformat(),
                     }
                     post_alarm_history(payload)
+                elif alarm_data["type"] == "Speech":
+                    config = alarm.get("config", {})
+                    payload = {
+                        "difficulty": config.get("difficulty"),
+                        "numberOfWords": config.get("num_of_words"),
+                    }
+                    sentence = post_speech_sentences(payload)
+                    math_alarm.trigger(alarm_data, root, go_back_callback, sentence)
             
 
     update_countdown()
