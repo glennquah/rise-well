@@ -3,7 +3,6 @@ from tkinter import ttk
 from gui.count_down_window import count_down_window
 
 def speech_window(root, alarm_data, go_back_callback):
-    # GLENN, ADD YOUR STUFF HERE
     for widget in root.winfo_children():
         widget.destroy()
 

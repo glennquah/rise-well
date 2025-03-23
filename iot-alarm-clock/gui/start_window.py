@@ -36,3 +36,5 @@ def start_window(root):
 
     add_alarm_btn = ttk.Button(root, text="Add Alarm", command=lambda: add_alarm_window(root, user_id_var.get()))
     add_alarm_btn.pack(pady=10)
+    
+    
