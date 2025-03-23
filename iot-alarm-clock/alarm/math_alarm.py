@@ -44,9 +44,12 @@ def trigger(alarm, root, go_back_callback):
         if difficulty == "Easy":
             a = random.randint(1, 10)
             b = random.randint(1, 10)
-        else:
+        else if difficulty == "Medium":
             a = random.randint(10, 50)
             b = random.randint(10, 50)
+        else: if difficulty == "Hard":
+            a = random.randint(50, 100)
+            b = random.randint(50, 100)
         if operation == "Addition":
             q = f"{a} + {b} = ?"
             ans = a + b
