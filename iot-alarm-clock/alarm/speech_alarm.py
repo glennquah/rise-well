@@ -1,7 +1,9 @@
 import tkinter as tk
 import datetime
+import speech_recognition as sr
 from utils import play_alarm_sound, stop_alarm_sound
 from apis.api_client import post_alarm_history
+from sensors.audio_sensor import AudioSensor
 
 def trigger(alarm, root, go_back_callback, sentence):
     root.configure(bg="white")
@@ -19,49 +21,76 @@ def trigger(alarm, root, go_back_callback, sentence):
     score = {"correct": 0}
     passed = {"status": False}
 
-    # Start Time
+    # Record start time
     start_time = datetime.datetime.now()
 
-    # UI
+    # UI Elements
     tk.Label(root, text="Repeat the sentence below:", font=("Arial", 14), bg="white").pack(pady=5)
-
-    sentence_label = tk.Label(root, text=sentence.sentence, wraplength=400, font=("Arial", 16), bg="white", justify="center")
+    sentence_label = tk.Label(root, text=sentence["sentence"], wraplength=400, font=("Arial", 16), bg="white", justify="center")
     sentence_label.pack(pady=10)
 
     result_label = tk.Label(root, text="", font=("Arial", 12), bg="white")
     result_label.pack(pady=5)
 
-    score_label = tk.Label(root, text=f"Attempts: 0 | Score: 0%", font=("Arial", 12), bg="white")
+    score_label = tk.Label(root, text="Attempts: 0 | Score: 0%", font=("Arial", 12), bg="white")
     score_label.pack(pady=5)
 
+    transcript_label = tk.Label(root, text="", font=("Arial", 12), bg="white")
+    transcript_label.pack(pady=5)
+
+    # Create an instance of AudioSensor
+    sensor = AudioSensor()
+
+    # Define a callback to be called each time background listening returns audio.
+    def callback(recognizer, audio):
+        try:
+            transcript = recognizer.recognize_google(audio)
+            sensor.collected_transcripts.append(transcript)
+            transcript_label.config(text="Heard: " + " ".join(sensor.collected_transcripts))
+        except sr.UnknownValueError:
+            transcript_label.config(text="Could not understand audio.")
+        except sr.RequestError as e:
+            transcript_label.config(text=f"Request error: {e}")
+
+    # Start recording: start background listening and swap buttons.
     def start_recording():
         attempts["total"] += 1
+        transcript_label.config(text="Recording... (Click 'Stop Recording' to finish)")
+        sensor.start_listening(callback)
+        start_btn.pack_forget()
+        stop_btn.pack(pady=10)
 
-        # Simulate speech check: just assume correct on even attempts (you can replace this)
-        is_correct = attempts["total"] % 2 == 0
-        if is_correct:
+    # Stop recording: stop background listening, process the captured text, and check similarity.
+    def stop_recording():
+        sensor.stop_listening_func()
+        transcript_label.config(text="Transcribing... Please wait.")
+        user_transcription = " ".join(sensor.collected_transcripts)
+        transcript_label.config(text="You said: " + user_transcription)
+        similarity = AudioSensor.calculate_similarity(sentence["sentence"], user_transcription)
+        if similarity >= 80:
             score["correct"] += 1
-            result_label.config(text="✅ You pronounced it correctly!", fg="green")
-        else:
-            result_label.config(text="❌ Incorrect. Try again.", fg="red")
-
-        # Update score
-        percent = int((score["correct"] / attempts["total"]) * 100)
-        score_label.config(text=f"Attempts: {attempts['total']} | Score: {percent}%")
-
-        # Auto-finish if passed
-        if percent >= 80:
             passed["status"] = True
+            result_label.config(text=f"✅ {similarity:.1f}% matched — Correct!", fg="green")
+            score_label.config(text=f"Attempts: {attempts['total']} | Score: 100%")
             finish_challenge()
+        else:
+            result_label.config(text=f"❌ {similarity:.1f}% matched — Try again.", fg="red")
+            score_label.config(text=f"Attempts: {attempts['total']} | Score: 0%")
+        stop_btn.pack_forget()
+        if not passed["status"]:
+            start_btn.pack(pady=10)
 
-    record_btn = tk.Button(root, text="Start Recording", command=start_recording, bg="white")
-    record_btn.pack(pady=10)
+    start_btn = tk.Button(root, text="Start Recording", command=start_recording, bg="white")
+    start_btn.pack(pady=10)
+    stop_btn = tk.Button(root, text="Stop Recording", command=stop_recording, bg="white")
 
+    # Finish challenge: display summary and send the POST request.
     def finish_challenge():
         end_time = datetime.datetime.now()
         time_taken = end_time - start_time
 
-        record_btn.destroy()
+        start_btn.pack_forget()
+        stop_btn.pack_forget()
 
         if passed["status"]:
             result_label.config(text="✅ Challenge Passed!", fg="green")
@@ -79,6 +108,8 @@ def trigger(alarm, root, go_back_callback, sentence):
             "resolvedTime": end_time.isoformat(),
             "difficulty": difficulty,
             "numOfWords": num_of_words,
-            "givenWords": sentence.sentence,
+            "givenWords": sentence["sentence"],
         }
         post_alarm_history(payload)
+
+    # End of trigger function.
