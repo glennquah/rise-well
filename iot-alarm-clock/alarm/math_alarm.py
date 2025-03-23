@@ -4,7 +4,8 @@ import pygame
 import os
 import datetime
 from utils import play_alarm_sound 
-from utils import stop_alarm_sound 
+from utils import stop_alarm_sound
+from apis.api_client import post_alarm_history
 
 def trigger(alarm, root, go_back_callback):
     # Reuse the same window and set background to white
@@ -43,9 +44,16 @@ def trigger(alarm, root, go_back_callback):
         if difficulty == "Easy":
             a = random.randint(1, 10)
             b = random.randint(1, 10)
-        else:
+        elif difficulty == "Medium":
             a = random.randint(10, 50)
             b = random.randint(10, 50)
+        elif difficulty == "Hard":
+            a = random.randint(50, 100)
+            b = random.randint(50, 100)
+        else:
+            a = random.randint(1, 10)
+            b = random.randint(1, 10)
+            
         if operation == "Addition":
             q = f"{a} + {b} = ?"
             ans = a + b
@@ -104,5 +112,15 @@ def trigger(alarm, root, go_back_callback):
         result_label.config(text=f"Score: {score['correct']} / {num_questions}\nTime taken: {str(time_taken).split('.')[0]}\nTotal attempts: {attempts['total']}", bg="white")
         tk.Button(root, text="Back", command=go_back_callback, bg="white").pack(pady=10)
         stop_alarm_sound()
+        payload = {
+            "userId": alarm.get("userId"),
+            "alarmType": "Math",
+            "alarmTime": start_time.isoformat(),
+            "resolvedTime": end_time.isoformat(),
+            "difficulty": difficulty,
+            "mathOperations": operation,
+            "numberOfQuestions": num_questions
+        }
+        post_alarm_history(payload)
 
     next_question()
