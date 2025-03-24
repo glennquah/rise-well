@@ -8,7 +8,7 @@ def start_window(root):
         widget.destroy()
         
     root.title("RiseWell")
-    root.geometry("500x400")
+    root.geometry("500x450")
     root.configure(bg="white")
 
     title_label = ttk.Label(root, text="Welcome to RiseWell", font=("Arial", 24, "bold"), background="white")
@@ -36,3 +36,5 @@ def start_window(root):
 
     add_alarm_btn = ttk.Button(root, text="Add Alarm", command=lambda: add_alarm_window(root, user_id_var.get()))
     add_alarm_btn.pack(pady=10)
+    
+    
