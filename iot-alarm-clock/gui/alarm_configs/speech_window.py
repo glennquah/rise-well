@@ -53,21 +53,3 @@ def speech_window(root, alarm_data, go_back_callback):
             record_transcription_label.config(text=f"Request error: {e}")
 
     ttk.Button(root, text="Record for 10 seconds", command=record_test).pack(pady=10)
-    
-                # def update_ui():
-            #     nonlocal attempts, final_passed, sound_obj
-            #     transcript_label.config(text="You said: " + transcript)
-            #     attempts += 1
-            #     sim = calculate_similarity(sentence["sentence"], transcript)
-            #     if sim >= 80:
-            #         result_label.config(text=f"✅ {sim:.1f}% matched — Correct!", fg="green")
-            #         score_label.config(text=f"Attempts: {attempts} | Score: 100%")
-            #         final_passed = True
-            #         finish_btn.config(state="normal")
-            #     else:
-            #         result_label.config(text=f"❌ {sim:.1f}% matched — Try again.", fg="red")
-            #         score_label.config(text=f"Attempts: {attempts} | Score: 0%")
-            #         record_btn.config(state="normal")
-            # root.after(0, update_ui)
-
-        # threading.Thread(target=record_thread, daemon=True).start()
