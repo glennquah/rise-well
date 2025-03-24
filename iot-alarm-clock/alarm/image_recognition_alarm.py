@@ -142,7 +142,7 @@ def trigger(alarm_data, root, go_back_callback):
                 "mode": mode,
                 "category": alarm_data["config"].get("category", None)
             }
-            # post_alarm_history(payload)
+            post_alarm_history(payload)
             print(payload)
             tk.Button(root, text="Back", command=go_back_callback, bg="white").pack(pady=10)
             GPIO.cleanup()
