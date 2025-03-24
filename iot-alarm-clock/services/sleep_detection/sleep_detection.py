@@ -1,3 +1,5 @@
+from time import sleep
+
 import cv2
 import joblib
 import mediapipe as mp
@@ -60,7 +62,7 @@ def __extract_landmarks__(image_path):
     return None
 
 
-def ai_predict():
+def __ai_predict__():
     """
     Takes a picture and predict if someone is sleeping or not.
     :return:
@@ -85,3 +87,16 @@ def ai_predict():
     prediction = __predict__(landmarks)
 
     return "SLEEP" if prediction[0] == 0 else "AWAKE"
+
+
+def checks_if_user_is_awake():
+    detection = __ai_predict__()
+    while detection != "AWAKE":
+        if detection == -1:
+            checks_if_user_is_awake()
+            return
+        else:
+            print("User not awake. Sleeping for 5 minutes...")
+            sleep(300) # 5 mins
+            detection = __ai_predict__()
+

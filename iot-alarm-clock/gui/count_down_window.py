@@ -1,8 +1,10 @@
+from time import sleep
 from tkinter import ttk
 import datetime
 import alarm.math_alarm as math_alarm
 from apis.api_client import post_alarm_history
 from services.sleep_detection.sleep_detection import ai_predict
+
 
 def count_down_window(root, alarm_data, go_back_callback):
     # Clear current widgets on the root
@@ -52,6 +54,9 @@ def count_down_window(root, alarm_data, go_back_callback):
                     }
                     post_alarm_history(payload)
 
+            while checks_if_user_is_awake():
+                sleep(300)
+                pass
 
     def checks_if_user_is_awake():
         detection = ai_predict()
