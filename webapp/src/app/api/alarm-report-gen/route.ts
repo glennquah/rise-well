@@ -29,22 +29,24 @@ export async function POST() {
     Analyze the provided alarm history data carefully and strictly generate your report as a JSON object following this exact schema:
 
     {
-      "overview": "<Provide a concise summary of how the user generally interacts with their alarms. Include details such as the types of alarms frequently set (**Speech**, **Math**, **Shake It**, **Image Recognition**, **Nothing**) and overall effectiveness.>",
-      
-      "frequentPatterns": "<Highlight clear patterns, such as which alarm types (**Speech**, **Math**, **Shake It**, **Image Recognition**, **Nothing**) and difficulty levels are most commonly used. Identify if the user favors certain tasks consistently.>",
-      
-      "wakeUpRegularity": "<Evaluate and comment clearly if the user tends to wake up at consistent times or if their waking times vary significantly. Include specific references to the data provided.>",
-      
-      "retriggerAnalysis": "<Carefully analyze if multiple alarms are triggered closely together (within short intervals, e.g., under 15 minutes). Explicitly indicate if this shows repeated snoozing or the re-triggering of alarms (**Speech**, **Math**, **Shake It**, **Image Recognition**, **Nothing**).>",
-      
+      "overview": "<Provide a concise summary of how the user interacts with their alarms. Clearly include which alarm types (**Speech**, **Math**, **Shake It**, **Image Recognition**, **Nothing**) they commonly use and their effectiveness at waking the user.>",
+
+      "frequentPatterns": "<Identify clear and notable patterns in the user's alarm behavior. Specify which alarm types (**Speech**, **Math**, **Shake It**, **Image Recognition**, **Nothing**) and difficulty levels appear most frequently.>",
+
+      "wakeUpRegularity": "<Clearly indicate if the user generally wakes up at consistent times or if wake-up times vary significantly. Reference specific time intervals or patterns from the provided data.>",
+
+      "retriggerAnalysis": "<Analyze carefully if multiple alarms were triggered close together (e.g., within 15-minute intervals), clearly identifying if this indicates repeated snoozing or retriggering of alarms (**Speech**, **Math**, **Shake It**, **Image Recognition**, **Nothing**).>",
+
       "suggestions": [
-        "<Provide specific, actionable advice based on your analysis. Clearly suggest improvements such as setting harder challenges (**Speech** or **Math**), using louder alarms, repositioning devices to avoid retriggers, adjusting bedtime, or if necessary, recommend seeking professional sleep guidance.>"
+        "<Provide at least four separate, concise, actionable suggestions to improve the user's wake-up routine. Suggestions should include methods such as setting more challenging tasks (**Speech** or **Math**), using louder or different alarm types (**Shake It**, **Image Recognition**), improving sleep hygiene, positioning devices differently, adjusting bedtime, or seeking professional sleep advice. Each suggestion should be short, actionable, and accompanied by a relevant and helpful link (URL) to a credible external resource.>"
       ]
     }
 
     IMPORTANT FORMATTING RULES:
-    - Whenever mentioning alarm types: "**Speech**", "**Math**", "**Shake It**", "**Image Recognition**", or "**Nothing**", strictly use Markdown bold formatting as demonstrated.
-    - Keep language professional, concise, and suitable for direct storage in a database or user-facing display.
+    - ALWAYS provide at least FOUR distinct suggestions, each SHORT, ACTIONABLE, and CLEARLY NUMBERED (1, 2, 3, 4, ...).
+    - Each suggestion must INCLUDE one relevant hyperlink to a credible external source for more information (e.g., sleep foundation, medical advice, or app recommendations).
+    - Whenever mentioning alarm types: "**Speech**", "**Math**", "**Shake It**", "**Image Recognition**", or "**Nothing**", strictly use Markdown bold formatting.
+    - Keep language professional, concise, and suitable for direct database storage or user-facing display.
 
     User's Alarm History Data:
     ${JSON.stringify(history, null, 2)}

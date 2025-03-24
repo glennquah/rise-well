@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
+import { toast } from 'sonner';
 import { AlarmReportDto } from '../api/dtos/alarm-report';
 
 export default function AlarmReport() {
@@ -9,7 +10,6 @@ export default function AlarmReport() {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [saveMessage, setSaveMessage] = useState<string | null>(null);
 
   const fetchReport = async () => {
     setLoading(true);
@@ -43,7 +43,6 @@ export default function AlarmReport() {
   const generateReport = async () => {
     setLoading(true);
     setError(null);
-    setSaveMessage(null);
     try {
       const res = await fetch('/api/alarm-report-gen', {
         method: 'POST',
@@ -58,6 +57,7 @@ export default function AlarmReport() {
 
       const data: AlarmReportDto = await res.json();
       setReport(data);
+      toast.success('Report Generated successfully!');
     } catch (err) {
       console.error(err);
 
@@ -75,7 +75,6 @@ export default function AlarmReport() {
     if (!report) return;
 
     setSaving(true);
-    setSaveMessage(null);
     try {
       const res = await fetch('/api/alarm-report', {
         method: 'POST',
@@ -89,13 +88,13 @@ export default function AlarmReport() {
         throw new Error(message || 'Failed to save report.');
       }
 
-      setSaveMessage('Report saved successfully.');
+      toast.success('Report saved successfully!');
     } catch (err) {
       console.error(err);
       if (err instanceof Error) {
-        setSaveMessage(err.message);
+        toast.error(err.message);
       } else {
-        setSaveMessage('An unknown error occurred');
+        toast.error('An unknown error occurred');
       }
     } finally {
       setSaving(false);
@@ -170,7 +169,20 @@ export default function AlarmReport() {
                         {idx + 1}
                       </td>
                       <td className="border px-4 py-2">
-                        <ReactMarkdown>{suggestion}</ReactMarkdown>
+                        <ReactMarkdown
+                          components={{
+                            a: ({ ...props }) => (
+                              <a
+                                {...props}
+                                className="text-blue-500 underline font-bold"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              />
+                            ),
+                          }}
+                        >
+                          {suggestion}
+                        </ReactMarkdown>
                       </td>
                     </tr>
                   ))}
@@ -186,10 +198,6 @@ export default function AlarmReport() {
           >
             {saving ? 'Saving...' : 'Save Report'}
           </button>
-
-          {saveMessage && (
-            <p className="text-sm text-green-600">{saveMessage}</p>
-          )}
         </div>
       )}
     </div>
