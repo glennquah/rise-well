@@ -1,5 +1,5 @@
 'use client';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import {
   Table,
   TableBody,
@@ -47,9 +47,6 @@ export const AlarmClockHistory = () => {
   return (
     <div className="py-4">
       <Card>
-        <CardHeader>
-          <CardTitle className="text-xl">Alarm History</CardTitle>
-        </CardHeader>
         <CardContent className="overflow-x-auto">
           <Table>
             <TableHeader>
