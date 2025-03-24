@@ -19,7 +19,7 @@ def add_alarm_window(root, userId):
     time_entry.pack(pady=5)
 
     tk.Label(root, text="Select Alarm Type", bg="white").pack(pady=5)
-    alarm_type = tk.StringVar(value="Math")
+    alarm_type = tk.StringVar(value="Image Recognition")
     options = ["Math", "Nothing", "Shake It", "Speech", "Image Recognition"]
     for opt in options:
         ttk.Radiobutton(root, text=opt, variable=alarm_type, value=opt, style="White.TRadiobutton").pack()
@@ -42,7 +42,7 @@ def add_alarm_window(root, userId):
         elif alarm_type.get() == "Speech":
             speech_window(root, alarm_data, lambda: go_back(root))
         elif alarm_type.get() == "Image Recognition":
-            image_recognition_window(root, alarm_data, lambda: go_back(root))
+            image_recognition_window(root, alarm_data, lambda: go_back(root, userId))
         else:
             count_down_window(root, alarm_data, lambda: go_back(root))
 
@@ -55,3 +55,8 @@ def _go_to_start(root):
 
 def go_back(root):
     add_alarm_window(root, alarm_data.get("userId"))
+
+def go_back(root, userId):
+    add_alarm_window(root, userId)
+
+

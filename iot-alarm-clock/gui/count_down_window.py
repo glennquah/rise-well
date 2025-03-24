@@ -2,6 +2,11 @@ import tkinter as tk
 from tkinter import ttk
 import datetime
 import alarm.math_alarm as math_alarm
+from alarm.image_recognition_alarm import trigger as image_trigger
+from apis.api_client import post_alarm_history
+import time
+
+
 
 def count_down_window(root, alarm_data, go_back_callback):
     # Clear current widgets on the root
@@ -38,18 +43,24 @@ def count_down_window(root, alarm_data, go_back_callback):
             root.after(1000, update_countdown)
         else:
             countdown_label.config(text="Time's up!", font=("Arial", 24, "bold"), background="white")
+
             if not alarm_data.get("triggered"):
-              alarm_data["triggered"] = True
-              if alarm_data["type"] == "Math":
-                    math_alarm.trigger(alarm_data, root, go_back_callback)
-                elif alarm_data["type"] == "Nothing":
-                    payload = {
-                        "userId": alarm.get("userId"),
-                        "alarmType": "Nothing",
-                        "alarmTime": start_time.isoformat(),
-                        "resolvedTime": end_time.isoformat(),
-                    }
-                    post_alarm_history(payload)
+                alarm_data["triggered"] = True
+                
+            if alarm_data["type"] == "Math":
+                math_alarm.trigger(alarm_data, root, go_back_callback)
+
+            elif alarm_data["type"] == "Image Recognition":
+                image_trigger(alarm_data, root, go_back_callback)
+
+            elif alarm_data["type"] == "Nothing":
+                payload = {
+                    "userId": alarm_data.get("userId"),
+                    "alarmType": "Nothing",
+                    "alarmTime": start_time.isoformat(),
+                    "resolvedTime": end_time.isoformat(),
+                }
+                # post_alarm_history(payload)
             
 
     update_countdown()
