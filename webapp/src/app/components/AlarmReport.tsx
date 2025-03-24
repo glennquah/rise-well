@@ -13,7 +13,7 @@ export default function AlarmReport() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch('/api/report-gen', {
+      const res = await fetch('/api/alarm-report-gen', {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
