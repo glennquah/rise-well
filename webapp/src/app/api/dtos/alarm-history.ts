@@ -8,32 +8,50 @@ const DateString = z.preprocess((arg) => {
 
 const BaseAlarmHistorySchema = z.object({
   userId: z.string(),
-  alarmType: z.enum(['speech', 'math', 'shake', 'image']),
+  alarmType: z.enum([
+    'Speech',
+    'Math',
+    'Shake It',
+    'Image Recognition',
+    'Nothing',
+  ]),
   alarmTime: DateString,
   resolvedTime: DateString,
 });
 
 const SpeechHistorySchema = BaseAlarmHistorySchema.extend({
-  alarmType: z.literal('speech'),
-  difficulty: z.enum(['easy', 'medium', 'hard']),
+  alarmType: z.literal('Speech'),
+  difficulty: z.enum(['Easy', 'Medium', 'Hard']),
   numberOfWords: z.number(),
   givenWords: z.string(),
 });
 
 const MathHistorySchema = BaseAlarmHistorySchema.extend({
-  alarmType: z.literal('math'),
+  alarmType: z.literal('Math'),
+  difficulty: z.enum(['Easy', 'Medium', 'Hard']),
+  mathOperations: z.enum([
+    'Addition',
+    'Subtraction',
+    'Multiplication',
+    'Division',
+  ]),
+  numberOfQuestions: z.number(),
 });
 
 const ShakeHistorySchema = BaseAlarmHistorySchema.extend({
-  alarmType: z.literal('shake'),
+  alarmType: z.literal('Shake It'),
 });
 
 const ImageHistorySchema = BaseAlarmHistorySchema.extend({
-  alarmType: z.literal('image'),
-  taskType: z.enum(['preset', 'prompt']),
+  alarmType: z.literal('Image Recognition'),
+  taskType: z.enum(['Preset', 'Prompt']),
   imageUrl: z.string().optional(),
   promptType: z.string().optional(),
   prompt: z.string().optional(),
+});
+
+const NothingHistorySchema = BaseAlarmHistorySchema.extend({
+  alarmType: z.literal('Nothing'),
 });
 
 export const AlarmHistorySchema = z.discriminatedUnion('alarmType', [
@@ -41,6 +59,7 @@ export const AlarmHistorySchema = z.discriminatedUnion('alarmType', [
   MathHistorySchema,
   ShakeHistorySchema,
   ImageHistorySchema,
+  NothingHistorySchema,
 ]);
 
 export type AlarmHistoryDto = z.infer<typeof AlarmHistorySchema>;

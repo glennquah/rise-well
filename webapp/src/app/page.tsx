@@ -10,6 +10,7 @@ export default async function Home() {
     <ResponsiveContainer>
       <div className="flex flex-col min-h-screen py-8 gap-2">
         <h1 className="text-4xl font-bold text-start">Hello, {name}!</h1>
+        <h1 className="text-2xl font-bold text-start">UserId: {user?.id}</h1>
         <p className="text-lg text-start text-gray-700">
           Welcome to RiseWell – your personalized IoT alarm clock designed to
           help you wake up refreshed and ready for the day. Explore your sleep
