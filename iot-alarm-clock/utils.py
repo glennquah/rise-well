@@ -5,6 +5,7 @@ import threading
 pygame.mixer.init()
 playing_thread = None
 
+
 def play_alarm_sound():
     global playing_thread
 
@@ -21,6 +22,7 @@ def play_alarm_sound():
     playing_thread = threading.Thread(target=play_audio, daemon=True)
     playing_thread.start()
     print("Sound started...")
+
 
 def stop_alarm_sound():
     pygame.mixer.music.stop()

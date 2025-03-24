@@ -5,13 +5,14 @@ from gui.alarm_configs.shake_it_window import shake_it_window
 from gui.alarm_configs.speech_window import speech_window
 from gui.alarm_configs.image_recognition_window import image_recognition_window
 from gui.count_down_window import count_down_window
-from utils import play_alarm_sound 
-from utils import stop_alarm_sound 
+from utils import play_alarm_sound
+from utils import stop_alarm_sound
+
 
 def add_alarm_window(root, userId):
     for widget in root.winfo_children():
         widget.destroy()
-        
+
     root.title("Add Alarm")
 
     tk.Label(root, text="Time (HH:MM)", bg="white").pack(pady=5)
@@ -49,9 +50,11 @@ def add_alarm_window(root, userId):
     ttk.Button(root, text="Next", command=next_action).pack(pady=10)
     ttk.Button(root, text="Back", command=lambda: _go_to_start(root)).pack(pady=5)
 
+
 def _go_to_start(root):
     from gui.start_window import start_window
     start_window(root)
+
 
 def go_back(root):
     add_alarm_window(root, alarm_data.get("userId"))

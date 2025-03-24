@@ -1,7 +1,8 @@
-import tkinter as tk
 from tkinter import ttk
 import datetime
 import alarm.math_alarm as math_alarm
+from apis.api_client import post_alarm_history
+from services.sleep_detection.sleep_detection import ai_predict
 
 def count_down_window(root, alarm_data, go_back_callback):
     # Clear current widgets on the root
@@ -39,8 +40,8 @@ def count_down_window(root, alarm_data, go_back_callback):
         else:
             countdown_label.config(text="Time's up!", font=("Arial", 24, "bold"), background="white")
             if not alarm_data.get("triggered"):
-              alarm_data["triggered"] = True
-              if alarm_data["type"] == "Math":
+                alarm_data["triggered"] = True
+                if alarm_data["type"] == "Math":
                     math_alarm.trigger(alarm_data, root, go_back_callback)
                 elif alarm_data["type"] == "Nothing":
                     payload = {
@@ -50,7 +51,17 @@ def count_down_window(root, alarm_data, go_back_callback):
                         "resolvedTime": end_time.isoformat(),
                     }
                     post_alarm_history(payload)
-            
+
+
+    def checks_if_user_is_awake():
+        detection = ai_predict()
+        while detection != -1:
+            detection = ai_predict()
+
+        if detection == "AWAKE":
+            return True
+
+        return False
 
     update_countdown()
 
