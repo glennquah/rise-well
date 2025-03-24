@@ -44,10 +44,11 @@ const ShakeHistorySchema = BaseAlarmHistorySchema.extend({
 
 const ImageHistorySchema = BaseAlarmHistorySchema.extend({
   alarmType: z.literal('Image Recognition'),
-  taskType: z.enum(['Preset', 'Prompt']),
+  mode: z.enum(['reference', 'category']),
   imageUrl: z.string().optional(),
-  promptType: z.string().optional(),
-  prompt: z.string().optional(),
+  refImageUrl: z.string().optional(),
+  target_object: z.string().optional(),
+  category: z.string().optional(),
 });
 
 const NothingHistorySchema = BaseAlarmHistorySchema.extend({

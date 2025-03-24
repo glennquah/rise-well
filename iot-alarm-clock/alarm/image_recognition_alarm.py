@@ -11,6 +11,8 @@ from ultralytics import YOLO
 from utils import play_alarm_sound, stop_alarm_sound
 from apis.api_client import post_alarm_history
 from PIL import Image, ImageTk
+from services.cloudinary_uploader import upload_image_to_cloudinary
+
 
 
 BUTTON_PIN = 17
@@ -74,7 +76,6 @@ def trigger(alarm_data, root, go_back_callback):
 
     mode = alarm_data["config"].get("mode")
     userId = alarm_data.get("userId")
-    start_time = time.time()
 
     label = tk.Label(root, text="Waking you up...", font=("Arial", 16), bg="white")
     label.pack(pady=20)
@@ -83,6 +84,7 @@ def trigger(alarm_data, root, go_back_callback):
 
     def run_check():
         success = False
+
         try:
             if mode == "reference":
                 label.config(text="Match the reference image. Press the button when ready.")
@@ -132,14 +134,21 @@ def trigger(alarm_data, root, go_back_callback):
 
         if success:
             stop_alarm_sound()
-            end_time = time.time()
+
+            if(ref_path):
+                refImageUrl = upload_image_to_cloudinary(refImageUrl)
+                imageUrl = upload_image_to_cloudinary(comp_path)
+            
+            else:
+                imageUrl = upload_image_to_cloudinary(image_path)
+
             label.config(text="✅ Alarm passed! Good morning!", fg="green")
             payload = {
-                "userId": userId,
                 "alarmType": "Image Recognition",
-                "alarmTime": time.strftime('%Y-%m-%dT%H:%M:%S', time.localtime(start_time)),
-                "resolvedTime": time.strftime('%Y-%m-%dT%H:%M:%S', time.localtime(end_time)),
                 "mode": mode,
+                "imageUrl": imageUrl,
+                "refImageUrl": refImageUrl,
+                "target object": target_object,
                 "category": alarm_data["config"].get("category", None)
             }
             post_alarm_history(payload)
