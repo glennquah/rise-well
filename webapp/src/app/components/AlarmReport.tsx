@@ -1,17 +1,49 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { AlarmReportDto } from '../api/dtos/alarm-report';
 
 export default function AlarmReport() {
   const [report, setReport] = useState<AlarmReportDto | null>(null);
   const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [saveMessage, setSaveMessage] = useState<string | null>(null);
+
+  const fetchReport = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch('/api/alarm-report', {
+        method: 'GET',
+        credentials: 'include',
+      });
+
+      if (!res.ok) {
+        const { message } = await res.json();
+        throw new Error(message || 'No saved report found.');
+      }
+
+      const data: AlarmReportDto = await res.json();
+      setReport(data);
+    } catch (err) {
+      console.error(err);
+
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('An unknown error occurred');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const generateReport = async () => {
     setLoading(true);
     setError(null);
+    setSaveMessage(null);
     try {
       const res = await fetch('/api/alarm-report-gen', {
         method: 'POST',
@@ -28,10 +60,51 @@ export default function AlarmReport() {
       setReport(data);
     } catch (err) {
       console.error(err);
+
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('An unknown error occurred');
+      }
     } finally {
       setLoading(false);
     }
   };
+
+  const saveReport = async () => {
+    if (!report) return;
+
+    setSaving(true);
+    setSaveMessage(null);
+    try {
+      const res = await fetch('/api/alarm-report', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(report),
+      });
+
+      if (!res.ok) {
+        const { message } = await res.json();
+        throw new Error(message || 'Failed to save report.');
+      }
+
+      setSaveMessage('Report saved successfully.');
+    } catch (err) {
+      console.error(err);
+      if (err instanceof Error) {
+        setSaveMessage(err.message);
+      } else {
+        setSaveMessage('An unknown error occurred');
+      }
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchReport();
+  }, []);
 
   return (
     <div className="space-y-8 py-4">
@@ -45,7 +118,7 @@ export default function AlarmReport() {
           disabled={loading}
           className="rounded bg-primary px-4 py-2 font-semibold text-white hover:bg-primary/80 disabled:bg-gray-400"
         >
-          {loading ? 'Generating Report...' : 'Generate Alarm Report'}
+          {loading ? 'Generating...' : 'Generate Alarm Report'}
         </button>
       </div>
 
@@ -91,7 +164,7 @@ export default function AlarmReport() {
                   </tr>
                 </thead>
                 <tbody>
-                  {report.suggestions.map((suggestion: string, idx) => (
+                  {report.suggestions.map((suggestion, idx) => (
                     <tr key={idx}>
                       <td className="border px-4 py-2 align-top font-semibold">
                         {idx + 1}
@@ -105,6 +178,18 @@ export default function AlarmReport() {
               </table>
             </div>
           </section>
+
+          <button
+            onClick={saveReport}
+            disabled={saving}
+            className="rounded bg-primary px-4 py-2 font-semibold text-white hover:bg-green-600 disabled:bg-gray-400"
+          >
+            {saving ? 'Saving...' : 'Save Report'}
+          </button>
+
+          {saveMessage && (
+            <p className="text-sm text-green-600">{saveMessage}</p>
+          )}
         </div>
       )}
     </div>
