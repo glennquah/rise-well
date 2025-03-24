@@ -54,7 +54,7 @@ export async function POST() {
     const completion = await openai.chat.completions.create({
       model: 'gpt-4-1106-preview',
       messages: [{ role: 'system', content: systemPrompt }],
-      temperature: 0.7,
+      temperature: 1,
       response_format: { type: 'json_object' },
     });
 

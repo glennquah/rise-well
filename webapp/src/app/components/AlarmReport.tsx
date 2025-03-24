@@ -34,27 +34,26 @@ export default function AlarmReport() {
   };
 
   return (
-    <div className="space-y-8 py-8">
-      <h1 className="text-4xl font-extrabold tracking-tight lg:text-5xl">
-        Your Alarm Usage Report
-      </h1>
+    <div className="space-y-8 py-4">
+      <div className="border-b pb-6 flex items-center justify-between">
+        <h1 className="text-3xl font-bold tracking-tight lg:text-4xl">
+          Your Alarm Usage Report
+        </h1>
 
-      <button
-        onClick={generateReport}
-        disabled={loading}
-        className="rounded bg-primary px-4 py-2 font-semibold text-white hover:bg-primary/80 disabled:bg-gray-400"
-      >
-        {loading ? 'Generating Report...' : 'Generate Alarm Report'}
-      </button>
+        <button
+          onClick={generateReport}
+          disabled={loading}
+          className="rounded bg-primary px-4 py-2 font-semibold text-white hover:bg-primary/80 disabled:bg-gray-400"
+        >
+          {loading ? 'Generating Report...' : 'Generate Alarm Report'}
+        </button>
+      </div>
 
       {error && <p className="text-red-500">{error}</p>}
 
       {report && (
-        <div className="prose prose-sm mt-10 space-y-8">
+        <div className="prose prose-sm mt-2 space-y-8">
           <section>
-            <h2 className="mb-2 border-b pb-2 text-3xl font-semibold tracking-tight">
-              📖 Overview
-            </h2>
             <ReactMarkdown>{report.overview}</ReactMarkdown>
           </section>
 
