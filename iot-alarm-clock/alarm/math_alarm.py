@@ -1,8 +1,8 @@
 import tkinter as tk
 import random
-import pygame
-import os
 import datetime
+
+from services.sleep_detection.sleep_detection import checks_if_user_is_awake
 from utils import play_alarm_sound 
 from utils import stop_alarm_sound
 from apis.api_client import post_alarm_history
@@ -122,5 +122,6 @@ def trigger(alarm, root, go_back_callback):
             "numberOfQuestions": num_questions
         }
         post_alarm_history(payload)
+        checks_if_user_is_awake()
 
     next_question()
