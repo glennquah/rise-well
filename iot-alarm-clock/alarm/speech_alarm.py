@@ -1,6 +1,6 @@
+import speech_recognition as sr
 import tkinter as tk
 import datetime
-import speech_recognition as sr
 import re
 from difflib import SequenceMatcher
 import threading
@@ -44,54 +44,49 @@ def trigger(alarm, root, go_back_callback, sentence):
     score_label = tk.Label(root, text="Attempts: 0 | Score: 0%", font=("Arial", 12), bg="white")
     score_label.pack(pady=5)
 
-    transcript_label = tk.Label(root, text="", font=("Arial", 12), bg="white", wraplength=400)
-    transcript_label.pack(pady=5)
-
     finish_btn = tk.Button(root, text="Finish", bg="white", state="disabled")
     finish_btn.pack_forget()
+    
+    transcript_label = tk.Label(root, text="", bg="white", wraplength=300)
+    transcript_label.pack(pady=5)
 
-    # Recording section using a single button to record for 15 seconds.
-    record_btn = tk.Button(root, text="Record for 15 seconds", bg="white")
+    # Recording section using a single button to record for 10 seconds.
+    record_btn = tk.Button(root, text="Record for 10 seconds", bg="white")
     record_btn.pack(pady=10)
 
-    def record_15_seconds():
+    def record_10_seconds():
         nonlocal attempts, final_passed, sound_obj
-        # Disable the record button to prevent multiple presses.
         record_btn.config(state="disabled")
-        transcript_label.config(text="Recording for 15 seconds...")
-        stop_alarm_sound()  # Stop any alarm sound while recording
+        transcript_label.config(text="Recording for 10 seconds...")
+        stop_alarm_sound()
 
-        def record_thread():
-            r = sr.Recognizer()
-            with sr.Microphone() as source:
-                r.adjust_for_ambient_noise(source, duration=1)
-                # Record for 15 seconds (blocking call).
-                audio_data = r.record(source, duration=15)
-            try:
-                transcript = r.recognize_google(audio_data)
-            except sr.UnknownValueError:
-                transcript = "Could not understand audio."
-            except sr.RequestError as e:
-                transcript = f"Request error: {e}"
-            def update_ui():
-                nonlocal attempts, final_passed, sound_obj
-                transcript_label.config(text="You said: " + transcript)
-                attempts += 1
-                sim = calculate_similarity(sentence["sentence"], transcript)
-                if sim >= 80:
-                    result_label.config(text=f"✅ {sim:.1f}% matched — Correct!", fg="green")
-                    score_label.config(text=f"Attempts: {attempts} | Score: 100%")
-                    final_passed = True
-                    finish_btn.config(state="normal")
-                else:
-                    result_label.config(text=f"❌ {sim:.1f}% matched — Try again.", fg="red")
-                    score_label.config(text=f"Attempts: {attempts} | Score: 0%")
-                    record_btn.config(state="normal")
-            root.after(0, update_ui)
+        r = sr.Recognizer()
+        with sr.Microphone() as source:
+            r.adjust_for_ambient_noise(source, duration=1)
+            audio_data = r.record(source, duration=5)
 
-        threading.Thread(target=record_thread, daemon=True).start()
+        try:
+            transcript = r.recognize_google(audio_data)
+        except sr.UnknownValueError:
+            transcript = "Could not understand audio."
+        except sr.RequestError as e:
+            transcript = f"Request error: {e}"
 
-    record_btn.config(command=record_15_seconds)
+        transcript_label.config(text="You said: " + transcript)
+        attempts += 1
+        sim = calculate_similarity(sentence["sentence"], transcript)
+        if sim >= 80:
+            result_label.config(text=f"✅ {sim:.1f}% matched — Correct!", fg="green")
+            score_label.config(text=f"Attempts: {attempts} | Score: 100%")
+            final_passed = True
+            finish_btn.config(state="normal")
+            record_btn.config(state="disabled")
+        else:
+            result_label.config(text=f"❌ {sim:.1f}% matched — Try again.", fg="red")
+            score_label.config(text=f"Attempts: {attempts} | Score: 0%")
+            record_btn.config(state="normal")
+
+    record_btn.config(command=record_10_seconds)
 
     def finish_challenge():
         end_time = datetime.datetime.now()
@@ -109,7 +104,7 @@ def trigger(alarm, root, go_back_callback, sentence):
             "alarmTime": start_time.isoformat(),
             "resolvedTime": end_time.isoformat(),
             "difficulty": difficulty,
-            "numOfWords": num_of_words,
+            "numberOfWords": num_of_words,
             "givenWords": sentence["sentence"],
         }
         post_alarm_history(payload)
