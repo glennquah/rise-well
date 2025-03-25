@@ -31,8 +31,7 @@ def __load_model__():
     return loaded_model, scalar
 
 
-def __predict__(data):
-    global model
+def __predict__(data, model):
     # Get the model's predictions
     prediction = model.predict(data)
 
@@ -84,7 +83,7 @@ def __ai_predict__():
         return -1
 
     landmarks = scaler.transform([landmarks])
-    prediction = __predict__(landmarks)
+    prediction = __predict__(landmarks, model)
 
     return "SLEEP" if prediction[0] == 0 else "AWAKE"
 
@@ -99,4 +98,7 @@ def checks_if_user_is_awake():
             print("User not awake. Sleeping for 5 minutes...")
             sleep(300) # 5 mins
             detection = __ai_predict__()
+    print("AWAKE!")
 
+if __name__ == '__main__':
+    checks_if_user_is_awake()
