@@ -3,43 +3,38 @@ import {
   CardAction,
   CardDescription,
   CardHeader,
-} from "@/components/ui/card"
-import { BarChart, Flame, HeartPulse, Snowflake } from "lucide-react"
+} from "@/components/ui/card";
+import { BarChart, Flame, HeartPulse, Snowflake } from "lucide-react";
 
 interface SectionCardsProps {
   data: {
-    _id: string
-    timestamp: number
-    heartrate: number
-  }[]
+    _id: string;
+    timestamp: number;
+    heartrate: number;
+  }[];
 }
 
 export function SectionCards({ data }: SectionCardsProps) {
+  const heartRates = (data || [])
+    .map((item) => Number(item.heartrate))
+    .filter((hr) => !isNaN(hr));
 
-  if (!data || data.length === 0) {
-    return <p className="text-center text-gray-500">No data available</p>;
-  }
+  const averageBPM = heartRates.length
+    ? Math.round(heartRates.reduce((sum, hr) => sum + hr, 0) / heartRates.length)
+    : NaN;
 
-  const heartRates = data
-    .map(item => Number(item.heartrate))
-    .filter(hr => !isNaN(hr));
+  const minBPM = heartRates.length ? Math.round(Math.min(...heartRates)) : NaN;
+  const maxBPM = heartRates.length ? Math.round(Math.max(...heartRates)) : NaN;
 
-  if (heartRates.length === 0) {
-    return <p className="text-center text-gray-500">No valid heart rate data</p>;
-  }
+  const mean = heartRates.length
+    ? heartRates.reduce((sum, hr) => sum + hr, 0) / heartRates.length
+    : NaN;
 
-  const averageBPM = Math.round(
-    heartRates.reduce((sum, hr) => sum + hr, 0) / heartRates.length
-  );
+  const variance = heartRates.length
+    ? heartRates.reduce((sum, hr) => sum + Math.pow(hr - mean, 2), 0) / heartRates.length
+    : NaN;
 
-  const minBPM = Math.round(Math.min(...heartRates));
-  const maxBPM = Math.round(Math.max(...heartRates));
-
-  const mean = heartRates.reduce((sum, hr) => sum + hr, 0) / heartRates.length;
-  const variance =
-    heartRates.reduce((sum, hr) => sum + Math.pow(hr - mean, 2), 0) /
-    heartRates.length;
-  const stdDeviation = Math.round(Math.sqrt(variance));
+  const stdDeviation = heartRates.length ? Math.round(Math.sqrt(variance)) : NaN;
 
   return (
     <div className="grid grid-cols-1 gap-4 px-4 lg:px-6 @xl/main:grid-cols-2 @5xl/main:grid-cols-4">
@@ -62,7 +57,6 @@ export function SectionCards({ data }: SectionCardsProps) {
           <CardDescription>Maximum BPM</CardDescription>
           <CardAction>
             <Flame className="w-6 h-6 text-gray-500" />
-
           </CardAction>
         </CardHeader>
         <div className="mb-4 h-full w-full flex justify-center items-center text-4xl font-semibold">
