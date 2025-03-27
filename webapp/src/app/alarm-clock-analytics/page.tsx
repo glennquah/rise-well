@@ -1,17 +1,27 @@
-import { auth, currentUser } from '@clerk/nextjs/server';
 import { AlarmClockHistory } from '../components/AlarmClockHistory';
+import AlarmReport from '../components/AlarmReport';
 import ResponsiveContainer from '../components/ResponsiveContainer';
+import { ReusableTabs } from '../components/ReusableTabs';
 
 export default async function AlarmClockAnalytics() {
-  const authData = await auth();
-  console.log(authData);
-  const user = await currentUser();
-  console.log(user);
+  const tabs = [
+    {
+      value: 'history',
+      label: 'History',
+      content: <AlarmClockHistory />,
+    },
+    {
+      value: 'report',
+      label: 'Report',
+      content: <AlarmReport />,
+    },
+  ];
+
   return (
     <ResponsiveContainer>
-      <div className="flex flex-col min-h-screen py-8 gap-2">
+      <div className="flex flex-col min-h-screen py-8 gap-4">
         <h1 className="text-4xl font-bold text-start">Alarm Clock Analytics</h1>
-        <AlarmClockHistory />
+        <ReusableTabs defaultValue="history" tabs={tabs} />
       </div>
     </ResponsiveContainer>
   );

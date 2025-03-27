@@ -1,10 +1,12 @@
 'use client';
 
 import { SignedIn, UserButton } from '@clerk/nextjs';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
 import { AiOutlineClose } from 'react-icons/ai';
 import { BiMenuAltRight } from 'react-icons/bi';
+import logo from '../../../public/RiseWellLogo.png';
 import ResponsiveContainer from './ResponsiveContainer';
 
 const NavigationBar = () => {
@@ -17,7 +19,8 @@ const NavigationBar = () => {
     <nav className="bg-black text-white sticky top-0 w-full z-50">
       <ResponsiveContainer>
         <div className="flex justify-between items-center h-16">
-          <Link href="/">
+          <Link href="/" className="flex flex-row items-center gap-3">
+            <Image src={logo} alt="RiseWell Logo" width={35} height={35} />
             <h1
               className="text-2xl font-bold cursor-pointer"
               onClick={closeMenu}

@@ -27,6 +27,9 @@ def add_alarm_window(root: tk.Tk, userId):
     ttk.Button(root, text="Play Alarm Ring Tone", command=play_alarm_sound).pack(pady=5)
     ttk.Button(root, text="Stop Alarm Ring Tone", command=stop_alarm_sound).pack(pady=5)
 
+    def go_back():
+            add_alarm_window(root, userId)
+            
     def next_action():
         alarm_data = {
             "userId": userId,
@@ -36,15 +39,17 @@ def add_alarm_window(root: tk.Tk, userId):
         }
         # Route to the specific config screen based on alarm type
         if alarm_type.get() == "Math":
-            math_window(root, alarm_data, lambda: go_back(root, alarm_data))
+            math_window(root, alarm_data, go_back)
         elif alarm_type.get() == "Shake It":
-            shake_it_window(root, alarm_data, lambda: go_back(root, alarm_data))
+            shake_it_window(root, alarm_data, go_back)
         elif alarm_type.get() == "Speech":
-            speech_window(root, alarm_data, lambda: go_back(root, alarm_data))
+            speech_window(root, alarm_data, go_back)
         elif alarm_type.get() == "Image Recognition":
-            image_recognition_window(root, alarm_data, lambda: go_back(root, alarm_data))
+            image_recognition_window(root, alarm_data, go_back)
+        elif alarm_type.get() == "Nothing":
+            count_down_window(root, alarm_data, go_back)
         else:
-            count_down_window(root, alarm_data, lambda: go_back(root, alarm_data))
+            count_down_window(root, alarm_data, go_back)
 
     ttk.Button(root, text="Next", command=next_action).pack(pady=10)
     ttk.Button(root, text="Back", command=lambda: _go_to_start(root)).pack(pady=5)
@@ -52,6 +57,3 @@ def add_alarm_window(root: tk.Tk, userId):
 def _go_to_start(root):
     from gui.start_window import start_window
     start_window(root)
-
-def go_back(root, alarm_data):
-    add_alarm_window(root, alarm_data.get("userId"))
