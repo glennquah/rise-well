@@ -41,8 +41,7 @@ export async function POST(req: Request) {
 
 export async function GET() {
   // IMPT!! Make sure u add this to protect the route
-  // const { userId } = await auth();
-  const userId = "user_2uWbVB0Sa5nzCaYSrQjpJ4cU5YY";
+  const { userId } = await auth();
   if (!userId) {
     return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
   }
