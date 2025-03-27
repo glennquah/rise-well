@@ -20,7 +20,7 @@ def trigger(alarm, root: tk.Tk, go_back_callback):
     root.title("Shake It Alarm")
 
     config = alarm.get("config", {})
-    difficulty = config.get("difficulty", "easy")
+    difficulty = config.get("difficulty", "Easy")
 
     display_label = tk.Label(root, text="", font=("Arial", 14), bg="white")
     display_label.pack(pady=10)
@@ -39,39 +39,31 @@ def trigger(alarm, root: tk.Tk, go_back_callback):
                 f"Shake it count: {total_score}",
                 f"Time taken: {str(time_taken).split('.')[0]}"
             ])
-            # display_label.config(text=message)
             stop_alarm_sound()
-            # payload = {
-            #     "userId": alarm.get("userId"),
-            #     "alarmType": "Shake It",
-            #     "alarmTime": start_time.isoformat(),
-            #     "difficulty": difficulty,
-            # }
-            # post_alarm_history(payload)
+            payload = {
+                "userId": alarm.get("userId"),
+                "alarmType": "Shake It",
+                "alarmTime": start_time.isoformat(),
+                "difficulty": difficulty,
+                "resolvedTime": end_time.isoformat(),
+                "shakeCount": total_score,
+            }
+            post_alarm_history(payload)
             stop_flag = True
 
         try:
             cleaned_data = data.strip().replace('\x00', '')
             score = int(cleaned_data)
             total_score = score
-            print(f"Scoreee {score}")
             update_display()
         except Exception as e:
-            # Optional: handle unexpected data here (not needed if you know Microbit only sends numbers)
-            print(f"type {type(e)}")
-            print(f"Received non-numeric data: {e}")
+            print(f"Error: {e}")
 
-
-
-
-
-    # Define shake_game function before calling it
     def shake_game(difficulty): 
         global stop_flag
         global start_time
-        stop_flag = False  # Reset stop flag
-        print(f"diff: {difficulty}")
-        display_label.config(text=f"Shake it level: {difficulty}\n Initiating shake...")  # Use f-string for difficulty
+        stop_flag = False 
+        display_label.config(text=f"Shake it level: {difficulty}\n Initiating shake...")
 
         try:
             bleUartDevice1 = None
@@ -117,9 +109,7 @@ def trigger(alarm, root: tk.Tk, go_back_callback):
                 back_button = tk.Button(root, text="Back", command=go_back_callback, bg="white")
                 back_button.pack(pady=10)
 
-
-
     def run_game(): 
-        shake_game(difficulty)  # Now calling the function after it's defined
+        shake_game(difficulty) 
     
     threading.Thread(target=run_game, daemon=True).start()

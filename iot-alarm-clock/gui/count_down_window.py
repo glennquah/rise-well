@@ -29,6 +29,9 @@ def count_down_window(root, alarm_data, go_back_callback):
     countdown_label = ttk.Label(root, text="", font=("Arial", 64), background="white")
     countdown_label.pack(pady=20)
 
+    back_button = ttk.Button(root, text="Back", command=go_back_callback)
+    back_button.pack(pady=10)
+
     def update_countdown():
         now = datetime.datetime.now()
         diff = alarm_time - now
@@ -41,6 +44,7 @@ def count_down_window(root, alarm_data, go_back_callback):
             countdown_label.config(text="Time's up!", font=("Arial", 24, "bold"), background="white")
             if not alarm_data.get("triggered"):
                 alarm_data["triggered"] = True
+                back_button.destroy()
                 if alarm_data["type"] == "Math":
                     math_alarm.trigger(alarm_data, root, go_back_callback)
                 elif alarm_data["type"] == "Shake It":
@@ -56,6 +60,3 @@ def count_down_window(root, alarm_data, go_back_callback):
             
 
     update_countdown()
-
-    # Back Button to return to the add alarm screen
-    ttk.Button(root, text="Back", command=go_back_callback).pack(pady=10)

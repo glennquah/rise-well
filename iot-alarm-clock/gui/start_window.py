@@ -29,9 +29,10 @@ def start_window(root: tk.Tk):
     desc_label.pack()
     guide_label = ttk.Label(root, text="How to start?\nAdd an alarm, pick activities, and start your day well!", font=("Arial", 10), background="white", justify="center")
     guide_label.pack(pady=5)
+    userId = 'user_2uWbVB0Sa5nzCaYSrQjpJ4cU5YY'
     
     tk.Label(root, text="Enter User ID", bg="white").pack(pady=5)
-    user_id_var = tk.StringVar()
+    user_id_var = tk.StringVar(value=userId)
     user_id_entry = tk.Entry(root, textvariable=user_id_var, width=30)
     user_id_entry.pack(pady=5)
 

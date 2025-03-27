@@ -2,11 +2,11 @@ import requests
 
 # Change here to your own local ip address
 # Glenn's Mac Address: "http://192.168.23.239:3000/api/alarm-history"
-# Emily
+# Emily's Mac Address: "http://192.168.1.6:3000/api/alarm-history"
 # Jordan
 # Hamzah
 # Ophe
-ALARM_HISTORY_ENDPOINT = "http://192.168.23.239:3000/api/alarm-history"
+ALARM_HISTORY_ENDPOINT = "http://192.168.1.6:3000/api/alarm-history"
 
 def post_alarm_history(payload):
     try:
