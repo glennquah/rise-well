@@ -32,6 +32,7 @@ bluetooth.onUartDataReceived(serial.delimiters(Delimiters.NewLine), function () 
         difficulty = "Hard";
     }
     selectedThreshold = shakeThresholds.find(threshold => threshold.type === difficulty).code;
+    shakeCount = selectedThreshold;
 });
 
 input.onGesture(Gesture.Shake, function () {
@@ -39,10 +40,10 @@ input.onGesture(Gesture.Shake, function () {
         init();
     };
 
-    shakeCount += 1;
-    basic.showNumber(shakeCount);
+    selectedThreshold--;
+    basic.showNumber(selectedThreshold);
 
-    if (shakeCount == selectedThreshold) {
+    if (selectedThreshold === 0) {
         gameOver = true;
         bluetooth.uartWriteString(shakeCount.toString());
         basic.showString("END");

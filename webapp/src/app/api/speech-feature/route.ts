@@ -27,7 +27,7 @@ export async function POST(req: Request) {
         },
       ],
       temperature:
-        difficulty === 'easy' ? 0.3 : difficulty === 'medium' ? 0.6 : 0.9,
+        difficulty === 'Easy' ? 0.3 : difficulty === 'Medium' ? 0.6 : 0.9,
     });
 
     const sentence = completion.choices[0].message.content?.trim();
