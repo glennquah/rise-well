@@ -46,12 +46,13 @@ export async function POST(req: Request) {
     });
 
     const sentence = completion.choices[0].message.content?.trim();
+    
 
     return NextResponse.json({ sentence });
   } catch (error) {
     console.error('Error generating motivational quote:', error);
     return NextResponse.json(
-      { message: 'Failed to generate motivational quote' },
+      { message: 'Failed to generate motivational quote: ', error },
       { status: 500 },
     );
   }
