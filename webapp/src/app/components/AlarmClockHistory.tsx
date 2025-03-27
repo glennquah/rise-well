@@ -49,7 +49,7 @@ export const AlarmClockHistory = () => {
 
   const renderAlarmDetails = (alarm: AlarmHistoryDto) => {
     const {alarmType} = alarm;
-    
+
     // TODO: Add in other alarm type here 
     if (alarmType === "Math") {
     return <details className="group w-full">
@@ -154,52 +154,6 @@ export const AlarmClockHistory = () => {
                   </TableCell>
                   <TableCell className="w-96">
                     {renderAlarmDetails(alarm) ?? 'NA'}
-                    {/* {alarm.alarmType === 'Speech' ? (
-                      <details className="group w-full">
-                        <summary
-                          className="block cursor-pointer text-blue-600 underline w-full m-0"
-                          style={{ listStyle: 'none' }}
-                        >
-                          View Details
-                        </summary>
-                        <div className="mt-2 space-y-1 transition-all duration-300 ease-in-out opacity-0 group-open:opacity-100">
-                          <p>
-                            <strong>Difficulty:</strong> {alarm.difficulty}
-                          </p>
-                          <p>
-                            <strong>Number of Words:</strong>{' '}
-                            {alarm.numberOfWords}
-                          </p>
-                          <p className="whitespace-normal">
-                            <strong>Given Words:</strong> {alarm.givenWords}
-                          </p>
-                        </div>
-                      </details>
-                    ) : alarm.alarmType === 'Math' ? (
-                      <details className="group w-full">
-                        <summary
-                          className="block cursor-pointer text-blue-600 underline w-full m-0"
-                          style={{ listStyle: 'none' }}
-                        >
-                          View Details
-                        </summary>
-                        <div className="mt-2 space-y-1 transition-all duration-300 ease-in-out opacity-0 group-open:opacity-100">
-                          <p>
-                            <strong>Difficulty:</strong> {alarm.difficulty}
-                          </p>
-                          <p>
-                            <strong>Math Operation:</strong>{' '}
-                            {alarm.mathOperations}
-                          </p>
-                          <p>
-                            <strong>Number of Questions:</strong>{' '}
-                            {alarm.numberOfQuestions}
-                          </p>
-                        </div>
-                      </details>
-                    ) : (
-                      'N/A'
-                    )} */}
                   </TableCell>
                 </TableRow>
               ))}
