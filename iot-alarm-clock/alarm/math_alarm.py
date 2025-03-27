@@ -109,7 +109,9 @@ def trigger(alarm, root, go_back_callback):
         submit_button.destroy()
         end_time = datetime.datetime.now()
         time_taken = end_time - start_time
-        result_label.config(text=f"Score: {score['correct']} / {num_questions}\nTime taken: {str(time_taken).split('.')[0]}\nTotal attempts: {attempts['total']}", bg="white")
+        # result_label.config(text=f"Score: {score['correct']} / {num_questions}\nTime taken: {str(time_taken).split('.')[0]}\nTotal attempts: {attempts['total']}", bg="white")
+        result_label.config(text=f"Score: {score['correct']} / {num_questions}\nTime taken: {time_taken}\nTotal attempts: {attempts['total']}", bg="white")
+
         tk.Button(root, text="Back", command=go_back_callback, bg="white").pack(pady=10)
         stop_alarm_sound()
         payload = {

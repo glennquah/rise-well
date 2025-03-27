@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 import datetime
 import alarm.math_alarm as math_alarm
+import alarm.shake_it_alarm as shake_it_alarm 
 
 def count_down_window(root, alarm_data, go_back_callback):
     # Clear current widgets on the root
@@ -39,9 +40,11 @@ def count_down_window(root, alarm_data, go_back_callback):
         else:
             countdown_label.config(text="Time's up!", font=("Arial", 24, "bold"), background="white")
             if not alarm_data.get("triggered"):
-              alarm_data["triggered"] = True
-              if alarm_data["type"] == "Math":
+                alarm_data["triggered"] = True
+                if alarm_data["type"] == "Math":
                     math_alarm.trigger(alarm_data, root, go_back_callback)
+                elif alarm_data["type"] == "Shake It":
+                    shake_it_alarm.trigger(alarm_data,root,go_back_callback)
                 elif alarm_data["type"] == "Nothing":
                     payload = {
                         "userId": alarm.get("userId"),

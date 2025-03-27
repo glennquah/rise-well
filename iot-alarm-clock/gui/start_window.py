@@ -1,9 +1,9 @@
 import tkinter as tk
 from tkinter import ttk
-from PIL import Image, ImageTk
+from PIL import Image 
 from gui.add_alarm_window import add_alarm_window
 
-def start_window(root):
+def start_window(root: tk.Tk):
     for widget in root.winfo_children():
         widget.destroy()
         
@@ -15,12 +15,13 @@ def start_window(root):
     title_label.pack(pady=10)
 
     try:
-        image = Image.open("assets/RiseWellLogo.png")
-        image = image.resize((150, 150), Image.ANTIALIAS)
-        alarm_image = ImageTk.PhotoImage(image)
-        img_label = tk.Label(root, image=alarm_image, background="white")
-        img_label.image = alarm_image
-        img_label.pack(pady=10)
+        print(Image.__version__)
+        # image = Image.open("assets/RiseWellLogo.png")
+        # image = image.resize((150, 150), Image.ANTIALIAS)
+        # alarm_image = ImageTk.PhotoImage(image)
+        # img_label = tk.Label(root, image=alarm_image, background="white")
+        # img_label.image = alarm_image
+        # img_label.pack(pady=10)
     except Exception as e:
         print(f"Image Error: {e}")
         
