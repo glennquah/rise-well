@@ -7,17 +7,11 @@ import { ChartLine } from "@/components/chart-line";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
-interface PollingDataDisplayProps {
-  initialData: any[];
-}
-
-export default function PollingDataDisplay({ initialData }: PollingDataDisplayProps) {
+export default function PollingDataDisplay() {
   const { data, error } = useSWR("/api/heartrate", fetcher, {
-    fallbackData: initialData,
     refreshInterval: 5000,
   });
 
-  // const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [selectedDate, setSelectedDate] = useState(() => {
     return new Date().toISOString().split("T")[0]; // "YYYY-MM-DD"
   });
