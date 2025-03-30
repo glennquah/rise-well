@@ -4,7 +4,6 @@ import ResponsiveContainer from './components/ResponsiveContainer';
 export default async function Home() {
   const user = await currentUser();
   const name = user?.firstName || user?.fullName || 'Guest';
-  console.log(user);
 
   return (
     <ResponsiveContainer>
