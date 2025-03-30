@@ -40,6 +40,8 @@ const MathHistorySchema = BaseAlarmHistorySchema.extend({
 
 const ShakeHistorySchema = BaseAlarmHistorySchema.extend({
   alarmType: z.literal('Shake It'),
+  difficulty: z.enum(['Easy', 'Medium', 'Hard']),
+  shakeCount: z.number(),
 });
 
 const ImageHistorySchema = BaseAlarmHistorySchema.extend({

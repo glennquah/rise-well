@@ -8,7 +8,7 @@ from gui.count_down_window import count_down_window
 from utils import play_alarm_sound 
 from utils import stop_alarm_sound 
 
-def add_alarm_window(root, userId):
+def add_alarm_window(root: tk.Tk, userId):
     for widget in root.winfo_children():
         widget.destroy()
         
