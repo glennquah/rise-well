@@ -6,6 +6,11 @@ import alarm.speech_alarm as speech_alarm
 from apis.api_client import post_alarm_history
 from apis.api_client import post_speech_sentences
 import alarm.shake_it_alarm as shake_it_alarm 
+from utils import stop_alarm_sound
+import serial
+import threading
+
+ser = serial.Serial(port='/dev/ttyACM0', baudrate=115200, timeout=1)
 
 def count_down_window(root, alarm_data, go_back_callback):
     # Clear current widgets on the root
@@ -69,6 +74,19 @@ def count_down_window(root, alarm_data, go_back_callback):
                     }
                     sentence = post_speech_sentences(payload)
                     speech_alarm.trigger(alarm_data, root, go_back_callback, sentence)
+
+    def listen_for_stop_alarm():
+        while True:
+            if ser.in_waiting > 0: 
+                message = ser.readline().decode('utf-8').strip()
+                if message == "stop": 
+                    stop_alarm_sound()
+                    ser.write(b"reset\n")
+                    ttk.Button(root, text="Exit", command=go_back_callback).pack(pady=10)
+
+    listener_thread = threading.Thread(target=listen_for_stop_alarm)
+    listener_thread.daemon = True  
+    listener_thread.start()
             
 
     update_countdown()
