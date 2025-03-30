@@ -5,8 +5,8 @@ import requests
 # Emily's Mac Address: "http://192.168.1.6:3000/api/alarm-history"
 # Jordan
 # Hamzah
-# Ophe
-API_ENDPOINT = "http://192.168.1.6:3000"
+# Ophe's WINDOWS Address: http://192.168.88.2:3000/api/alarm-history
+API_ENDPOINT = "http://192.168.88.2:3000"
 
 def post_alarm_history(payload):
     try:

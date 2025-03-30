@@ -12,13 +12,13 @@ from utils import play_alarm_sound, stop_alarm_sound
 from apis.api_client import post_alarm_history
 from PIL import Image, ImageTk
 from services.cloudinary_uploader import upload_image_to_cloudinary
-
-
+import datetime
 
 BUTTON_PIN = 17
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(BUTTON_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 model = YOLO("yolov5su.pt")
+
 
 CATEGORIES = {
     "furniture": ["chair", "couch", "bed", "dining table", "toilet", "bench"],
@@ -80,6 +80,7 @@ def trigger(alarm_data, root, go_back_callback):
     label = tk.Label(root, text="Waking you up...", font=("Arial", 16), bg="white")
     label.pack(pady=20)
 
+    start_time = datetime.datetime.now()
     play_alarm_sound()
 
     def run_check():
@@ -134,16 +135,22 @@ def trigger(alarm_data, root, go_back_callback):
 
         if success:
             stop_alarm_sound()
+            end_time = datetime.datetime.now()
 
-            if(ref_path):
-                refImageUrl = upload_image_to_cloudinary(refImageUrl)
-                imageUrl = upload_image_to_cloudinary(comp_path)
-            
-            else:
+            if mode == "reference":
+                    refImageUrl = upload_image_to_cloudinary(ref_path)
+                    imageUrl = upload_image_to_cloudinary(comp_path)
+
+            elif mode == "category":
                 imageUrl = upload_image_to_cloudinary(image_path)
 
             label.config(text="✅ Alarm passed! Good morning!", fg="green")
+
+
             payload = {
+                "userId": alarm_data.get("userId"),
+                "alarmTime": start_time.isoformat(),
+                "resolvedTime": end_time.isoformat(),
                 "alarmType": "Image Recognition",
                 "mode": mode,
                 "imageUrl": imageUrl,
@@ -151,8 +158,9 @@ def trigger(alarm_data, root, go_back_callback):
                 "target object": target_object,
                 "category": alarm_data["config"].get("category", None)
             }
-            post_alarm_history(payload)
+
             print(payload)
+            post_alarm_history(payload)
             tk.Button(root, text="Back", command=go_back_callback, bg="white").pack(pady=10)
             GPIO.cleanup()
         else:
