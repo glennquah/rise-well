@@ -1,76 +1,84 @@
 import tkinter as tk
+from tkinter import ttk
 import random
-import pygame
-import os
 import datetime
-from utils import play_alarm_sound 
-from utils import stop_alarm_sound
+from utils import play_alarm_sound, stop_alarm_sound
 from apis.api_client import post_alarm_history
 
+
 def trigger(alarm, root, go_back_callback):
-    # Reuse the same window and set background to white
     root.configure(bg="white")
     for widget in root.winfo_children():
         widget.destroy()
 
     root.title("Math Challenge Alarm")
 
-    # Start playing the alarm sound
     sound_obj = play_alarm_sound()
 
-    # Retrieve math configuration from alarm data
     config = alarm.get("config", {})
     difficulty = config.get("difficulty", "Easy")
     operation = config.get("operation", "Addition")
     num_questions = config.get("num_questions", 3)
 
-    # Initialize score, attempts, and question counter
     score = {"correct": 0}
     attempts = {"total": 0}
     current_q = {"question": None, "answer": None}
     questions_asked = [0]
 
-    # Create UI elements with white backgrounds
-    question_label = tk.Label(root, text="", font=("Arial", 18), bg="white")
-    question_label.pack(pady=10)
+    main_frame = tk.Frame(root, bg="white")
+    main_frame.pack(expand=True)
 
-    answer_entry = tk.Entry(root, font=("Arial", 14), bg="white")
-    answer_entry.pack(pady=10)
+    content_frame = tk.Frame(main_frame, bg="white")
+    content_frame.pack(expand=True)
 
-    result_label = tk.Label(root, text="", font=("Arial", 14), bg="white")
+    question_label = tk.Label(
+        content_frame,
+        text="",
+        font=("Arial", 64, "bold"),
+        bg="white",
+    )
+    question_label.pack(pady=20)
+
+    answer_var = tk.StringVar()
+    answer_entry = tk.Entry(
+        content_frame,
+        textvariable=answer_var,
+        font=("Arial", 48),
+        width=8,
+        justify="center",
+    )
+    answer_entry.pack(pady=20)
+
+    result_label = tk.Label(
+        content_frame,
+        text="",
+        font=("Arial", 32),
+        bg="white",
+    )
     result_label.pack(pady=10)
 
     def generate_question():
         if difficulty == "Easy":
-            a = random.randint(1, 10)
-            b = random.randint(1, 10)
+            a, b = random.randint(1, 10), random.randint(1, 10)
         elif difficulty == "Medium":
-            a = random.randint(10, 50)
-            b = random.randint(10, 50)
+            a, b = random.randint(10, 50), random.randint(10, 50)
         elif difficulty == "Hard":
-            a = random.randint(50, 100)
-            b = random.randint(50, 100)
+            a, b = random.randint(50, 100), random.randint(50, 100)
         else:
-            a = random.randint(1, 10)
-            b = random.randint(1, 10)
-            
+            a, b = random.randint(1, 10), random.randint(1, 10)
+
         if operation == "Addition":
-            q = f"{a} + {b} = ?"
-            ans = a + b
+            q, ans = f"{a} + {b} = ?", a + b
         elif operation == "Subtraction":
-            q = f"{a} - {b} = ?"
-            ans = a - b
+            q, ans = f"{a} - {b} = ?", a - b
         elif operation == "Multiplication":
-            q = f"{a} * {b} = ?"
-            ans = a * b
+            q, ans = f"{a} * {b} = ?", a * b
         elif operation == "Division":
             b = random.randint(1, 10)
             a = b * random.randint(1, 10)
-            q = f"{a} / {b} = ?"
-            ans = a / b
+            q, ans = f"{a} / {b} = ?", round(a / b, 2)
         else:
-            q = f"{a} + {b} = ?"
-            ans = a + b
+            q, ans = f"{a} + {b} = ?", a + b
         return q, ans
 
     def next_question():
@@ -78,51 +86,117 @@ def trigger(alarm, root, go_back_callback):
             finish_challenge()
             return
         q, ans = generate_question()
-        current_q["question"] = q
-        current_q["answer"] = ans
+        current_q["question"], current_q["answer"] = q, ans
         question_label.config(text=q)
-        answer_entry.delete(0, tk.END)
+        answer_var.set("")
         questions_asked[0] += 1
 
     def submit_answer():
         attempts["total"] += 1
         try:
-            user_ans = float(answer_entry.get())
+            user_ans = float(answer_var.get())
             if abs(user_ans - current_q["answer"]) < 0.01:
                 score["correct"] += 1
-                result_label.config(text="Correct!", bg="white")
+                result_label.config(text="✅ Correct!", bg="white")
                 next_question()
             else:
-                result_label.config(text="Wrong! Try again.", bg="white")
-        except:
+                result_label.config(text="❌ Wrong! Try again.", bg="white")
+        except ValueError:
             result_label.config(text="Invalid input. Please enter a number.", bg="white")
 
-    submit_button = tk.Button(root, text="Submit", command=submit_answer, bg="white")
-    submit_button.pack(pady=10)
+    # Create a Num Pad for easier number input
+    num_pad_frame = tk.Frame(content_frame, bg="white")
+    num_pad_frame.pack(pady=20)
 
-    # Record the start time for measuring duration
+    def insert_number(num):
+        current_value = answer_var.get()
+        answer_var.set(current_value + str(num))
+
+    def clear_entry():
+        answer_var.set("")
+
+    btn_texts = [
+        ["1", "2", "3"],
+        ["4", "5", "6"],
+        ["7", "8", "9"],
+        ["0", "⌫", "Clear"],
+    ]
+
+    for r, row in enumerate(btn_texts):
+        for c, text in enumerate(row):
+            if text == "⌫":
+                btn = ttk.Button(
+                    num_pad_frame,
+                    text=text,
+                    command=lambda: answer_var.set(answer_var.get()[:-1]),
+                    style="Big.TButton",
+                )
+            elif text == "Clear":
+                btn = ttk.Button(
+                    num_pad_frame,
+                    text=text,
+                    command=clear_entry,
+                    style="Big.TButton",
+                )
+            else:
+                btn = ttk.Button(
+                    num_pad_frame,
+                    text=text,
+                    command=lambda t=text: insert_number(t),
+                    style="Big.TButton",
+                )
+            btn.grid(row=r, column=c, padx=5, pady=5, ipadx=20, ipady=20)
+
+    submit_button = ttk.Button(
+        content_frame,
+        text="Submit",
+        command=submit_answer,
+        style="Big.TButton",
+    )
+    submit_button.pack(pady=20)
+
     start_time = datetime.datetime.now()
 
     def finish_challenge():
-        question_label.config(text="Challenge completed!")
+        question_label.config(text="🎉 Challenge completed!")
         answer_entry.destroy()
         submit_button.destroy()
+        num_pad_frame.destroy()
         end_time = datetime.datetime.now()
-        time_taken = end_time - start_time
-        # result_label.config(text=f"Score: {score['correct']} / {num_questions}\nTime taken: {str(time_taken).split('.')[0]}\nTotal attempts: {attempts['total']}", bg="white")
-        result_label.config(text=f"Score: {score['correct']} / {num_questions}\nTime taken: {time_taken}\nTotal attempts: {attempts['total']}", bg="white")
+        time_taken = str(end_time - start_time).split(".")[0]
+        result_label.config(
+            text=f" Score: {score['correct']} / {num_questions}\n Time taken: {time_taken}\n Total attempts: {attempts['total']}",
+            bg="white",
+        )
 
-        tk.Button(root, text="Back", command=go_back_callback, bg="white").pack(pady=10)
+        tk.Button(
+            root,
+            text="Back",
+            command=go_back_callback,
+            font=("Arial", 28),
+            bg="white",
+            padx=20,
+            pady=10,
+        ).pack(pady=20)
+
         stop_alarm_sound()
         payload = {
             "userId": alarm.get("userId"),
             "alarmType": "Math",
             "alarmTime": start_time.isoformat(),
             "resolvedTime": end_time.isoformat(),
+            "attempts": attempts["total"],
             "difficulty": difficulty,
             "mathOperations": operation,
-            "numberOfQuestions": num_questions
+            "numberOfQuestions": num_questions,
         }
         post_alarm_history(payload)
 
     next_question()
+
+    style = ttk.Style()
+    style.configure(
+        "Big.TButton",
+        font=("Arial", 28),
+        padding=15,
+    )
