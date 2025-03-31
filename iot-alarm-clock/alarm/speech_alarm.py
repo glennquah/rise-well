@@ -89,7 +89,7 @@ def trigger(alarm, root, go_back_callback, sentence):
 
     record_btn = ttk.Button(
         btn_frame,
-        text="Start Speech Challenge",
+        text="Start Recording (10s)",
         style="Big.TButton",
     )
     record_btn.grid(row=0, column=0, padx=20, ipadx=40, ipady=10)
