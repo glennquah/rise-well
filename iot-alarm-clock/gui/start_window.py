@@ -10,6 +10,8 @@ def start_window(root: tk.Tk):
     root.title("RiseWell")
     root.geometry("500x450")
     root.configure(bg="white")
+    
+    root.attributes('-fullscreen', True)
 
     title_label = ttk.Label(root, text="Welcome to RiseWell", font=("Arial", 24, "bold"), background="white")
     title_label.pack(pady=10)
@@ -29,7 +31,7 @@ def start_window(root: tk.Tk):
     desc_label.pack()
     guide_label = ttk.Label(root, text="How to start?\nAdd an alarm, pick activities, and start your day well!", font=("Arial", 10), background="white", justify="center")
     guide_label.pack(pady=5)
-    userId = 'user_2uWbVB0Sa5nzCaYSrQjpJ4cU5YY' #TODO: update to your userId so that you wont have to keep entering ur userId in login page
+    userId = 'user_2uLEgW40wSAAR9BWMfSDX5cue22' #TODO: update to your userId so that you wont have to keep entering ur userId in login page
     
     tk.Label(root, text="Enter User ID", bg="white").pack(pady=5)
     user_id_var = tk.StringVar(value=userId)

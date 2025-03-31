@@ -119,6 +119,7 @@ def trigger(alarm, root, go_back_callback):
             "alarmType": "Math",
             "alarmTime": start_time.isoformat(),
             "resolvedTime": end_time.isoformat(),
+            "attempts": attempts["total"],
             "difficulty": difficulty,
             "mathOperations": operation,
             "numberOfQuestions": num_questions

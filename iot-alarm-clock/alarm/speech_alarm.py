@@ -103,6 +103,7 @@ def trigger(alarm, root, go_back_callback, sentence):
             "alarmType": "Speech",
             "alarmTime": start_time.isoformat(),
             "resolvedTime": end_time.isoformat(),
+            "attempts": attempts,
             "difficulty": difficulty,
             "numberOfWords": num_of_words,
             "givenWords": sentence["sentence"],
