@@ -31,7 +31,9 @@ def preview_camera():
 
 def capture_image(image_path, preview):
     preview.terminate()
-    subprocess.run(["rpicam-still", "-o", image_path, "--width", "640", "--height", "480"])
+    result = subprocess.run(["rpicam-still", "-o", image_path, "--width", "640", "--height", "480"])
+    if result.returncode != 0:
+        raise RuntimeError(f"Image capture failed: {result}")
 
 def image_recognition_window(root, alarm_data, go_back_callback):
     for widget in root.winfo_children():
@@ -79,8 +81,7 @@ def image_recognition_window(root, alarm_data, go_back_callback):
             update_objects_display()
 
     def capture_reference_image(alarm_data):
-        userId = alarm_data.get("userId")
-        ref_path = f"data/references/{userId}_ref.jpg"
+        ref_path = f"data/references/ref.jpg"
         os.makedirs(os.path.dirname(ref_path), exist_ok=True)
         absolute_path = os.path.abspath(ref_path)
         messagebox.showinfo("Ready", "Camera preview starting. Press the button to capture.")

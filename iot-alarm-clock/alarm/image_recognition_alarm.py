@@ -52,22 +52,79 @@ def detect_objects(image_path):
     results = model(image)
     return [model.names[int(obj[5])] for obj in results[0].boxes.data.cpu().numpy()]
 
-def show_reference_popup(img_path):
+def show_reference_popup(img_path, root):
     popup = tk.Toplevel(root)
     popup.title("📸 Reference Image")
     popup.configure(bg="white")
+    popup.geometry("350x300")  # Optional: set a fixed size
 
     img = Image.open(img_path)
-    img = img.resize((320, 240))  # Resize if needed
+    img = img.resize((320, 240))  # Resize to fit nicely
     tk_img = ImageTk.PhotoImage(img)
 
     label = tk.Label(popup, text="Match this image!", font=("Arial", 14), bg="white")
     label.pack(pady=5)
-    panel = tk.Label(popup, image=tk_img)
-    panel.image = tk_img  # Keep reference
+
+    panel = tk.Label(popup, image=tk_img, bg="white")
+    panel.image = tk_img  # Keep reference to avoid garbage collection
     panel.pack()
 
-    popup.after(4000, popup.destroy)  # Auto-close after 4 seconds
+    # Keep popup accessible and on top
+    popup.attributes("-topmost", True)
+    popup.lift()
+    popup.focus_force()
+
+    return popup  # Let caller manage when to destroy it
+
+def handle_alarm_result(success, mode, ref_path, comp_path, image_path, target_object, start_time, alarm_data, root, go_back_callback, label):
+    refImageUrl = ""
+    imageUrl = ""
+
+    if success:
+        stop_alarm_sound()
+        end_time = datetime.datetime.now()
+
+        if mode == "reference":
+            refImageUrl = upload_image_to_cloudinary(ref_path)
+            imageUrl = upload_image_to_cloudinary(comp_path)
+        elif mode == "category":
+            imageUrl = upload_image_to_cloudinary(image_path)
+
+        label.config(text="✅ Alarm passed! Good morning!", fg="green")
+
+        payload = {
+            "userId": alarm_data.get("userId"),
+            "alarmTime": start_time.isoformat(),
+            "resolvedTime": end_time.isoformat(),
+            "alarmType": "Image Recognition",
+            "mode": mode,
+            "imageUrl": imageUrl,
+            "refImageUrl": refImageUrl,
+            "target object": target_object,
+            "category": alarm_data["config"].get("category", "")
+        }
+
+        print(payload)
+        post_alarm_history(payload)
+        tk.Button(root, text="Back", command=go_back_callback, bg="white").pack(pady=10)
+        GPIO.cleanup()
+
+    else:
+        label.config(text="❌ Try again! Press the button when ready.", fg="red")
+        tk.Button(
+            root,
+            text="🔁 Retry",
+            command=lambda: trigger(alarm_data, root, go_back_callback),
+            bg="white"
+        ).pack(pady=10)
+
+        tk.Button(
+            root,
+            text="⬅️ Back",
+            command=go_back_callback,
+            bg="white"
+        ).pack(pady=5)
+
 
 def trigger(alarm_data, root, go_back_callback):
     root.configure(bg="white")
@@ -75,7 +132,6 @@ def trigger(alarm_data, root, go_back_callback):
         widget.destroy()
 
     mode = alarm_data["config"].get("mode")
-    userId = alarm_data.get("userId")
 
     label = tk.Label(root, text="Waking you up...", font=("Arial", 16), bg="white")
     label.pack(pady=20)
@@ -83,88 +139,85 @@ def trigger(alarm_data, root, go_back_callback):
     start_time = datetime.datetime.now()
     play_alarm_sound()
 
-    def run_check():
-        success = False
+    target_object = None
+    success = False
 
-        try:
-            if mode == "reference":
-                label.config(text="Match the reference image. Press the button when ready.")
-                ref_path = f"data/references/{userId}_ref.jpg"
-                show_reference_popup(ref_path)
-                preview = preview_camera()
-                wait_for_button()
-                comp_path = f"/tmp/{userId}_compare.jpg"
-                capture_image(comp_path, preview)
-                score = compute_similarity(ref_path, comp_path)
-                success = score >= 0.75
+    try:
+        if mode == "reference":
+            label.config(text="Match the reference image. Press the button when ready.")
+            ref_path = f"data/references/ref.jpg"
+            print(ref_path)
+            show_reference_popup(ref_path, root)
+            preview = preview_camera()
+            wait_for_button()
+            comp_path = f"/tmp/compare.jpg"
+            capture_image(comp_path, preview)
+            score = compute_similarity(ref_path, comp_path)
+            success = score >= 0.75
 
-            elif mode == "category":
-                selected_category = alarm_data["config"].get("category")
-                target_objects = CATEGORIES.get(selected_category, [])
-
-                if not target_objects:
-                    label.config(text=f"No objects defined for category: {selected_category}", fg="red")
-                    return
-
-                target_object = random.choice(target_objects)
-                alarm_data["config"]["target_object"] = target_object  # store for logging
-
-                # Display instructions first
-                label.config(
-                    text=f"📸 Show me a '{target_object}' from category '{selected_category}'.\n\nPress the button when ready.",
-                    font=("Arial", 14),
-                    wraplength=500,
-                    justify="center"
-                )
-                root.update_idletasks()     # Force GUI to update
-                time.sleep(1.0)             # Give user a second to read
-
-                # Now launch the preview and capture
-                preview = preview_camera()
-                wait_for_button()
-                image_path = f"/tmp/{userId}_category.jpg"
-                capture_image(image_path, preview)
-                
-                detected = detect_objects(image_path)
-                print("Detected:", detected)
-
-                success = target_object in detected
-
-        except Exception as e:
-            label.config(text=f"Error: {e}", fg="red")
-
-        if success:
-            stop_alarm_sound()
-            end_time = datetime.datetime.now()
-
-            if mode == "reference":
-                    refImageUrl = upload_image_to_cloudinary(ref_path)
-                    imageUrl = upload_image_to_cloudinary(comp_path)
-
-            elif mode == "category":
-                imageUrl = upload_image_to_cloudinary(image_path)
-
-            label.config(text="✅ Alarm passed! Good morning!", fg="green")
+            handle_alarm_result(
+            success=success,
+            mode=mode,
+            ref_path=ref_path,
+            comp_path=comp_path,
+            image_path=None,
+            target_object=target_object,
+            start_time=start_time,
+            alarm_data=alarm_data,
+            root=root,
+            go_back_callback=go_back_callback,
+            label=label
+            )
 
 
-            payload = {
-                "userId": alarm_data.get("userId"),
-                "alarmTime": start_time.isoformat(),
-                "resolvedTime": end_time.isoformat(),
-                "alarmType": "Image Recognition",
-                "mode": mode,
-                "imageUrl": imageUrl,
-                "refImageUrl": refImageUrl,
-                "target object": target_object,
-                "category": alarm_data["config"].get("category", None)
-            }
+        elif mode == "category":
+            selected_category = alarm_data["config"].get("category")
+            target_objects = CATEGORIES.get(selected_category, [])
 
-            print(payload)
-            post_alarm_history(payload)
-            tk.Button(root, text="Back", command=go_back_callback, bg="white").pack(pady=10)
-            GPIO.cleanup()
-        else:
-            label.config(text="❌ Try again! Press the button when ready.", fg="red")
-            root.after(1000, run_check)
+            if not target_objects:
+                label.config(text=f"No objects defined for category: {selected_category}", fg="red")
+                return
 
-    run_check()
+            target_object = random.choice(target_objects)
+            alarm_data["config"]["target_object"] = target_object  # store for logging
+
+            # Display instructions first
+            label.config(
+                text=f"📸 Show me a '{target_object}' from category '{selected_category}'.\n\nPress the button when ready.",
+                font=("Arial", 14),
+                wraplength=500,
+                justify="center"
+            )
+            root.update_idletasks()     # Force GUI to update
+            time.sleep(1.0)             # Give user a second to read
+
+            # Now launch the preview and capture
+            preview = preview_camera()
+            wait_for_button()
+            image_path = f"/tmp/category.jpg"
+            capture_image(image_path, preview)
+            
+            detected = detect_objects(image_path)
+            print("Detected:", detected)
+
+            success = target_object in detected
+
+            handle_alarm_result(
+            success=success,
+            mode=mode,
+            ref_path=None,
+            comp_path=None,
+            image_path=image_path,
+            target_object=target_object,
+            start_time=start_time,
+            alarm_data=alarm_data,
+            root=root,
+            go_back_callback=go_back_callback,
+            label=label
+            )
+
+
+    except Exception as e:
+        label.config(text=f"Error: {e}", fg="red")
+
+   

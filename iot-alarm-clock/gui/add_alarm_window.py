@@ -1,13 +1,12 @@
 import tkinter as tk
 from tkinter import ttk
 from gui.alarm_configs.math_window import math_window
-from gui.alarm_configs.shake_it_window import shake_it_window
 from gui.alarm_configs.speech_window import speech_window
 from gui.alarm_configs.image_recognition_window import image_recognition_window
 from gui.count_down_window import count_down_window
 from utils import play_alarm_sound 
 from utils import stop_alarm_sound 
-from gui.start_window import start_window
+
 
 
 def add_alarm_window(root: tk.Tk, userId):
@@ -56,12 +55,10 @@ def add_alarm_window(root: tk.Tk, userId):
     ttk.Button(root, text="Next", command=next_action).pack(pady=10)
     ttk.Button(root, text="Back", command=lambda: _go_to_start(root)).pack(pady=5)
 
-def _go_to_start(root):
-    start_window(root)
 
 def go_back(root):
     add_alarm_window(root, alarm_data.get("userId"))
 
 def go_back(root, userId):
     add_alarm_window(root, userId)
-    start_window(root)
+
