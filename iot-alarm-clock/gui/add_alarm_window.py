@@ -1,12 +1,13 @@
 import tkinter as tk
 from tkinter import ttk
 from gui.alarm_configs.math_window import math_window
-from gui.alarm_configs.shake_it_window import shake_it_window
 from gui.alarm_configs.speech_window import speech_window
 from gui.alarm_configs.image_recognition_window import image_recognition_window
 from gui.count_down_window import count_down_window
 from utils import play_alarm_sound
 from utils import stop_alarm_sound
+
+
 
 
 def add_alarm_window(root: tk.Tk, userId):
@@ -44,6 +45,8 @@ def add_alarm_window(root: tk.Tk, userId):
     )
     time_entry.pack(pady=5)
 
+    tk.Label(root, text="Select Alarm Type", bg="white").pack(pady=5)
+    alarm_type = tk.StringVar(value="Image Recognition")
     num_pad_frame = tk.Frame(main_frame, bg="white")
     num_pad_frame.pack(pady=5)
 
@@ -149,7 +152,7 @@ def add_alarm_window(root: tk.Tk, userId):
         elif alarm_type.get() == "Speech":
             speech_window(root, alarm_data, go_back)
         elif alarm_type.get() == "Image Recognition":
-            image_recognition_window(root, alarm_data, go_back)
+            image_recognition_window(root, alarm_data, lambda: go_back(root, userId))
         elif alarm_type.get() == "Nothing":
             count_down_window(root, alarm_data, go_back)
         else:

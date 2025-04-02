@@ -2,10 +2,17 @@ import tkinter as tk
 from tkinter import ttk
 import datetime
 import alarm.math_alarm as math_alarm
+from alarm.image_recognition_alarm import trigger as image_trigger
+from apis.api_client import post_alarm_history
+import time
+import alarm.speech_alarm as speech_alarm
+from apis.api_client import post_speech_sentences
+import alarm.shake_it_alarm as shake_it_alarm 
 import alarm.speech_alarm as speech_alarm
 from apis.api_client import post_alarm_history, post_speech_sentences
 import alarm.shake_it_alarm as shake_it_alarm
 from utils import play_alarm_sound, stop_alarm_sound
+
 
 
 def count_down_window(root, alarm_data, go_back_callback):
@@ -91,6 +98,46 @@ def count_down_window(root, alarm_data, go_back_callback):
             countdown_label.config(text=str(diff).split(".")[0])
             root.after(1000, update_countdown)
         else:
+            countdown_label.config(text="Time's up!", font=("Arial", 24, "bold"), background="white")
+
+            if not alarm_data.get("triggered"):
+                alarm_data["triggered"] = True
+                
+            if alarm_data["type"] == "Math":
+                math_alarm.trigger(alarm_data, root, go_back_callback)
+
+            elif alarm_data["type"] == "Image Recognition":
+                image_trigger(alarm_data, root, go_back_callback)
+
+            elif alarm_data["type"] == "Nothing":
+                payload = {
+                    "userId": alarm_data.get("userId"),
+                    "alarmType": "Nothing",
+                    "alarmTime": start_time.isoformat(),
+                    "resolvedTime": end_time.isoformat(),
+                }
+                back_button.destroy()
+                if alarm_data["type"] == "Math":
+                    math_alarm.trigger(alarm_data, root, go_back_callback)
+                elif alarm_data["type"] == "Shake It":
+                    shake_it_alarm.trigger(alarm_data,root,go_back_callback)
+                elif alarm_data["type"] == "Nothing":
+                    time_now = datetime.datetime.now()
+                    payload = {
+                        "userId": alarm_data.get("userId"),
+                        "alarmType": "Nothing",
+                        "alarmTime": time_now.isoformat(),
+                        "resolvedTime": time_now.isoformat(),
+                    }
+                    post_alarm_history(payload)
+                elif alarm_data["type"] == "Speech":
+                    config = alarm_data.get("config", {})
+                    payload = {
+                        "difficulty": config.get("difficulty"),
+                        "numberOfWords": config.get("num_of_words"),
+                    }
+                    sentence = post_speech_sentences(payload)
+            
             countdown_label.config(
                 text="Rise and Shine!",
                 font=("Arial", 140, "bold"),
