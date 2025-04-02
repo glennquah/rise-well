@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 from gui.start_window import start_window
 import threading
-from sensors import serial_heartrate_reader  # 👈 import your function
+from sensors import serial_heartrate_reader
 
 if __name__ == "__main__":
     root = tk.Tk()
@@ -13,7 +13,7 @@ if __name__ == "__main__":
 
     
 
-    Start serial listener in background thread
+    # Start serial listener in background thread
     serial_thread = threading.Thread(target=serial_heartrate_reader.start_serial_listener, daemon=True)
     serial_thread.start()
 
