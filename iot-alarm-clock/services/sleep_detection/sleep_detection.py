@@ -26,8 +26,8 @@ def __capture_image__():
 
 
 def __load_model__():
-    loaded_model = joblib.load('pose_sleep_model.sav')
-    scalar = joblib.load('pose_sleep_scaler.sav')
+    loaded_model = joblib.load('./services/sleep_detection/pose_sleep_model.sav')
+    scalar = joblib.load('./services/sleep_detection/pose_sleep_scaler.sav')
     return loaded_model, scalar
 
 
@@ -90,4 +90,5 @@ def __ai_predict__():
 
 def checks_if_user_is_awake():
     detection = __ai_predict__()
+    print(detection)
     return True if detection == 'AWAKE' else False
