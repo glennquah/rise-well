@@ -1,21 +1,22 @@
 import speech_recognition as sr
 import tkinter as tk
+from tkinter import ttk
 import datetime
 import re
 from difflib import SequenceMatcher
-import threading
-
 from utils import play_alarm_sound, stop_alarm_sound
 from apis.api_client import post_alarm_history
-from sensors.audio_sensor import AudioSensor
+
 
 def clean_sentence(s):
-    return re.sub(r'[^\w\s]', '', s).lower().strip()
+    return re.sub(r"[^\w\s]", "", s).lower().strip()
+
 
 def calculate_similarity(expected_sentence, user_sentence):
     a = clean_sentence(expected_sentence)
     b = clean_sentence(user_sentence)
     return SequenceMatcher(None, a, b).ratio() * 100
+
 
 def trigger(alarm, root, go_back_callback, sentence):
     root.configure(bg="white")
@@ -23,6 +24,8 @@ def trigger(alarm, root, go_back_callback, sentence):
         widget.destroy()
 
     root.title("Speech Challenge Alarm")
+
+    # Start playing the alarm sound initially
     sound_obj = play_alarm_sound()
 
     config = alarm.get("config", {})
@@ -31,39 +34,88 @@ def trigger(alarm, root, go_back_callback, sentence):
 
     attempts = 0
     final_passed = False
-
     start_time = datetime.datetime.now()
 
-    tk.Label(root, text="Repeat the sentence below:", font=("Arial", 14), bg="white").pack(pady=5)
-    sentence_label = tk.Label(root, text=sentence["sentence"], wraplength=400, font=("Arial", 16), bg="white", justify="center")
-    sentence_label.pack(pady=10)
+    main_frame = tk.Frame(root, bg="white")
+    main_frame.pack(expand=True)
 
-    result_label = tk.Label(root, text="", font=("Arial", 12), bg="white")
-    result_label.pack(pady=5)
+    content_frame = tk.Frame(main_frame, bg="white")
+    content_frame.pack(expand=True)
 
-    score_label = tk.Label(root, text="Attempts: 0 | Score: 0%", font=("Arial", 12), bg="white")
-    score_label.pack(pady=5)
+    tk.Label(
+        content_frame,
+        text="Repeat the sentence below:",
+        font=("Arial", 36, "underline"),
+        bg="white",
+    ).pack(pady=10)
 
-    finish_btn = tk.Button(root, text="Finish", bg="white", state="disabled")
-    finish_btn.pack_forget()
-    
-    transcript_label = tk.Label(root, text="", bg="white", wraplength=300)
-    transcript_label.pack(pady=5)
+    sentence_label = tk.Label(
+        content_frame,
+        text=sentence["sentence"],
+        wraplength=1000,
+        font=("Arial", 42),
+        bg="white",
+        justify="center",
+    )
+    sentence_label.pack(pady=20)
 
-    # Recording section using a single button to record for 10 seconds.
-    record_btn = tk.Button(root, text="Record for 10 seconds", bg="white")
-    record_btn.pack(pady=10)
+    result_label = tk.Label(
+        content_frame,
+        text="",
+        font=("Arial", 24),
+        bg="white",
+    )
+    result_label.pack(pady=10)
+
+    score_label = tk.Label(
+        content_frame,
+        text="Attempts: 0 | Score: 0%",
+        font=("Arial", 24),
+        bg="white",
+    )
+    score_label.pack(pady=10)
+
+    transcript_label = tk.Label(
+        content_frame,
+        text="",
+        bg="white",
+        font=("Arial", 24),
+        wraplength=800,
+    )
+    transcript_label.pack(pady=10)
+
+    btn_frame = tk.Frame(content_frame, bg="white")
+    btn_frame.pack(pady=20)
+
+    record_btn = ttk.Button(
+        btn_frame,
+        text="Start Recording (10s)",
+        style="Big.TButton",
+    )
+    record_btn.grid(row=0, column=0, padx=20, ipadx=40, ipady=10)
+
+    finish_btn = ttk.Button(
+        btn_frame,
+        text="Finish",
+        style="Big.TButton",
+        state="disabled",
+    )
+    finish_btn.grid(row=0, column=1, padx=20, ipadx=40, ipady=10)
 
     def record_10_seconds():
+        """Record audio for 10 seconds and process the result."""
         nonlocal attempts, final_passed, sound_obj
+
+        # Stop the alarm temporarily while recording
+        stop_alarm_sound()
+
         record_btn.config(state="disabled")
         transcript_label.config(text="Recording for 10 seconds...")
-        stop_alarm_sound()
 
         r = sr.Recognizer()
         with sr.Microphone() as source:
             r.adjust_for_ambient_noise(source, duration=1)
-            audio_data = r.record(source, duration=5)
+            audio_data = r.record(source, duration=10)
 
         try:
             transcript = r.recognize_google(audio_data)
@@ -75,34 +127,62 @@ def trigger(alarm, root, go_back_callback, sentence):
         transcript_label.config(text="You said: " + transcript)
         attempts += 1
         sim = calculate_similarity(sentence["sentence"], transcript)
+
         if sim >= 80:
-            result_label.config(text=f"✅ {sim:.1f}% matched — Correct!", fg="green")
+            result_label.config(
+                text=f"✅ {sim:.1f}% matched — Correct!",
+                fg="green",
+                bg="white",
+            )
             score_label.config(text=f"Attempts: {attempts} | Score: 100%")
             final_passed = True
             finish_btn.config(state="normal")
             record_btn.config(state="disabled")
+            stop_alarm_sound()
         else:
-            result_label.config(text=f"❌ {sim:.1f}% matched — Try again.", fg="red")
+            result_label.config(
+                text=f"❌ {sim:.1f}% matched — Try again.",
+                fg="red",
+                bg="white",
+            )
             score_label.config(text=f"Attempts: {attempts} | Score: 0%")
-            record_btn.config(state="normal")
+
+            # Re-trigger the alarm if the user fails
+            if not final_passed:
+                sound_obj = play_alarm_sound()
+                record_btn.config(state="normal")
 
     record_btn.config(command=record_10_seconds)
 
     def finish_challenge():
+        """Finish the speech challenge and send data to API."""
         end_time = datetime.datetime.now()
-        time_taken = end_time - start_time
+        time_taken = str(end_time - start_time).split(".")[0]
         stop_alarm_sound()
-        record_btn.pack_forget()
-        finish_btn.pack_forget()
-        result_label.config(text="✅ Challenge Passed!", fg="green")
-        tk.Label(root, text=f"Time taken: {str(time_taken).split('.')[0]}", bg="white", font=("Arial", 12)).pack(pady=5)
-        tk.Button(root, text="Back", command=go_back_callback, bg="white").pack(pady=10)
-        
+        record_btn.grid_forget()
+        finish_btn.grid_forget()
+        result_label.config(text="✅ Challenge Passed!", fg="green", bg="white")
+
+        tk.Label(
+            root,
+            text=f"Time taken: {time_taken}",
+            bg="white",
+            font=("Arial", 24),
+        ).pack(pady=10)
+
+        ttk.Button(
+            root,
+            text="Back",
+            command=go_back_callback,
+            style="Big.TButton",
+        ).pack(pady=20)
+
         payload = {
             "userId": alarm.get("userId"),
             "alarmType": "Speech",
             "alarmTime": start_time.isoformat(),
             "resolvedTime": end_time.isoformat(),
+            "attempts": attempts,
             "difficulty": difficulty,
             "numberOfWords": num_of_words,
             "givenWords": sentence["sentence"],
@@ -110,5 +190,10 @@ def trigger(alarm, root, go_back_callback, sentence):
         post_alarm_history(payload)
 
     finish_btn.config(command=finish_challenge)
-    record_btn.pack(pady=10)
-    finish_btn.pack(pady=10)
+
+    style = ttk.Style()
+    style.configure(
+        "Big.TButton",
+        font=("Arial", 28),
+        padding=15,
+    )

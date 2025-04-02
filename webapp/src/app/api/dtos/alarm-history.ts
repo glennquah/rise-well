@@ -24,6 +24,7 @@ const SpeechHistorySchema = BaseAlarmHistorySchema.extend({
   difficulty: z.enum(['Easy', 'Medium', 'Hard']),
   numberOfWords: z.number(),
   givenWords: z.string(),
+  attempts: z.number().optional(),
 });
 
 const MathHistorySchema = BaseAlarmHistorySchema.extend({
@@ -36,6 +37,7 @@ const MathHistorySchema = BaseAlarmHistorySchema.extend({
     'Division',
   ]),
   numberOfQuestions: z.number(),
+  attempts: z.number().optional(),
 });
 
 const ShakeHistorySchema = BaseAlarmHistorySchema.extend({
