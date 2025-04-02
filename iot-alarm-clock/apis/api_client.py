@@ -6,7 +6,7 @@ import requests
 # Jordan
 # Hamzah
 # Ophe
-API_ENDPOINT = "http://192.168.1.6:3000"
+API_ENDPOINT = "http://192.168.136.239:3000"
 
 def post_alarm_history(payload):
     try:
