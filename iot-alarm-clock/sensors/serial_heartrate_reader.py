@@ -1,7 +1,6 @@
 # serial_reader.py
 import os
 import time
-import paho.mqtt.client as mqtt
 import pymongo
 import serial
 import platform
@@ -9,7 +8,9 @@ import glob
 import sys
 
 # MongoDB Setup
-MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017/")
+# MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017/")
+MONGO_URI = os.getenv("MONGO_URI", "mongodb://192.168.137.1:27017/")
+
 DB_NAME = os.getenv("MONGO_DB", "rise-well")
 COLLECTION_NAME = os.getenv("MONGO_COLLECTION", "heartrate")
 
