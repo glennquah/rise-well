@@ -7,10 +7,10 @@ from apis.api_client import post_alarm_history
 import time
 import alarm.speech_alarm as speech_alarm
 from apis.api_client import post_speech_sentences
-# import alarm.shake_it_alarm as shake_it_alarm 
+import alarm.shake_it_alarm as shake_it_alarm 
 import alarm.speech_alarm as speech_alarm
 from apis.api_client import post_alarm_history, post_speech_sentences
-# import alarm.shake_it_alarm as shake_it_alarm
+import alarm.shake_it_alarm as shake_it_alarm
 from utils import play_alarm_sound, stop_alarm_sound
 
 
@@ -76,8 +76,8 @@ def count_down_window(root, alarm_data, go_back_callback):
         # Route to the corresponding alarm type after triggering
         if alarm_data["type"] == "Math":
             math_alarm.trigger(alarm_data, root, go_back_callback)
-        # elif alarm_data["type"] == "Shake It":
-        #     shake_it_alarm.trigger(alarm_data, root, go_back_callback)
+        elif alarm_data["type"] == "Shake It":
+            shake_it_alarm.trigger(alarm_data, root, go_back_callback)
         elif alarm_data["type"] == "Nothing":
             post_alarm_history(payload)
         elif alarm_data["type"] == "Speech":
