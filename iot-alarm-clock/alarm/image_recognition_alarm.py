@@ -13,6 +13,7 @@ from apis.api_client import post_alarm_history
 from PIL import Image, ImageTk
 from services.cloudinary_uploader import upload_image_to_cloudinary
 import datetime
+from services.sleep_detection.sleep_detection import checks_if_user_is_awake
 
 BUTTON_PIN = 17
 GPIO.setmode(GPIO.BCM)
@@ -29,6 +30,17 @@ CATEGORIES = {
     "decor/misc": ["potted plant", "clock", "vase", "book"]
 }
 OBJECT_LIST = [item for sub in CATEGORIES.values() for item in sub]
+
+def poll_user_awake_status(root, label):
+    def check():
+        if checks_if_user_is_awake():
+            label.config(text="🌞 Rise and Shine! You're awake!", fg="blue")
+        else:
+            label.config(text="😴 Still sleepy? We'll check again in 5 minutes...", fg="orange")
+            root.after(5 * 60 * 1000, check)  # 5 minutes in milliseconds
+
+    check()  # start polling
+
 
 def wait_for_button():
     while GPIO.input(BUTTON_PIN) == GPIO.HIGH:
@@ -91,6 +103,8 @@ def handle_alarm_result(success, mode, ref_path, comp_path, image_path, target_o
             imageUrl = upload_image_to_cloudinary(image_path)
 
         label.config(text="✅ Alarm passed! Good morning!", fg="green")
+        label.config(text="Now checking if you're awake...", fg="green")
+
 
         payload = {
             "userId": alarm_data.get("userId"),
@@ -106,6 +120,7 @@ def handle_alarm_result(success, mode, ref_path, comp_path, image_path, target_o
 
         print(payload)
         post_alarm_history(payload)
+        poll_user_awake_status(root, label)  # ✅ start polling every 5 mins
         tk.Button(root, text="Back", command=go_back_callback, bg="white").pack(pady=10)
         GPIO.cleanup()
 
