@@ -24,6 +24,7 @@ const SpeechHistorySchema = BaseAlarmHistorySchema.extend({
   difficulty: z.enum(['Easy', 'Medium', 'Hard']),
   numberOfWords: z.number(),
   givenWords: z.string(),
+  attempts: z.number().optional(),
 });
 
 const MathHistorySchema = BaseAlarmHistorySchema.extend({
@@ -36,18 +37,22 @@ const MathHistorySchema = BaseAlarmHistorySchema.extend({
     'Division',
   ]),
   numberOfQuestions: z.number(),
+  attempts: z.number().optional(),
 });
 
 const ShakeHistorySchema = BaseAlarmHistorySchema.extend({
   alarmType: z.literal('Shake It'),
+  difficulty: z.enum(['Easy', 'Medium', 'Hard']),
+  shakeCount: z.number(),
 });
 
 const ImageHistorySchema = BaseAlarmHistorySchema.extend({
   alarmType: z.literal('Image Recognition'),
-  taskType: z.enum(['Preset', 'Prompt']),
+  mode: z.enum(['reference', 'category']),
   imageUrl: z.string().optional(),
-  promptType: z.string().optional(),
-  prompt: z.string().optional(),
+  refImageUrl: z.string().optional(),
+  target_object: z.string().optional(),
+  category: z.string().optional(),
 });
 
 const NothingHistorySchema = BaseAlarmHistorySchema.extend({

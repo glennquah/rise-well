@@ -2,15 +2,27 @@ import requests
 
 # Change here to your own local ip address
 # Glenn's Mac Address: "http://192.168.23.239:3000/api/alarm-history"
-# Emily
+# Emily's Mac Address: "http://192.168.1.6:3000/api/alarm-history"
 # Jordan
 # Hamzah
-# Ophe
-ALARM_HISTORY_ENDPOINT = "http://192.168.23.239:3000/api/alarm-history"
+# Ophe's WINDOWS Address: http://172.25.107.114:3000/api/alarm-history
+API_ENDPOINT = "http://172.25.107.114:3001"
 
 def post_alarm_history(payload):
     try:
-        response = requests.post(ALARM_HISTORY_ENDPOINT, json=payload)
-        print(f"POST status: {response.status_code} | Response: {response.text}")
+        response = requests.post(f"{API_ENDPOINT}/api/alarm-history", json=payload)
+        print(f"POST HISTORY status: {response.status_code} | Response: {response.text}")
     except Exception as e:
         print(f"Failed to post alarm history: {e}")
+        
+# TODO: TechDebt
+# def get_all_users():
+    
+def post_speech_sentences(payload):
+    try:
+        response = requests.post(f"{API_ENDPOINT}/api/speech-feature", json=payload)
+        print(f"POST SPEECH status: {response.status_code} | Response: {response.text}")
+        return response.json()
+    except Exception as e:
+        print(f"Failed to get speech sentences from openai: {e}")
+        return []

@@ -164,3 +164,4 @@ OPENAI_API_KEY=<<INSERT YOUR OPENAI API KEY>>
 - Type everything strictly (TypeScript DTOs/schema).
 - Clearly separate reusable logic (API calls, OpenAI, auth handling).
 - Regularly test API endpoints with Postman or frontend hooks.
+- To get local ip address: `ipconfig getifaddr en0`

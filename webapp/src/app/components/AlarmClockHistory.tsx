@@ -1,5 +1,5 @@
 'use client';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import {
   Table,
   TableBody,
@@ -11,6 +11,9 @@ import {
 import { useEffect, useState } from 'react';
 import { AlarmHistoryDto } from '../api/dtos/alarm-history';
 import { LoadingSpinner } from './Loadingspinner';
+
+type AlarmType = "Math" | "Shake It" | "Image Recognition" | "Nothing";
+
 
 export const AlarmClockHistory = () => {
   const [alarms, setAlarms] = useState<AlarmHistoryDto[]>([]);
@@ -44,12 +47,80 @@ export const AlarmClockHistory = () => {
   if (loading) return <LoadingSpinner />;
   if (error) return <div className="text-red-500 text-center">{error}</div>;
 
+  const renderAlarmDetails = (alarm: AlarmHistoryDto) => {
+    const {alarmType} = alarm;
+
+    // TODO: Add in other alarm type here 
+    if (alarmType === "Math") {
+    return <details className="group w-full">
+              <summary
+                className="block cursor-pointer text-blue-600 underline w-full m-0"
+                style={{ listStyle: 'none' }}
+              >
+                View Details
+              </summary>
+              <div className="mt-2 space-y-1 transition-all duration-300 ease-in-out opacity-0 group-open:opacity-100">
+                <p>
+                  <strong>Difficulty:</strong> {alarm.difficulty}
+                </p>
+                <p>
+                  <strong>Math Operation:</strong>{' '}
+                  {alarm.mathOperations}
+                </p>
+                <p>
+                  <strong>Number of Questions:</strong>{' '}
+                  {alarm.numberOfQuestions}
+                </p>
+              </div>
+            </details>
+    }
+    if (alarmType === "Speech") {
+      return <details className="group w-full">
+        <summary
+            className="block cursor-pointer text-blue-600 underline w-full m-0"
+            style={{ listStyle: 'none' }}
+        >
+          View Details
+        </summary>
+        <div className="mt-2 space-y-1 transition-all duration-300 ease-in-out opacity-0 group-open:opacity-100">
+          <p>
+            <strong>Difficulty:</strong> {alarm.difficulty}
+          </p>
+          <p>
+            <strong>Number of Words:</strong>{' '}
+            {alarm.numberOfWords}
+          </p>
+          <p className="whitespace-normal">
+            <strong>Given Words:</strong> {alarm.givenWords}
+          </p>
+        </div>
+      </details>
+    }
+    if (alarmType === 'Shake It') {
+      return <details className="group w-full">
+        <summary             
+            className="block cursor-pointer text-blue-600 underline w-full m-0"
+            style={{ listStyle: 'none' }}
+          >
+            View Details  
+        </summary>
+        <p>
+            <strong>Difficulty:</strong> {alarm.difficulty}
+        </p>
+        <p>
+            <strong>Shake Count:</strong> {alarm.shakeCount}
+        </p>
+
+
+      </details>
+    }
+  }
+   
+  
+
   return (
     <div className="py-4">
       <Card>
-        <CardHeader>
-          <CardTitle className="text-xl">Alarm History</CardTitle>
-        </CardHeader>
         <CardContent className="overflow-x-auto">
           <Table>
             <TableHeader>
@@ -79,52 +150,7 @@ export const AlarmClockHistory = () => {
                     })}
                   </TableCell>
                   <TableCell className="w-96">
-                    {alarm.alarmType === 'Speech' ? (
-                      <details className="group w-full">
-                        <summary
-                          className="block cursor-pointer text-blue-600 underline w-full m-0"
-                          style={{ listStyle: 'none' }}
-                        >
-                          View Details
-                        </summary>
-                        <div className="mt-2 space-y-1 transition-all duration-300 ease-in-out opacity-0 group-open:opacity-100">
-                          <p>
-                            <strong>Difficulty:</strong> {alarm.difficulty}
-                          </p>
-                          <p>
-                            <strong>Number of Words:</strong>{' '}
-                            {alarm.numberOfWords}
-                          </p>
-                          <p className="whitespace-normal">
-                            <strong>Given Words:</strong> {alarm.givenWords}
-                          </p>
-                        </div>
-                      </details>
-                    ) : alarm.alarmType === 'Math' ? (
-                      <details className="group w-full">
-                        <summary
-                          className="block cursor-pointer text-blue-600 underline w-full m-0"
-                          style={{ listStyle: 'none' }}
-                        >
-                          View Details
-                        </summary>
-                        <div className="mt-2 space-y-1 transition-all duration-300 ease-in-out opacity-0 group-open:opacity-100">
-                          <p>
-                            <strong>Difficulty:</strong> {alarm.difficulty}
-                          </p>
-                          <p>
-                            <strong>Math Operation:</strong>{' '}
-                            {alarm.mathOperations}
-                          </p>
-                          <p>
-                            <strong>Number of Questions:</strong>{' '}
-                            {alarm.numberOfQuestions}
-                          </p>
-                        </div>
-                      </details>
-                    ) : (
-                      'N/A'
-                    )}
+                    {renderAlarmDetails(alarm) ?? 'NA'}
                   </TableCell>
                 </TableRow>
               ))}
