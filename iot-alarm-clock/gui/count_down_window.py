@@ -119,8 +119,8 @@ def count_down_window(root, alarm_data, go_back_callback):
                 back_button.destroy()
                 if alarm_data["type"] == "Math":
                     math_alarm.trigger(alarm_data, root, go_back_callback)
-                # elif alarm_data["type"] == "Shake It":
-                #     shake_it_alarm.trigger(alarm_data,root,go_back_callback)
+                elif alarm_data["type"] == "Shake It":
+                    shake_it_alarm.trigger(alarm_data,root,go_back_callback)
                 elif alarm_data["type"] == "Nothing":
                     time_now = datetime.datetime.now()
                     payload = {
