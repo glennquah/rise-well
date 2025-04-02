@@ -90,15 +90,4 @@ def __ai_predict__():
 
 def checks_if_user_is_awake():
     detection = __ai_predict__()
-    while detection != "AWAKE":
-        if detection == -1:
-            checks_if_user_is_awake()
-            return
-        else:
-            print("User not awake. Sleeping for 5 minutes...")
-            sleep(300) # 5 mins
-            detection = __ai_predict__()
-    print("AWAKE!")
-
-if __name__ == '__main__':
-    checks_if_user_is_awake()
+    return True if detection == 'AWAKE' else False
