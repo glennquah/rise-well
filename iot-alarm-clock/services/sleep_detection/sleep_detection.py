@@ -1,19 +1,14 @@
-import base64
-import json
-import os
-import time
+from time import sleep
 
 import cv2
 import joblib
 import mediapipe as mp
-import paho.mqtt.client as mqtt
 
 mp_pose = mp.solutions.pose
 pose = mp_pose.Pose(static_image_mode=True)
 
 
-# Function to capture an image using the Raspberry Pi camera
-def capture_image():
+def __capture_image__():
     """Captures an image using the Raspberry Pi camera and saves it."""
     image_path = "./image.jpg"
 
@@ -30,8 +25,20 @@ def capture_image():
         return None
 
 
-# Function to extract pose landmarks
-def extract_landmarks(image_path):
+def __load_model__():
+    loaded_model = joblib.load('pose_sleep_model.sav')
+    scalar = joblib.load('pose_sleep_scaler.sav')
+    return loaded_model, scalar
+
+
+def __predict__(data, model):
+    # Get the model's predictions
+    prediction = model.predict(data)
+
+    return prediction
+
+
+def __extract_landmarks__(image_path):
     """Extract pose landmarks from the image using mediapipe."""
     image = cv2.imread(image_path)
     if image is None:
@@ -54,56 +61,33 @@ def extract_landmarks(image_path):
     return None
 
 
-# Function to send data to RabbitMQ
-def send_data(data):
-    """Publish image data to RabbitMQ."""
-    client.publish(TOPIC, data)
-    print("Image data sent successfully!")
-
-def load_model():
-    loaded_model = joblib.load('pose_sleep_model.sav')
-    scalar = joblib.load('pose_sleep_scaler.sav')
-    return loaded_model, scalar
-
-def predict(data):
-    global model
-    # Get the model's predictions
-    prediction = model.predict(data)
-
-    return prediction
-
-# RabbitMQ Server Details
-BROKER = "192.168.50.83"  # Change to your RabbitMQ server IP
-PORT = 1883
-TOPIC = "image_data"
-
-# Setup MQTT Client
-client = mqtt.Client()
-client.connect(BROKER, PORT)
-
-while True:
-    image_path = capture_image()
-    model, scaler = load_model()
+def __ai_predict__():
+    """
+    Takes a picture and predict if someone is sleeping or not.
+    :return:
+    -1 : should try again
+    AWAKE: person is awake
+    SLEEP: person is sleeping
+    """
+    image_path = __capture_image__()
+    model, scaler = __load_model__()
 
     if not image_path:
         print("Failed to capture image.")
-        continue
+        return -1
 
     # Extract Pose Landmarks
-    landmarks = extract_landmarks(image_path)
+    landmarks = __extract_landmarks__(image_path)
     if landmarks is None:
         print("No pose detected. Skipping entry.")
-        continue
+        return -1
 
-    print(landmarks)
     landmarks = scaler.transform([landmarks])
-    prediction = predict(landmarks)
-    print(prediction)
+    prediction = __predict__(landmarks, model)
 
-    # Encode landmarks to JSON, then base64
-    encoded_landmarks = base64.b64encode(prediction)
+    return "SLEEP" if prediction[0] == 0 else "AWAKE"
 
-    # Send encoded landmarks data over MQTT
-    send_data(encoded_landmarks)
 
-    time.sleep(10)  # Capture and send image every 10 seconds
+def checks_if_user_is_awake():
+    detection = __ai_predict__()
+    return True if detection == 'AWAKE' else False

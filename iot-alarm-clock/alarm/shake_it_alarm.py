@@ -3,6 +3,8 @@ from tkinter import ttk
 import time
 import datetime
 import threading
+
+from services.sleep_detection.sleep_detection import checks_if_user_is_awake
 from utils import stop_alarm_sound
 from apis.api_client import post_alarm_history
 import serial  
@@ -58,6 +60,7 @@ def trigger(alarm, root: tk.Tk, go_back_callback):
             }
             post_alarm_history(payload)
             stop_flag = True
+            checks_if_user_is_awake()
 
         try:
             cleaned_data = data.strip().replace('\x00', '')
@@ -93,7 +96,8 @@ def trigger(alarm, root: tk.Tk, go_back_callback):
             display_label.config(text="Failed to connect via USB.")
 
     def run_game(): 
-        shake_game(difficulty) 
+        shake_game(difficulty)
+
     
     threading.Thread(target=run_game, daemon=True).start()
 

@@ -3,18 +3,13 @@ from tkinter import ttk
 from PIL import Image, ImageTk
 from gui.add_alarm_window import add_alarm_window
 
-
 def start_window(root: tk.Tk):
     for widget in root.winfo_children():
         widget.destroy()
 
     root.title("RiseWell")
     root.configure(bg="white")
-
     root.attributes('-fullscreen', True)
-
-    root.grid_rowconfigure(0, weight=1)
-    root.grid_columnconfigure(0, weight=1)
 
     main_frame = tk.Frame(root, bg="white")
     main_frame.pack(fill="both", expand=True)
@@ -31,7 +26,6 @@ def start_window(root: tk.Tk):
     title_label.pack(pady=20)
 
     try:
-        print(Image.__version__)
         image = Image.open("assets/RiseWellLogo.png")
         image = image.resize((300, 300), Image.LANCZOS)
         alarm_image = ImageTk.PhotoImage(image)
@@ -39,7 +33,7 @@ def start_window(root: tk.Tk):
         img_label.image = alarm_image
         img_label.pack(pady=10)
     except Exception as e:
-        print(f"Image Error: {e}")        
+        print(f"Image Error: {e}")
 
     desc_label = ttk.Label(
         content_frame,
@@ -59,8 +53,7 @@ def start_window(root: tk.Tk):
     )
     guide_label.pack(pady=10)
 
-    userId = "user_2uLEgW40wSAAR9BWMfSDX5cue22" 
-    # FIXME: Change this when needed
+    userId = "user_2uLEgW40wSAAR9BWMfSDX5cue22"  # FIXME: Change this when needed
 
     user_id_label = tk.Label(
         content_frame,
@@ -102,9 +95,8 @@ def start_window(root: tk.Tk):
     )
     quit_btn.pack(pady=10, ipadx=50, ipady=20)
 
-    # Press ESC / Button to quit
     root.bind("<Escape>", lambda event: quit_app())
-    
+
     style = ttk.Style()
     style.configure(
         "Big.TButton",
