@@ -10,12 +10,12 @@ from apis.api_client import post_speech_sentences
 import alarm.shake_it_alarm as shake_it_alarm 
 import alarm.speech_alarm as speech_alarm
 from apis.api_client import post_alarm_history, post_speech_sentences
-import alarm.shake_it_alarm as shake_it_alarm
 from utils import play_alarm_sound, stop_alarm_sound
 
 import serial
 import threading
 
+#TODO: Change serial port accordingly (use command: `ls /dev/ttyUSB* /dev/ttyACM* /dev/serial/by-id/` )
 ser = serial.Serial(port='/dev/ttyACM0', baudrate=115200, timeout=1)
 
 
@@ -97,7 +97,8 @@ def count_down_window(root, alarm_data, go_back_callback):
         while True:
             if ser.in_waiting > 0: 
                 message = ser.readline().decode('utf-8').strip()
-                if message == "stop": 
+                parts = message.split(",")
+                if parts[0] == "m1": 
                     stop_alarm_sound()
                     ser.write(b"reset\n")
                     ttk.Button(root, text="Exit", command=go_back_callback).pack(pady=10)
@@ -117,43 +118,28 @@ def count_down_window(root, alarm_data, go_back_callback):
         else:
             countdown_label.config(text="Time's up!", font=("Arial", 24, "bold"), background="white")
 
-            if not alarm_data.get("triggered"):
-                alarm_data["triggered"] = True
-                
             if alarm_data["type"] == "Math":
                 math_alarm.trigger(alarm_data, root, go_back_callback)
-
-            elif alarm_data["type"] == "Image Recognition":
-                image_trigger(alarm_data, root, go_back_callback)
-
+            elif alarm_data["type"] == "Shake It":
+                print("here shake")
+                shake_it_alarm.trigger(alarm_data, root, go_back_callback)
             elif alarm_data["type"] == "Nothing":
+                print(f"NOTHING")
+                time_now = datetime.datetime.now()
                 payload = {
                     "userId": alarm_data.get("userId"),
                     "alarmType": "Nothing",
-                    "alarmTime": start_time.isoformat(),
-                    "resolvedTime": end_time.isoformat(),
+                    "alarmTime": time_now.isoformat(),
+                    "resolvedTime": time_now.isoformat(),
                 }
-                back_button.destroy()
-                if alarm_data["type"] == "Math":
-                    math_alarm.trigger(alarm_data, root, go_back_callback)
-                elif alarm_data["type"] == "Shake It":
-                    shake_it_alarm.trigger(alarm_data,root,go_back_callback)
-                elif alarm_data["type"] == "Nothing":
-                    time_now = datetime.datetime.now()
-                    payload = {
-                        "userId": alarm_data.get("userId"),
-                        "alarmType": "Nothing",
-                        "alarmTime": time_now.isoformat(),
-                        "resolvedTime": time_now.isoformat(),
-                    }
-                    post_alarm_history(payload)
-                elif alarm_data["type"] == "Speech":
-                    config = alarm_data.get("config", {})
-                    payload = {
-                        "difficulty": config.get("difficulty"),
-                        "numberOfWords": config.get("num_of_words"),
-                    }
-                    sentence = post_speech_sentences(payload)
+                post_alarm_history(payload)
+            elif alarm_data["type"] == "Speech":
+                config = alarm_data.get("config", {})
+                payload = {
+                    "difficulty": config.get("difficulty"),
+                    "numberOfWords": config.get("num_of_words"),
+                }
+                sentence = post_speech_sentences(payload)
             
             countdown_label.config(
                 text="Rise and Shine!",
