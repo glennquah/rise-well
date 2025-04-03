@@ -17,7 +17,7 @@ def start_window(root: tk.Tk):
     root.grid_columnconfigure(0, weight=1)
 
     main_frame = tk.Frame(root, bg="white")
-    main_frame.grid(row=0, column=0, sticky="nsew")
+    main_frame.pack(fill="both", expand=True)
 
     content_frame = tk.Frame(main_frame, bg="white")
     content_frame.pack(expand=True)
@@ -33,22 +33,13 @@ def start_window(root: tk.Tk):
     try:
         print(Image.__version__)
         image = Image.open("assets/RiseWellLogo.png")
-        image = image.resize((300, 300), Image.ANTIALIAS)
+        image = image.resize((300, 300), Image.LANCZOS)
         alarm_image = ImageTk.PhotoImage(image)
         img_label = tk.Label(content_frame, image=alarm_image, background="white")
         img_label.image = alarm_image
         img_label.pack(pady=10)
     except Exception as e:
-        print(f"Image Error: {e}")
-        
-    desc_label = ttk.Label(root, text="Your IoT alarm clock to ensure you wake up!", font=("Arial", 12), background="white", justify="center")
-    desc_label.pack()
-    guide_label = ttk.Label(root, text="How to start?\nAdd an alarm, pick activities, and start your day well!", font=("Arial", 10), background="white", justify="center")
-    guide_label.pack(pady=5)
-    userId = 'user_2v1pIUBGclM9GPclE6jaYXI2E1o' #TODO: update to your userId so that you wont have to keep entering ur userId in login page
-    
-    tk.Label(root, text="Enter User ID", bg="white").pack(pady=5)
-
+        print(f"Image Error: {e}")        
 
     desc_label = ttk.Label(
         content_frame,
