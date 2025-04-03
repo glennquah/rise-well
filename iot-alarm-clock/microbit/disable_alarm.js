@@ -5,7 +5,7 @@ input.onButtonPressed(Button.A, function () {
     basic.showNumber(press_count) 
 
     if (press_count >= 10) {
-        serial.writeLine("stop") 
+        serial.writeLine("m1,stop")
         press_count = 0  
         basic.showIcon(IconNames.Asleep) 
     }
