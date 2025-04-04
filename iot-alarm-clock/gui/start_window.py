@@ -27,7 +27,7 @@ def start_window(root: tk.Tk):
 
     try:
         image = Image.open("assets/RiseWellLogo.png")
-        image = image.resize((300, 300), Image.ANTIALIAS)
+        image = image.resize((300, 300), Image.LANCZOS)
         alarm_image = ImageTk.PhotoImage(image)
         img_label = tk.Label(content_frame, image=alarm_image, background="white")
         img_label.image = alarm_image

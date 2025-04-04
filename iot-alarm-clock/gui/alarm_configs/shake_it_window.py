@@ -10,6 +10,9 @@ def shake_it_window(root: tk.Tk, alarm_data, go_back_callback):
     root.title("Shake Game Configuration")
     root.configure(bg="white")
 
+    if "config" not in alarm_data:
+        alarm_data["config"] = {}
+
     main_frame = tk.Frame(root, bg="white")
     main_frame.pack(expand=True)
 
