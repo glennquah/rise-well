@@ -2,8 +2,9 @@ import { ClerkProvider, SignIn, SignedIn, SignedOut } from '@clerk/nextjs';
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import { Toaster } from 'sonner';
-import NavigationBar from './components/NavigationBar';
 import './globals.css';
+import Footer from './layout/Footer';
+import NavigationBar from './layout/NavigationBar';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -47,8 +48,9 @@ export default function RootLayout({
             <SignedIn>
               {' '}
               <NavigationBar />
-              {children}
+              <div className="pt-8">{children}</div>
               <Toaster />
+              <Footer />
             </SignedIn>
           </main>
         </body>
