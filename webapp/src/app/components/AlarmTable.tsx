@@ -121,7 +121,7 @@ const AlarmTable = ({ data }: AlarmTableProps) => {
         <Table className="w-full">
           <TableHeader>
             <TableRow className="hover:bg-transparent">
-              <TableHead className="w-[100px]">Date</TableHead>
+              <TableHead className="w-[120px]">Date</TableHead>
               <TableHead>Triggered Time</TableHead>
               <TableHead>Deactivated</TableHead>
               <TableHead>Time to Resolve</TableHead>
