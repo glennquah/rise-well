@@ -7,6 +7,7 @@ const DateString = z.preprocess((arg) => {
 }, z.date());
 
 const BaseAlarmHistorySchema = z.object({
+  _id: z.string(),
   userId: z.string(),
   alarmType: z.enum([
     'Speech',
