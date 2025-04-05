@@ -47,6 +47,14 @@ body {
   --radius: 1rem;
 }
 
+.glass-panel {
+  @apply bg-white/50 backdrop-blur-lg border border-white/60 shadow-sm;
+}
+
+.card-hover {
+  @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
+}
+
 .dark {
   --background: oklch(0.13 0.028 261.692);
   --foreground: oklch(0.985 0.002 247.839);
