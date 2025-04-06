@@ -19,22 +19,23 @@ export const ReusableTabs: React.FC<ReusableTabsProps> = ({
   tabs,
 }) => {
   return (
-    <Tabs defaultValue={defaultValue} className="relative mr-auto w-full">
-      <TabsList className="w-full justify-start rounded-none border-b bg-transparent p-0">
+    <Tabs defaultValue={defaultValue} className="w-fit rounded-full p-1">
+      <TabsList className="flex gap-1 bg-transparent p-0 shadow-none bg-gray-200">
         {tabs.map((tab) => (
           <TabsTrigger
             key={tab.value}
             value={tab.value}
-            className="relative rounded-b-none border-b-2 border-b-transparent bg-transparent px-6 py-2 font-semibold text-muted-foreground shadow-none transition-none focus-visible:ring-0 data-[state=active]:border-b-primary data-[state=active]:text-foreground data-[state=active]:shadow-none"
+            className="rounded-full px-4 py-1.5 text-sm font-medium text-muted-foreground data-[state=active]:bg-white data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all"
           >
             {tab.label}
           </TabsTrigger>
         ))}
       </TabsList>
+
       {tabs.map((tab) => (
-        <div className="pb-2" key={tab.value}>
-          <TabsContent value={tab.value}>{tab.content}</TabsContent>
-        </div>
+        <TabsContent key={tab.value} value={tab.value} className="pt-2">
+          {tab.content}
+        </TabsContent>
       ))}
     </Tabs>
   );

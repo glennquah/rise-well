@@ -1,5 +1,8 @@
 import { currentUser } from '@clerk/nextjs/server';
+import HeroSection from './components/Header';
+import QuickAccessSection from './components/QuickAccessSection';
 import ResponsiveContainer from './components/ResponsiveContainer';
+import SummarySection from './components/SummarySection';
 
 export default async function Home() {
   const user = await currentUser();
@@ -7,17 +10,9 @@ export default async function Home() {
 
   return (
     <ResponsiveContainer>
-      <div className="flex flex-col min-h-screen py-8 gap-2">
-        <h1 className="text-4xl font-bold text-start">Hello, {name}!</h1>
-        <h1 className="text-2xl font-bold text-start">UserId: {user?.id}</h1>
-        <p className="text-lg text-start text-gray-700">
-          Welcome to RiseWell – your personalized IoT alarm clock designed to
-          help you wake up refreshed and ready for the day. Explore your sleep
-          insights, monitor your health, and experience a smarter morning
-          routine.
-        </p>
-      </div>
-      <div>Add some analytics here</div>
+      <HeroSection name={name} />
+      <SummarySection />
+      <QuickAccessSection />
     </ResponsiveContainer>
   );
 }

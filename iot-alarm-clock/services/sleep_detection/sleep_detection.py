@@ -35,6 +35,7 @@ def __load_model__():
 
     loaded_model = joblib.load(model_path)
     scalar = joblib.load(scaler_path)
+
     return loaded_model, scalar
 
 
@@ -97,4 +98,5 @@ def __ai_predict__():
 
 def checks_if_user_is_awake():
     detection = __ai_predict__()
+    print(detection)
     return True if detection == 'AWAKE' else False
