@@ -20,8 +20,7 @@ export async function POST(req: Request) {
       );
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { _id, ...alarmData } = parsed.data;
+    const { ...alarmData } = parsed.data;
     const collection = await getCollection(COLLECTION_NAME);
     const result = await collection.insertOne(alarmData);
 

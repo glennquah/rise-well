@@ -7,7 +7,6 @@ const DateString = z.preprocess((arg) => {
 }, z.date());
 
 const BaseAlarmHistorySchema = z.object({
-  _id: z.string(),
   userId: z.string(),
   alarmType: z.enum([
     'Speech',
@@ -67,5 +66,21 @@ export const AlarmHistorySchema = z.discriminatedUnion('alarmType', [
   ImageHistorySchema,
   NothingHistorySchema,
 ]);
+
+const SpeechWithId = SpeechHistorySchema.extend({ _id: z.string() });
+const MathWithId = MathHistorySchema.extend({ _id: z.string() });
+const ShakeWithId = ShakeHistorySchema.extend({ _id: z.string() });
+const ImageWithId = ImageHistorySchema.extend({ _id: z.string() });
+const NothingWithId = NothingHistorySchema.extend({ _id: z.string() });
+
+export const FullAlarmHistorySchema = z.discriminatedUnion('alarmType', [
+  SpeechWithId,
+  MathWithId,
+  ShakeWithId,
+  ImageWithId,
+  NothingWithId,
+]);
+
+export type FullAlarmHistoryDto = z.infer<typeof FullAlarmHistorySchema>;
 
 export type AlarmHistoryDto = z.infer<typeof AlarmHistorySchema>;

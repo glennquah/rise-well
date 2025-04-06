@@ -10,7 +10,7 @@ import {
 import { cn } from '@/lib/utils';
 import { ChevronDown } from 'lucide-react';
 import React, { useState } from 'react';
-import { AlarmHistoryDto } from '../api/dtos/alarm-history';
+import { FullAlarmHistoryDto } from '../api/dtos/alarm-history';
 
 const formatTimeDifference = (start: Date, end: Date) => {
   const diff = end.getTime() - start.getTime();
@@ -22,7 +22,7 @@ const formatTimeDifference = (start: Date, end: Date) => {
   return `${seconds}s`;
 };
 
-const renderAlarmDetailsContent = (alarm: AlarmHistoryDto) => {
+const renderAlarmDetailsContent = (alarm: FullAlarmHistoryDto) => {
   switch (alarm.alarmType) {
     case 'Math':
       return (
@@ -69,7 +69,7 @@ const renderAlarmDetailsContent = (alarm: AlarmHistoryDto) => {
 };
 
 interface AlarmTableProps {
-  data: AlarmHistoryDto[];
+  data: FullAlarmHistoryDto[];
 }
 
 const AlarmTable = ({ data }: AlarmTableProps) => {

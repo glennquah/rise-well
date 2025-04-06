@@ -1,12 +1,12 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { AlarmHistoryDto } from '../api/dtos/alarm-history';
+import { FullAlarmHistoryDto } from '../api/dtos/alarm-history';
 import AlarmCharts from './AlarmCharts';
 import AlarmTable from './AlarmTable';
 import { LoadingSpinner } from './Loadingspinner';
 
 export const AlarmClockHistory = () => {
-  const [alarms, setAlarms] = useState<AlarmHistoryDto[]>([]);
+  const [alarms, setAlarms] = useState<FullAlarmHistoryDto[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -17,7 +17,7 @@ export const AlarmClockHistory = () => {
           credentials: 'include',
         });
         const data = await res.json();
-        const alarms = data.alarms as AlarmHistoryDto[];
+        const alarms = data.alarms as FullAlarmHistoryDto[];
         if (!res.ok) {
           setError(data.message || 'Error fetching alarms');
         } else {
