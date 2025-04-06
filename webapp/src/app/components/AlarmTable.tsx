@@ -112,7 +112,8 @@ const AlarmTable = ({ data }: AlarmTableProps) => {
           <p className="text-sm text-foreground/60 mt-1">
             Review your alarm activity and generate insights. This data is being
             shown through your IOT alarm clock, where you can set alarms and
-            track your sleep patterns and insights through the app.
+            track your sleep patterns and insights through the app. Press on the
+            details icon to see more information about the alarm.
           </p>
         </div>
       </div>
