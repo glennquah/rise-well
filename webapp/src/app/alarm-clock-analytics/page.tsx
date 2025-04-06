@@ -19,8 +19,15 @@ export default async function AlarmClockAnalytics() {
 
   return (
     <ResponsiveContainer>
-      <div className="flex flex-col min-h-screen py-8 gap-4">
-        <h1 className="text-4xl font-bold text-start">Alarm Clock Analytics</h1>
+      <div className="flex flex-col py-8 gap-4">
+        <div className="py-4">
+          <h1 className="text-4xl font-bold text-start">
+            Alarm Clock Analytics
+          </h1>
+          <p className="text-foreground/70 mt-2">
+            Review your alarm activity and get insights on your wake-up patterns
+          </p>
+        </div>
         <ReusableTabs defaultValue="history" tabs={tabs} />
       </div>
     </ResponsiveContainer>

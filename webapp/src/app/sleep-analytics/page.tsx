@@ -1,31 +1,25 @@
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import PollingDataDisplay from "../components/PollingDataDisplay";
-import React from "react";
+import PollingDataDisplay from '../components/PollingDataDisplay';
+import ResponsiveContainer from '../components/ResponsiveContainer';
 
 export default async function Page() {
   return (
-    <SidebarProvider
-      style={{
-        "--sidebar-width": "calc(var(--spacing) * 72)",
-        "--header-height": "calc(var(--spacing) * 12)",
-      } as React.CSSProperties}
-    >
-      <SidebarInset>
-        {/* <AppSidebar variant="inset" /> */}
-        {/* <SiteHeader /> */}
-        <div className="flex flex-1 flex-col">
+    <ResponsiveContainer>
+      <div className="flex flex-col min-h-screen py-8">
+        <div className="pt-4">
+          <h1 className="text-4xl font-bold text-start">Sleep Analytics</h1>
+          <p className="text-foreground/70 mt-2">
+            Track your sleep patterns, quality, and get detailed insights
+            breakdown
+          </p>
+        </div>
+        <div className="flex flex-col gap-4 md:gap-6">
           <div className="@container/main flex flex-1 flex-col gap-2">
             <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
-              <PollingDataDisplay  />
+              <PollingDataDisplay />
             </div>
           </div>
         </div>
-      </SidebarInset>
-    </SidebarProvider>
+      </div>
+    </ResponsiveContainer>
   );
 }
-
-
-
-
-

@@ -6,8 +6,6 @@ import { AlarmHistorySchema } from '../dtos/alarm-history';
 const COLLECTION_NAME = 'alarm-history';
 
 export async function POST(req: Request) {
-  // TODO: Find a way to protect this route so only iot device can call this
-
   try {
     const json = await req.json();
     const parsed = AlarmHistorySchema.safeParse(json);
@@ -22,7 +20,7 @@ export async function POST(req: Request) {
       );
     }
 
-    const alarmData = { ...parsed.data };
+    const { ...alarmData } = parsed.data;
     const collection = await getCollection(COLLECTION_NAME);
     const result = await collection.insertOne(alarmData);
 
