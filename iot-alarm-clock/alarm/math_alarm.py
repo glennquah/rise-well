@@ -2,7 +2,8 @@ import tkinter as tk
 from tkinter import ttk
 import random
 import datetime
-
+import time
+import threading
 from services.sleep_detection.sleep_detection import checks_if_user_is_awake
 from utils import play_alarm_sound, stop_alarm_sound
 from apis.api_client import post_alarm_history
@@ -171,15 +172,6 @@ def trigger(alarm, root, go_back_callback):
             bg="white",
         )
 
-        tk.Button(
-            root,
-            text="Back",
-            command=go_back_callback,
-            font=("Arial", 28),
-            bg="white",
-            padx=20,
-            pady=10,
-        ).pack(pady=20)
 
         stop_alarm_sound()
         payload = {
@@ -193,7 +185,28 @@ def trigger(alarm, root, go_back_callback):
             "numberOfQuestions": num_questions,
         }
         post_alarm_history(payload)
-        checks_if_user_is_awake()
+
+        def post_challenge_check():
+            time.sleep(10) 
+            print("Checking if user is still awake...")
+            if checks_if_user_is_awake():
+                print("User is awake!")
+                tk.Button(
+                    root,
+                    text="Back",
+                    command=go_back_callback,
+                    font=("Arial", 28),
+                    bg="white",
+                    padx=20,
+                    pady=10,
+                ).pack(pady=20)
+            else:
+                result_label.after(0, lambda: result_label.config(text="Still Asleep! Restarting challenge..."))
+                time.sleep(2)
+                trigger(alarm, root, go_back_callback)
+
+        threading.Thread(target=post_challenge_check, daemon=True).start()
+
 
     next_question()
 

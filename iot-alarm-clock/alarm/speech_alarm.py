@@ -3,6 +3,9 @@ import tkinter as tk
 from tkinter import ttk
 import datetime
 import re
+import threading
+import time
+from services.sleep_detection.sleep_detection import checks_if_user_is_awake
 from difflib import SequenceMatcher
 from utils import play_alarm_sound, stop_alarm_sound
 from apis.api_client import post_alarm_history
@@ -170,13 +173,6 @@ def trigger(alarm, root, go_back_callback, sentence):
             font=("Arial", 24),
         ).pack(pady=10)
 
-        ttk.Button(
-            root,
-            text="Back",
-            command=go_back_callback,
-            style="Big.TButton",
-        ).pack(pady=20)
-
         payload = {
             "userId": alarm.get("userId"),
             "alarmType": "Speech",
@@ -188,6 +184,24 @@ def trigger(alarm, root, go_back_callback, sentence):
             "givenWords": sentence["sentence"],
         }
         post_alarm_history(payload)
+
+        def post_challenge_check():
+            time.sleep(10) 
+            print("Checking if user is still awake...")
+            if checks_if_user_is_awake():
+                print("User is awake!")
+                ttk.Button(
+                    root,
+                    text="Back",
+                    command=go_back_callback,
+                    style="Big.TButton",
+                ).pack(pady=20)
+            else:
+                result_label.after(0, lambda: result_label.config(text="Still Asleep! Restarting challenge..."))
+                time.sleep(2)
+                trigger(alarm, root, go_back_callback)
+
+        threading.Thread(target=post_challenge_check, daemon=True).start()
 
     finish_btn.config(command=finish_challenge)
 

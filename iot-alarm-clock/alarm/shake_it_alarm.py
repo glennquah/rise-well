@@ -47,8 +47,6 @@ def trigger(alarm, root: tk.Tk, go_back_callback):
                 f"Time taken: {str(time_taken).split('.')[0]}"
             ])
             display_label.after(0, lambda: display_label.config(text=message))
-            back_button = tk.Button(root, text="Back", command=go_back_callback, bg="white")
-            back_button.pack(pady=10)
             stop_alarm_sound()
             payload = {
                 "userId": alarm.get("userId"),
@@ -60,7 +58,24 @@ def trigger(alarm, root: tk.Tk, go_back_callback):
             }
             post_alarm_history(payload)
             stop_flag = True
-            checks_if_user_is_awake()
+
+            def post_challenge_check():
+                time.sleep(10)  # Wait 10 seconds before re-checking
+                print("Checking if user is still awake...")
+                if checks_if_user_is_awake():
+                    print("User is awake!")
+                    back_button = tk.Button(root, text="Back", command=go_back_callback, bg="white")
+                    back_button.pack(pady=10)
+                else:
+                    display_label.after(0, lambda: display_label.config(text="Still Asleep! Restarting challenge..."))
+                    time.sleep(2)
+                    trigger(alarm, root, go_back_callback)
+
+            ### exclude back button first
+
+            # back_button = tk.Button(root, text="Back", command=go_back_callback, bg="white") 
+            # back_button.pack(pady=10)
+            threading.Thread(target=post_challenge_check, daemon=True).start()
 
         try:
             cleaned_data = data.strip().replace('\x00', '')
