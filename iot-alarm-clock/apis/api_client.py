@@ -6,7 +6,7 @@ import requests
 # Jordan
 # Hamzah
 # Ophe's WINDOWS Address: http://172.25.107.114:3000/api/alarm-history
-API_ENDPOINT = "http://172.25.107.114:3001"
+API_ENDPOINT = "http://192.168.137.1:3000"
 
 def post_alarm_history(payload):
     try:

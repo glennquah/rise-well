@@ -5,6 +5,7 @@ import time
 import subprocess
 import RPi.GPIO as GPIO
 from gui.count_down_window import count_down_window
+import cv2
 
 
 BUTTON_PIN = 17
@@ -21,6 +22,43 @@ CATEGORIES = {
 }
 CATEGORY_OPTIONS = list(CATEGORIES.keys())
 
+def preview_camera_and_capture(image_path):
+    cap = cv2.VideoCapture(0)  # /dev/video0
+    if not cap.isOpened():
+        raise RuntimeError("Cannot open webcam")
+
+    cv2.namedWindow("USB Camera Preview", cv2.WINDOW_NORMAL)
+    cv2.resizeWindow("USB Camera Preview", 640, 480)
+
+    print("Press the physical button to capture.")
+
+    captured_frame = None
+    while True:
+        ret, frame = cap.read()
+        if not ret:
+            print("Failed to grab frame")
+            break
+        cv2.imshow("USB Camera Preview", frame)
+
+        # Non-blocking key check
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+
+        if GPIO.input(BUTTON_PIN) == GPIO.LOW:  # Button pressed
+            captured_frame = frame
+            break
+
+    cap.release()
+    cv2.destroyAllWindows()
+
+    if captured_frame is not None:
+        cv2.imwrite(image_path, captured_frame)
+        print(f"Image saved to {image_path}")
+        return True
+    else:
+        print("Capture cancelled")
+        return False
+
 
 def wait_for_button():
     while GPIO.input(BUTTON_PIN) == GPIO.HIGH:
@@ -29,11 +67,10 @@ def wait_for_button():
 def preview_camera():
     return subprocess.Popen(["rpicam-still", "--preview", "0,0,640,480", "--timeout", "0"])
 
-def capture_image(image_path, preview):
-    preview.terminate()
-    result = subprocess.run(["rpicam-still", "-o", image_path, "--width", "640", "--height", "480"])
-    if result.returncode != 0:
-        raise RuntimeError(f"Image capture failed: {result}")
+def capture_image(image_path, preview_frame):
+    if preview_frame is None:
+        raise RuntimeError("No image to save")
+    cv2.imwrite(image_path, preview_frame)
 
 def image_recognition_window(root, alarm_data, go_back_callback):
     for widget in root.winfo_children():
@@ -84,11 +121,14 @@ def image_recognition_window(root, alarm_data, go_back_callback):
         ref_path = f"data/references/ref.jpg"
         os.makedirs(os.path.dirname(ref_path), exist_ok=True)
         absolute_path = os.path.abspath(ref_path)
-        messagebox.showinfo("Ready", "Camera preview starting. Press the button to capture.")
-        preview = preview_camera()
-        wait_for_button()
-        capture_image(absolute_path, preview)
-        messagebox.showinfo("Saved", f"Reference image saved to {absolute_path}")
+
+        messagebox.showinfo("Ready", "Camera preview will start.\nPress the button to capture.")
+
+        success = preview_camera_and_capture(absolute_path)
+        if success:
+            messagebox.showinfo("Saved", f"Reference image saved to {absolute_path}")
+        else:
+            messagebox.showwarning("Cancelled", "Image capture was cancelled.")
 
     def next_action():
         alarm_data["config"]["mode"] = mode.get()

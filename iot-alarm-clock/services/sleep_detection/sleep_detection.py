@@ -3,6 +3,7 @@ from time import sleep
 import cv2
 import joblib
 import mediapipe as mp
+import os
 
 mp_pose = mp.solutions.pose
 pose = mp_pose.Pose(static_image_mode=True)
@@ -13,7 +14,7 @@ def __capture_image__():
     image_path = "./image.jpg"
 
     # Initialize the camera (using OpenCV)
-    cap = cv2.VideoCapture(0)  # 0 is typically the default camera
+    cap = cv2.VideoCapture(2)  # 0 is typically the default camera
     ret, frame = cap.read()
 
     if ret:
@@ -26,8 +27,14 @@ def __capture_image__():
 
 
 def __load_model__():
-    loaded_model = joblib.load('pose_sleep_model.sav')
-    scalar = joblib.load('pose_sleep_scaler.sav')
+
+    base_path = os.path.dirname(__file__)
+    model_path = os.path.join(base_path, 'pose_sleep_model.sav')
+    scaler_path = os.path.join(base_path, 'pose_sleep_scaler.sav')
+
+
+    loaded_model = joblib.load(model_path)
+    scalar = joblib.load(scaler_path)
     return loaded_model, scalar
 
 
