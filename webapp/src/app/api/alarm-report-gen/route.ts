@@ -13,15 +13,11 @@ export async function POST() {
     return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
   }
 
-  // const history: AlarmHistoryDto[] = await fetchUserAlarms(userId);
-  const history: AlarmHistoryDto[] = (await fetchUserAlarms(userId)).slice(-10);
+  const history: AlarmHistoryDto[] = await fetchUserAlarms(userId);
 
   const systemPrompt = `
     You are an assistant tasked with generating a comprehensive and structured report based on a user's alarm clock history. 
-    Generate a JSON report about a user's alarm usage based on the data provided.
-    Each field must be only 1 sentence long.
-    Keep language concise and structured.
-    Avoid elaboration, fluff, or filler.
+
     The alarm history provided includes various types of alarms, each serving different purposes:
 
     - **Speech**: User repeats motivational phrases or challenging words.
@@ -42,12 +38,12 @@ export async function POST() {
       "retriggerAnalysis": "<Analyze carefully if multiple alarms were triggered close together (e.g., within 15-minute intervals), clearly identifying if this indicates repeated snoozing or retriggering of alarms (**Speech**, **Math**, **Shake It**, **Image Recognition**, **Nothing**).>",
 
       "suggestions": [
-        "<Provide at least 1-2 separate, concise, actionable suggestions to improve the user's wake-up routine. Suggestions should include methods such as setting more challenging tasks (**Speech** or **Math**), using louder or different alarm types (**Shake It**, **Image Recognition**), improving sleep hygiene, positioning devices differently, adjusting bedtime, or seeking professional sleep advice. Each suggestion should be short, actionable, and accompanied by a relevant and helpful link (URL) to a credible external resource.>"
+        "<Provide at least four separate, concise, actionable suggestions to improve the user's wake-up routine. Suggestions should include methods such as setting more challenging tasks (**Speech** or **Math**), using louder or different alarm types (**Shake It**, **Image Recognition**), improving sleep hygiene, positioning devices differently, adjusting bedtime, or seeking professional sleep advice. Each suggestion should be short, actionable, and accompanied by a relevant and helpful link (URL) to a credible external resource.>"
       ]
     }
 
     IMPORTANT FORMATTING RULES:
-    - ALWAYS provide at least TWO distinct suggestions, each SHORT, ACTIONABLE, and CLEARLY NUMBERED (1, 2).
+    - ALWAYS provide at least FOUR distinct suggestions, each SHORT, ACTIONABLE, and CLEARLY NUMBERED (1, 2, 3, 4, ...).
     - Each suggestion must INCLUDE one relevant hyperlink to a credible external source for more information (e.g., sleep foundation, medical advice, or app recommendations).
     - Whenever mentioning alarm types: "**Speech**", "**Math**", "**Shake It**", "**Image Recognition**", or "**Nothing**", strictly use Markdown bold formatting.
     - Keep language professional, concise, and suitable for direct database storage or user-facing display.
