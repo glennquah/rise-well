@@ -45,14 +45,27 @@ export default function AlarmReport() {
       const res = await fetch('/api/alarm-report-gen', {
         method: 'POST',
         credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
       });
-      if (!res.ok) {
-        const { message } = await res.json();
-        throw new Error(message || 'Failed to generate report.');
+
+      if (!res.ok || !res.body) {
+        throw new Error('Failed to generate report.');
       }
-      const data: AlarmReportDto = await res.json();
-      setReport(data);
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let result = '';
+      let done = false;
+
+      while (!done) {
+        const { value, done: doneReading } = await reader.read();
+        if (value) {
+          result += decoder.decode(value, { stream: true });
+        }
+        done = doneReading;
+      }
+
+      const parsed = JSON.parse(result);
+      setReport(parsed);
       toast.success('Report Generated successfully!');
     } catch (err) {
       console.error(err);
