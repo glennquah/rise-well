@@ -46,7 +46,6 @@ export default function RootLayout({
               </div>
             </SignedOut>
             <SignedIn>
-              {' '}
               <NavigationBar />
               <div className="pt-8">{children}</div>
               <Toaster />

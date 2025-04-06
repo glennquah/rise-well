@@ -3,8 +3,8 @@ import {
   CardAction,
   CardDescription,
   CardHeader,
-} from "@/components/ui/card";
-import { BarChart, Flame, HeartPulse, Snowflake } from "lucide-react";
+} from '@/components/ui/card';
+import { BarChart, Flame, HeartPulse, Snowflake } from 'lucide-react';
 
 interface SectionCardsProps {
   data: {
@@ -20,7 +20,9 @@ export function SectionCards({ data }: SectionCardsProps) {
     .filter((hr) => !isNaN(hr));
 
   const averageBPM = heartRates.length
-    ? Math.round(heartRates.reduce((sum, hr) => sum + hr, 0) / heartRates.length)
+    ? Math.round(
+        heartRates.reduce((sum, hr) => sum + hr, 0) / heartRates.length,
+      )
     : NaN;
 
   const minBPM = heartRates.length ? Math.round(Math.min(...heartRates)) : NaN;
@@ -31,13 +33,16 @@ export function SectionCards({ data }: SectionCardsProps) {
     : NaN;
 
   const variance = heartRates.length
-    ? heartRates.reduce((sum, hr) => sum + Math.pow(hr - mean, 2), 0) / heartRates.length
+    ? heartRates.reduce((sum, hr) => sum + Math.pow(hr - mean, 2), 0) /
+      heartRates.length
     : NaN;
 
-  const stdDeviation = heartRates.length ? Math.round(Math.sqrt(variance)) : NaN;
+  const stdDeviation = heartRates.length
+    ? Math.round(Math.sqrt(variance))
+    : NaN;
 
   return (
-    <div className="grid grid-cols-1 gap-4 px-4 lg:px-6 @xl/main:grid-cols-2 @5xl/main:grid-cols-4">
+    <div className="grid grid-cols-1 gap-4 @xl/main:grid-cols-2 @5xl/main:grid-cols-4">
       {/* Average BPM */}
       <Card className="@container/card">
         <CardHeader>
@@ -47,7 +52,7 @@ export function SectionCards({ data }: SectionCardsProps) {
           </CardAction>
         </CardHeader>
         <div className="mb-4 h-full w-full flex justify-center items-center text-4xl font-semibold">
-          {isNaN(averageBPM) ? "N/A" : averageBPM}
+          {isNaN(averageBPM) ? 'N/A' : averageBPM}
         </div>
       </Card>
 
@@ -60,7 +65,7 @@ export function SectionCards({ data }: SectionCardsProps) {
           </CardAction>
         </CardHeader>
         <div className="mb-4 h-full w-full flex justify-center items-center text-4xl font-semibold">
-          {isNaN(maxBPM) ? "N/A" : maxBPM}
+          {isNaN(maxBPM) ? 'N/A' : maxBPM}
         </div>
       </Card>
 
@@ -73,7 +78,7 @@ export function SectionCards({ data }: SectionCardsProps) {
           </CardAction>
         </CardHeader>
         <div className="mb-4 h-full w-full flex justify-center items-center text-4xl font-semibold">
-          {isNaN(minBPM) ? "N/A" : minBPM}
+          {isNaN(minBPM) ? 'N/A' : minBPM}
         </div>
       </Card>
 
@@ -86,7 +91,7 @@ export function SectionCards({ data }: SectionCardsProps) {
           </CardAction>
         </CardHeader>
         <div className="mb-4 h-full w-full flex justify-center items-center text-4xl font-semibold">
-          {isNaN(stdDeviation) ? "N/A" : stdDeviation}
+          {isNaN(stdDeviation) ? 'N/A' : stdDeviation}
         </div>
       </Card>
     </div>
