@@ -19,7 +19,7 @@ export default async function AlarmClockAnalytics() {
 
   return (
     <ResponsiveContainer>
-      <div className="flex flex-col min-h-screen py-8 gap-4">
+      <div className="flex flex-col py-8 gap-4">
         <div className="py-4">
           <h1 className="text-4xl font-bold text-start">
             Alarm Clock Analytics

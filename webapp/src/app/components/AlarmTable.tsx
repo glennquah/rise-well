@@ -103,7 +103,7 @@ const AlarmTable = ({ data }: AlarmTableProps) => {
   };
 
   return (
-    <div className="glass-panel rounded-2xl soft-shadow overflow-hidden w-full">
+    <div className="glass-panel rounded-2xl soft-shadow w-full">
       <div className="p-6 flex flex-col md:flex-row items-start md:items-center gap-4 border-b border-border/30">
         <div>
           <h2 className="text-xl font-semibold text-foreground">
@@ -116,69 +116,70 @@ const AlarmTable = ({ data }: AlarmTableProps) => {
           </p>
         </div>
       </div>
-
       <div className="overflow-x-auto w-full">
-        <Table className="w-full">
-          <TableHeader>
-            <TableRow className="hover:bg-transparent">
-              <TableHead className="w-[120px]">Date</TableHead>
-              <TableHead>Triggered Time</TableHead>
-              <TableHead>Deactivated</TableHead>
-              <TableHead>Time to Resolve</TableHead>
-              <TableHead>Type</TableHead>
-              <TableHead>Details</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {data.map((alarm) => {
-              const triggered = new Date(alarm.alarmTime);
-              const deactivated = new Date(alarm.resolvedTime);
-              return (
-                <React.Fragment key={alarm._id}>
-                  <TableRow className="hover:bg-blue-50/50 transition-colors">
-                    <TableCell className="font-medium">
-                      {triggered.toLocaleDateString()}
-                    </TableCell>
-                    <TableCell>{triggered.toLocaleTimeString()}</TableCell>
-                    <TableCell>{deactivated.toLocaleTimeString()}</TableCell>
-                    <TableCell>
-                      {formatTimeDifference(triggered, deactivated)}
-                    </TableCell>
-                    <TableCell>
-                      <span
-                        className={cn(
-                          'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
-                          getTypeColor(alarm.alarmType),
-                        )}
-                      >
-                        {alarm.alarmType}
-                      </span>
-                    </TableCell>
-                    <TableCell className="text-center">
-                      <button
-                        onClick={() => toggleRow(alarm._id)}
-                        className="p-2 focus:outline-none"
-                      >
-                        <ChevronDown
-                          className={`h-4 w-4 transition-transform ${
-                            expandedRows.has(alarm._id) ? 'rotate-180' : ''
-                          }`}
-                        />
-                      </button>
-                    </TableCell>
-                  </TableRow>
-                  {expandedRows.has(alarm._id) && (
-                    <TableRow className="bg-gray-50">
-                      <TableCell colSpan={6} className="p-4">
-                        {renderAlarmDetailsContent(alarm)}
+        <div className="min-w-[700px]">
+          <Table className="table-auto whitespace-nowrap w-full">
+            <TableHeader>
+              <TableRow className="hover:bg-transparent">
+                <TableHead className="w-[120px]">Date</TableHead>
+                <TableHead>Triggered Time</TableHead>
+                <TableHead>Deactivated</TableHead>
+                <TableHead>Time to Resolve</TableHead>
+                <TableHead>Type</TableHead>
+                <TableHead>Details</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {data.map((alarm) => {
+                const triggered = new Date(alarm.alarmTime);
+                const deactivated = new Date(alarm.resolvedTime);
+                return (
+                  <React.Fragment key={alarm._id}>
+                    <TableRow className="hover:bg-blue-50/50 transition-colors">
+                      <TableCell className="font-medium">
+                        {triggered.toLocaleDateString()}
+                      </TableCell>
+                      <TableCell>{triggered.toLocaleTimeString()}</TableCell>
+                      <TableCell>{deactivated.toLocaleTimeString()}</TableCell>
+                      <TableCell>
+                        {formatTimeDifference(triggered, deactivated)}
+                      </TableCell>
+                      <TableCell>
+                        <span
+                          className={cn(
+                            'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
+                            getTypeColor(alarm.alarmType),
+                          )}
+                        >
+                          {alarm.alarmType}
+                        </span>
+                      </TableCell>
+                      <TableCell className="text-center">
+                        <button
+                          onClick={() => toggleRow(alarm._id)}
+                          className="p-2 focus:outline-none"
+                        >
+                          <ChevronDown
+                            className={`h-4 w-4 transition-transform ${
+                              expandedRows.has(alarm._id) ? 'rotate-180' : ''
+                            }`}
+                          />
+                        </button>
                       </TableCell>
                     </TableRow>
-                  )}
-                </React.Fragment>
-              );
-            })}
-          </TableBody>
-        </Table>
+                    {expandedRows.has(alarm._id) && (
+                      <TableRow className="bg-gray-50">
+                        <TableCell colSpan={6} className="p-4">
+                          {renderAlarmDetailsContent(alarm)}
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </React.Fragment>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </div>
       </div>
     </div>
   );

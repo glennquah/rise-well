@@ -73,7 +73,7 @@ const AlarmCharts = ({ data }: AlarmTableProps) => {
           <p className="text-sm text-muted-foreground mb-4">
             Shows how often each alarm type was triggered.
           </p>
-          <ResponsiveContainer width="100%" height={300}>
+          <ResponsiveContainer width="100%" aspect={2}>
             <PieChart>
               <Pie
                 data={pieData}
@@ -102,15 +102,12 @@ const AlarmCharts = ({ data }: AlarmTableProps) => {
             Duration from the first alarm triggered to the last resolved alarm
             each day.
           </p>
-          <ResponsiveContainer width="100%" height={300}>
+          <ResponsiveContainer width="100%" aspect={2}>
             <BarChart data={barData}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis
                 dataKey="date"
-                interval={0}
-                angle={-45}
-                textAnchor="end"
-                height={60}
+                interval={Math.floor(barData.length / 5)}
                 tickLine={false}
                 style={{ fontSize: '12px' }}
               />
