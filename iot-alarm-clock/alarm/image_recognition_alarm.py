@@ -104,16 +104,16 @@ def poll_user_awake_status(root, label, alarm_data, go_back_callback):
             check_awake_status()
 
     def check_awake_status():
-        label.config(text="🧠 Checking if you're awake using AI...", fg="blue")
+        label.config(text="Checking if you're awake using AI...", fg="blue")
         root.update()
 
         if checks_if_user_is_awake():
-            label.config(text="🌞 You're awake! Alarm complete.", fg="green")
+            label.config(text="You're awake! Alarm complete.", fg="green")
             root.update()
             GPIO.cleanup()
             root.after(3000, root.quit)  # Quit after 3s
         else:
-            label.config(text="😴 Still sleepy... Let's play again!", fg="orange")
+            label.config(text="Still sleepy... Let's play again!", fg="orange")
             root.update()
             root.after(2000, lambda: trigger(alarm_data, root, go_back_callback))
 
@@ -144,7 +144,7 @@ def handle_alarm_result(success, mode, refImageUrl, imageUrl, target_object, sta
 
         post_alarm_history(payload)
 
-        label.config(text="✅ Alarm passed! Good morning!", fg="green")
+        label.config(text="Alarm passed! Good morning!", fg="green")
         root.update()
 
         # After 2 seconds, update message and start countdown
