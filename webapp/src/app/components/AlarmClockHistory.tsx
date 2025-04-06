@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { AlarmHistoryDto } from '../api/dtos/alarm-history';
+import AlarmCharts from './AlarmCharts';
 import AlarmTable from './AlarmTable';
 import { LoadingSpinner } from './Loadingspinner';
 
@@ -33,11 +34,17 @@ export const AlarmClockHistory = () => {
     fetchAlarms();
   }, []);
 
-  if (loading) return <LoadingSpinner />;
+  if (loading)
+    return (
+      <div className="flex justify-center items-center h-full">
+        <LoadingSpinner />
+      </div>
+    );
   if (error) return <div className="text-red-500 text-center">{error}</div>;
   return (
     <div className="py-4">
       <AlarmTable data={alarms} />
+      <AlarmCharts data={alarms} />
     </div>
   );
 };
