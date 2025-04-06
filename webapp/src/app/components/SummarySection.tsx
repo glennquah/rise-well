@@ -25,7 +25,16 @@ export default function SummarySection() {
               icon={<Clock className="h-5 w-5" />}
             />
           </motion.div>
-
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            <CardStats
+              title="Time Taken to Wakeup"
+              value={'8h 30m'}
+              icon={<BarChart2 className="h-5 w-5" />}
+            />
+          </motion.div>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -35,17 +44,6 @@ export default function SummarySection() {
               title="Sleep Duration"
               value={'8h 30m'}
               icon={<Moon className="h-5 w-5" />}
-            />
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
-            <CardStats
-              title="Sleep Quality"
-              value={'85%'}
-              icon={<BarChart2 className="h-5 w-5" />}
             />
           </motion.div>
         </div>
