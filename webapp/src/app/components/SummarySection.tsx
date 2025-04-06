@@ -1,9 +1,44 @@
 'use client';
 import { motion } from 'framer-motion';
 import { BarChart2, Clock, Moon } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import CardStats from './CardStats';
 
 export default function SummarySection() {
+  const [wakeUpTime, setWakeUpTime] = useState<string | null>(null);
+  const [timeToWakeup, setTimeToWakeup] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchWakeUpData = async () => {
+      try {
+        const wakeRes = await fetch('/api/alarm-history/wake-up-time', {
+          credentials: 'include',
+        });
+        const wakeData = await wakeRes.json();
+        setWakeUpTime(wakeData.wakeUpTime);
+
+        const wakeupTimeRes = await fetch('/api/alarm-history/time-to-wakeup', {
+          credentials: 'include',
+        });
+        const wakeupTimeData = await wakeupTimeRes.json();
+        setTimeToWakeup(wakeupTimeData.timeToWake);
+      } catch (error) {
+        console.error('Error fetching summary data:', error);
+      }
+    };
+
+    fetchWakeUpData();
+  }, []);
+
+  const formatTimeToWake = (time: string | null) => {
+    if (!time) return 'N/A';
+    const [hrs, mins] = time.split(':').map(Number);
+    const parts = [];
+    if (hrs > 0) parts.push(`${hrs}h`);
+    if (mins > 0) parts.push(`${mins}m`);
+    return parts.join(' ') || '0m';
+  };
+
   return (
     <section className="py-8">
       <motion.div
@@ -21,7 +56,7 @@ export default function SummarySection() {
           >
             <CardStats
               title="Wake-up Time"
-              value={'14:44'}
+              value={wakeUpTime ?? 'Loading...'}
               icon={<Clock className="h-5 w-5" />}
             />
           </motion.div>
@@ -31,7 +66,7 @@ export default function SummarySection() {
           >
             <CardStats
               title="Time Taken to Wakeup"
-              value={'8h 30m'}
+              value={formatTimeToWake(timeToWakeup)}
               icon={<BarChart2 className="h-5 w-5" />}
             />
           </motion.div>
@@ -42,7 +77,7 @@ export default function SummarySection() {
           >
             <CardStats
               title="Sleep Duration"
-              value={'8h 30m'}
+              value={'8h 30m'} // TODO: Replace with actual API call
               icon={<Moon className="h-5 w-5" />}
             />
           </motion.div>

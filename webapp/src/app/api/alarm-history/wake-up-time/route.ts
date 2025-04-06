@@ -5,7 +5,7 @@ import { getCollection } from '../../../lib/mongodb';
 
 const COLLECTION_NAME = 'alarm-history';
 
-export async function WAKE_UP_TIME() {
+export async function GET() {
   const { userId } = await auth();
   if (!userId) {
     return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
