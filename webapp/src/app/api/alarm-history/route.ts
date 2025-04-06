@@ -46,7 +46,10 @@ export async function GET() {
 
   try {
     const collection = await getCollection(COLLECTION_NAME);
-    const alarms = await collection.find({ userId }).toArray();
+    const alarms = await collection
+      .find({ userId })
+      .sort({ alarmTime: -1 })
+      .toArray();
     return NextResponse.json({ alarms });
   } catch (error) {
     console.error('Error fetching alarm history:', error);
