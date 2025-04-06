@@ -43,12 +43,12 @@ export function ChartLine({
     heartrate: Math.round(item.heartrate),
   }));
 
-  const minDate = new Date(
-    Math.min(...data.map((item) => item.timestamp * 1000)),
-  ).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
-  const maxDate = new Date(
-    Math.max(...data.map((item) => item.timestamp * 1000)),
-  ).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
+  //   const minDate = new Date(
+  //     Math.min(...data.map((item) => item.timestamp * 1000)),
+  //   ).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
+  //   const maxDate = new Date(
+  //     Math.max(...data.map((item) => item.timestamp * 1000)),
+  //   ).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
 
   return (
     <div className="glass-panel rounded-2xl soft-shadow overflow-hidden w-full">

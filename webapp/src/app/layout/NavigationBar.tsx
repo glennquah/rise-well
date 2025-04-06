@@ -69,7 +69,7 @@ const NavigationBar = () => {
           </nav>
           {/* Menu Toggle */}
           <div className="md:hidden">
-            <button onClick={toggleMenu} className="text-3xl text-white">
+            <button onClick={toggleMenu} className="text-3xl text-black">
               {menuOpen ? <AiOutlineClose /> : <BiMenuAltRight />}
             </button>
           </div>
@@ -77,13 +77,13 @@ const NavigationBar = () => {
       </ResponsiveContainer>
       {/* MOBILE NAV */}
       <nav
-        className={`md:hidden fixed inset-0 bg-black-900 bg-opacity-90 backdrop-blur-sm flex flex-col justify-center items-center space-y-6 transform transition-transform duration-300 ${
+        className={`md:hidden fixed inset-0 bg-black bg-opacity-60 bg-white flex flex-col justify-center items-center space-y-6 transform transition-transform duration-300 ${
           menuOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
         <button
           onClick={closeMenu}
-          className="absolute top-4 right-4 text-3xl text-white"
+          className="absolute top-4 right-4 text-3xl text-black"
         >
           <AiOutlineClose />
         </button>
@@ -102,7 +102,7 @@ const NavigationBar = () => {
           Sleep Analytics
         </Link>
         <Link
-          href="/wake-up-analytics"
+          href="/alarm-clock-analytics"
           className="text-xl px-6 py-3 rounded hover:bg-gray-700"
           onClick={closeMenu}
         >
