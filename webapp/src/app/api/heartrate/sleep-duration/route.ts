@@ -25,8 +25,6 @@ export async function GET() {
       return NextResponse.json({ message: 'No alarms found' }, { status: 404 });
     }
 
-    const lastAlarmDate = new Date(latestDateDoc[0].alarmTime);
-    const dateKey = format(lastAlarmDate, 'yyyy-MM-dd');
 
     // const sameDayAlarms = await collection
     //   .find({

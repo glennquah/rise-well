@@ -71,7 +71,6 @@ export function SectionCards({ data }: SectionCardsProps) {
       console.log(`Still in deep sleep at end — duration: ${mins.toFixed(2)} mins`);
     }
   }
-  const deepSleepHours = heartRates.length ? deepSleepMinutes / 60 : NaN;
   console.log('Deep sleep minutes:', deepSleepMinutes);
 
 

@@ -58,7 +58,7 @@ export default function SummarySection() {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.6, delay: 0.2 }}
       >
-        <h2 className="section-title">Today's Summary</h2>
+        <h2 className="section-title">Summary for Today</h2>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 py-2">
           <motion.div
