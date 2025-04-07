@@ -111,7 +111,4 @@ def trigger(alarm, root: tk.Tk, go_back_callback):
 
     def run_game(): 
         shake_game(difficulty)
-
-    
     threading.Thread(target=run_game, daemon=True).start()
-
