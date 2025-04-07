@@ -14,7 +14,7 @@ export async function GET() {
   try {
     const collection = await getCollection(COLLECTION_NAME);
 
-    // Find the most recent alarm for the user (i.e., latest day)
+    // Find the most recent alarm for the user (i.e., latest day).
     const latestDateDoc = await collection
       .find({ userId })
       .sort({ alarmTime: -1 }) // <-- change from 1 to -1 for descending
