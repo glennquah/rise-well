@@ -1,5 +1,5 @@
 import { auth } from '@clerk/nextjs/server';
-import { differenceInMinutes, format } from 'date-fns';
+import { differenceInMinutes } from 'date-fns';
 import { NextResponse } from 'next/server';
 import { getCollection } from '../../../lib/mongodb';
 
@@ -25,7 +25,6 @@ export async function GET() {
       return NextResponse.json({ message: 'No alarms found' }, { status: 404 });
     }
 
-
     // const sameDayAlarms = await collection
     //   .find({
     //     userId,
@@ -42,7 +41,6 @@ export async function GET() {
         heartrate: { $exists: true },
       })
       .toArray();
-
 
     if (!sameDayAlarms.length) {
       return NextResponse.json(
@@ -64,7 +62,6 @@ export async function GET() {
     const lastTime = new Date(last.timestamp * 1000);
 
     const mins = differenceInMinutes(lastTime, firstTime);
-
 
     // const mins = differenceInMinutes(
     //   new Date(last.resolvedTime),
