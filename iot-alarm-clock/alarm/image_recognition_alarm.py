@@ -13,6 +13,7 @@ from apis.api_client import post_alarm_history
 from PIL import Image, ImageTk
 from services.cloudinary_uploader import upload_image_to_cloudinary
 import datetime
+from services.sleep_detection.sleep_detection import checks_if_user_is_awake
 
 BUTTON_PIN = 17
 GPIO.setmode(GPIO.BCM)
@@ -30,6 +31,9 @@ CATEGORIES = {
 }
 OBJECT_LIST = [item for sub in CATEGORIES.values() for item in sub]
 
+
+
+
 def wait_for_button():
     while GPIO.input(BUTTON_PIN) == GPIO.HIGH:
         time.sleep(0.1)
@@ -37,9 +41,42 @@ def wait_for_button():
 def preview_camera():
     return subprocess.Popen(["rpicam-still", "--preview", "0,0,640,480", "--timeout", "0"])
 
-def capture_image(path, preview):
-    preview.terminate()
-    subprocess.run(["rpicam-still", "-o", path, "--width", "640", "--height", "480"])
+def capture_image_with_preview(path):
+    cap = cv2.VideoCapture(0)  # USB webcam usually shows up as /dev/video0
+    if not cap.isOpened():
+        raise RuntimeError("Cannot open USB webcam")
+
+    cv2.namedWindow("Camera Preview", cv2.WINDOW_NORMAL)
+    cv2.resizeWindow("Camera Preview", 640, 480)
+
+    print("Showing preview... Press the button to capture.")
+    captured_frame = None
+
+    while True:
+        ret, frame = cap.read()
+        if not ret:
+            print("Failed to grab frame")
+            break
+
+        cv2.imshow("Camera Preview", frame)
+        if GPIO.input(BUTTON_PIN) == GPIO.LOW:
+            print("Button pressed! Capturing image...")
+            captured_frame = frame
+            break
+
+        if cv2.waitKey(1) & 0xFF == ord('q'):  # Optional escape
+            print("Preview canceled.")
+            break
+
+    cap.release()
+    cv2.destroyAllWindows()
+
+    if captured_frame is not None:
+        cv2.imwrite(path, captured_frame)
+        print(f"Image saved to {path}")
+        return True
+    else:
+        return False
 
 def compute_similarity(img1_path, img2_path):
     img1 = cv2.imread(img1_path, cv2.IMREAD_GRAYSCALE)
@@ -52,45 +89,46 @@ def detect_objects(image_path):
     results = model(image)
     return [model.names[int(obj[5])] for obj in results[0].boxes.data.cpu().numpy()]
 
-def show_reference_popup(img_path, root):
-    popup = tk.Toplevel(root)
-    popup.title("📸 Reference Image")
-    popup.configure(bg="white")
-    popup.geometry("350x300")  # Optional: set a fixed size
+def poll_user_awake_status(root, label, alarm_data, go_back_callback):
+    countdown_seconds = 15  # Set to 300 for 5 minutes in real usage
 
-    img = Image.open(img_path)
-    img = img.resize((320, 240))  # Resize to fit nicely
-    tk_img = ImageTk.PhotoImage(img)
+    def update_countdown(time_left):
+        if time_left > 0:
+            label.config(
+                text=f"⏳ Checking if you're still awake in {time_left} seconds...",
+                fg="blue"
+            )
+            root.update()
+            root.after(1000, update_countdown, time_left - 1)
+        else:
+            check_awake_status()
 
-    label = tk.Label(popup, text="Match this image!", font=("Arial", 14), bg="white")
-    label.pack(pady=5)
+    def check_awake_status():
+        label.config(text="Checking if you're awake using AI...", fg="blue")
+        root.update()
 
-    panel = tk.Label(popup, image=tk_img, bg="white")
-    panel.image = tk_img  # Keep reference to avoid garbage collection
-    panel.pack()
+        if checks_if_user_is_awake():
+            label.config(text="You're awake! Alarm complete.", fg="green")
+            root.update()
+            GPIO.cleanup()
+            root.after(3000, root.quit)  # Quit after 3s
+        else:
+            label.config(text="Still sleepy... Let's play again!", fg="orange")
+            root.update()
+            root.after(2000, lambda: trigger(alarm_data, root, go_back_callback))
 
-    # Keep popup accessible and on top
-    popup.attributes("-topmost", True)
-    popup.lift()
-    popup.focus_force()
+    update_countdown(countdown_seconds)
 
-    return popup  # Let caller manage when to destroy it
 
-def handle_alarm_result(success, mode, ref_path, comp_path, image_path, target_object, start_time, alarm_data, root, go_back_callback, label):
-    refImageUrl = ""
-    imageUrl = ""
+
+def handle_alarm_result(success, mode, refImageUrl, imageUrl, target_object, start_time, alarm_data, root, go_back_callback, label):
+
 
     if success:
         stop_alarm_sound()
         end_time = datetime.datetime.now()
 
-        if mode == "reference":
-            refImageUrl = upload_image_to_cloudinary(ref_path)
-            imageUrl = upload_image_to_cloudinary(comp_path)
-        elif mode == "category":
-            imageUrl = upload_image_to_cloudinary(image_path)
 
-        label.config(text="✅ Alarm passed! Good morning!", fg="green")
 
         payload = {
             "userId": alarm_data.get("userId"),
@@ -104,23 +142,32 @@ def handle_alarm_result(success, mode, ref_path, comp_path, image_path, target_o
             "category": alarm_data["config"].get("category", "")
         }
 
-        print(payload)
         post_alarm_history(payload)
-        tk.Button(root, text="Back", command=go_back_callback, bg="white").pack(pady=10)
-        GPIO.cleanup()
+
+        label.config(text="Alarm passed! Good morning!", fg="green")
+        root.update()
+
+        # After 2 seconds, update message and start countdown
+        def start_awake_check():
+            label.config(text="Now checking if you're awake...", fg="green")
+            root.update()
+            poll_user_awake_status(root, label, alarm_data, go_back_callback)
+
+        root.after(2000, start_awake_check)
+
 
     else:
-        label.config(text="❌ Try again! Press the button when ready.", fg="red")
+        label.config(text="Try again! Press the button when ready.", fg="red")
         tk.Button(
             root,
-            text="🔁 Retry",
+            text="Retry",
             command=lambda: trigger(alarm_data, root, go_back_callback),
             bg="white"
         ).pack(pady=10)
 
         tk.Button(
             root,
-            text="⬅️ Back",
+            text="Back",
             command=go_back_callback,
             bg="white"
         ).pack(pady=5)
@@ -146,22 +193,39 @@ def trigger(alarm_data, root, go_back_callback):
         if mode == "reference":
             label.config(text="Match the reference image. Press the button when ready.")
             ref_path = f"data/references/ref.jpg"
-            print(ref_path)
-            show_reference_popup(ref_path, root)
-            preview = preview_camera()
-            wait_for_button()
+            img = Image.open(ref_path)
+            img = img.resize((320, 240))
+            tk_img = ImageTk.PhotoImage(img)
+
+            image_label = tk.Label(root, image=tk_img, bg="white")
+            image_label.image = tk_img  # Prevent GC
+            image_label.pack(pady=5)
+
+            root.update()  # ✅ Force UI to render before continuing
+
+            refImageUrl = upload_image_to_cloudinary(ref_path)
+
+
             comp_path = f"/tmp/compare.jpg"
-            capture_image(comp_path, preview)
+
+            success = capture_image_with_preview(comp_path)
+
+            image_label.destroy()
+
+
+            if not success:
+                raise RuntimeError("Image capture failed or was cancelled.")
+            
+            imageUrl = upload_image_to_cloudinary(comp_path)
             score = compute_similarity(ref_path, comp_path)
             success = score >= 0.75
 
             handle_alarm_result(
             success=success,
             mode=mode,
-            ref_path=ref_path,
-            comp_path=comp_path,
-            image_path=None,
-            target_object=target_object,
+            refImageUrl = refImageUrl,
+            imageUrl = imageUrl,
+            target_object="",
             start_time=start_time,
             alarm_data=alarm_data,
             root=root,
@@ -183,7 +247,7 @@ def trigger(alarm_data, root, go_back_callback):
 
             # Display instructions first
             label.config(
-                text=f"📸 Show me a '{target_object}' from category '{selected_category}'.\n\nPress the button when ready.",
+                text=f"Show me a '{target_object}' from category '{selected_category}'.\n\nPress the button when ready.",
                 font=("Arial", 14),
                 wraplength=500,
                 justify="center"
@@ -191,12 +255,12 @@ def trigger(alarm_data, root, go_back_callback):
             root.update_idletasks()     # Force GUI to update
             time.sleep(1.0)             # Give user a second to read
 
-            # Now launch the preview and capture
-            preview = preview_camera()
-            wait_for_button()
             image_path = f"/tmp/category.jpg"
-            capture_image(image_path, preview)
-            
+    
+            success = capture_image_with_preview(image_path)
+
+            imageUrl = upload_image_to_cloudinary(image_path)
+
             detected = detect_objects(image_path)
             print("Detected:", detected)
 
@@ -205,9 +269,8 @@ def trigger(alarm_data, root, go_back_callback):
             handle_alarm_result(
             success=success,
             mode=mode,
-            ref_path=None,
-            comp_path=None,
-            image_path=image_path,
+            refImageUrl = "",
+            imageUrl=imageUrl,
             target_object=target_object,
             start_time=start_time,
             alarm_data=alarm_data,
