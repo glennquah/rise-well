@@ -16,6 +16,7 @@ if __name__ == "__main__":
     # Start serial listener in background thread
     serial_thread = threading.Thread(target=serial_heartrate_reader.start_serial_listener, daemon=True)
     serial_thread.start()
+    print("hello")
 
 
     

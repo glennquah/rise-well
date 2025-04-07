@@ -6,7 +6,9 @@ import requests
 # Jordan
 # Hamzah
 # Ophe's WINDOWS Address: http://172.25.107.114:3000/api/alarm-history
-API_ENDPOINT = "http://172.25.108.114:3001"
+
+API_ENDPOINT = "https://rise-well.vercel.app"
+
 
 def post_alarm_history(payload):
     try:

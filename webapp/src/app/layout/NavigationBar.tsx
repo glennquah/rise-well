@@ -3,20 +3,32 @@
 import { SignedIn, UserButton } from '@clerk/nextjs';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { AiOutlineClose } from 'react-icons/ai';
 import { BiMenuAltRight } from 'react-icons/bi';
 import logo from '../../../public/RiseWellLogo.png';
-import ResponsiveContainer from './ResponsiveContainer';
+import ResponsiveContainer from '../components/ResponsiveContainer';
 
 const NavigationBar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 10);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const toggleMenu = () => setMenuOpen((prev) => !prev);
   const closeMenu = () => setMenuOpen(false);
 
   return (
-    <nav className="bg-black text-white sticky top-0 w-full z-50">
+    <nav
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-white/80 backdrop-blur-md shadow-sm' : 'bg-transparent'}`}
+    >
       <ResponsiveContainer>
         <div className="flex justify-between items-center h-16">
           <Link href="/" className="flex flex-row items-center gap-3">
@@ -32,21 +44,21 @@ const NavigationBar = () => {
           <nav className="hidden md:flex space-x-4 items-center">
             <Link
               href="/"
-              className="px-4 py-2 rounded hover:bg-gray-700"
+              className="px-4 py-2 rounded hover:bg-white"
               onClick={closeMenu}
             >
               Home
             </Link>
             <Link
               href="/sleep-analytics"
-              className="px-4 py-2 rounded hover:bg-gray-700"
+              className="px-4 py-2 rounded hover:bg-white"
               onClick={closeMenu}
             >
               Sleep Analytics
             </Link>
             <Link
               href="/alarm-clock-analytics"
-              className="px-4 py-2 rounded hover:bg-gray-700"
+              className="px-4 py-2 rounded hover:bg-white"
               onClick={closeMenu}
             >
               Alarm Clock Analytics
@@ -57,7 +69,7 @@ const NavigationBar = () => {
           </nav>
           {/* Menu Toggle */}
           <div className="md:hidden">
-            <button onClick={toggleMenu} className="text-3xl text-white">
+            <button onClick={toggleMenu} className="text-3xl text-black">
               {menuOpen ? <AiOutlineClose /> : <BiMenuAltRight />}
             </button>
           </div>
@@ -65,13 +77,13 @@ const NavigationBar = () => {
       </ResponsiveContainer>
       {/* MOBILE NAV */}
       <nav
-        className={`md:hidden fixed inset-0 bg-black-900 bg-opacity-90 backdrop-blur-sm flex flex-col justify-center items-center space-y-6 transform transition-transform duration-300 ${
+        className={`md:hidden fixed inset-0 bg-black bg-opacity-60 bg-white flex flex-col justify-center items-center space-y-6 transform transition-transform duration-300 ${
           menuOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
         <button
           onClick={closeMenu}
-          className="absolute top-4 right-4 text-3xl text-white"
+          className="absolute top-4 right-4 text-3xl text-black"
         >
           <AiOutlineClose />
         </button>
@@ -90,7 +102,7 @@ const NavigationBar = () => {
           Sleep Analytics
         </Link>
         <Link
-          href="/wake-up-analytics"
+          href="/alarm-clock-analytics"
           className="text-xl px-6 py-3 rounded hover:bg-gray-700"
           onClick={closeMenu}
         >
