@@ -53,7 +53,7 @@ def start_window(root: tk.Tk):
     )
     guide_label.pack(pady=10)
 
-    userId = "user_2uLEgW40wSAAR9BWMfSDX5cue22"  # FIXME: Change this when needed
+    userId = "user_2uWbVB0Sa5nzCaYSrQjpJ4cU5YY"  # FIXME: Change this when needed
 
     user_id_label = tk.Label(
         content_frame,

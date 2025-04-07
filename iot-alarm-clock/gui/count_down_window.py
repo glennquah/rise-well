@@ -16,7 +16,7 @@ import serial
 import threading
 
 #TODO: Change serial port accordingly (use command: `ls /dev/ttyUSB* /dev/ttyACM* /dev/serial/by-id/` )
-ser = serial.Serial(port='/dev/ttyACM0', baudrate=115200, timeout=1)
+# ser = serial.Serial(port='/dev/ttyACM0', baudrate=115200, timeout=1)
 
 
 def count_down_window(root, alarm_data, go_back_callback):
@@ -93,19 +93,19 @@ def count_down_window(root, alarm_data, go_back_callback):
             sentence = post_speech_sentences(payload)
             speech_alarm.trigger(alarm_data, root, go_back_callback, sentence)
 
-    def listen_for_stop_alarm():
-        while True:
-            if ser.in_waiting > 0: 
-                message = ser.readline().decode('utf-8').strip()
-                parts = message.split(",")
-                if parts[0] == "m1": 
-                    stop_alarm_sound()
-                    ser.write(b"reset\n")
-                    ttk.Button(root, text="Exit", command=go_back_callback).pack(pady=10)
+    # def listen_for_stop_alarm():
+    #     while True:
+    #         if ser.in_waiting > 0: 
+    #             message = ser.readline().decode('utf-8').strip()
+    #             parts = message.split(",")
+    #             if parts[0] == "m1": 
+    #                 stop_alarm_sound()
+    #                 ser.write(b"reset\n")
+    #                 ttk.Button(root, text="Exit", command=go_back_callback).pack(pady=10)
 
-    listener_thread = threading.Thread(target=listen_for_stop_alarm)
-    listener_thread.daemon = True  
-    listener_thread.start()
+    # listener_thread = threading.Thread(target=listen_for_stop_alarm)
+    # listener_thread.daemon = True  
+    # listener_thread.start()
 
     def update_countdown():
         """Update the countdown every second."""
