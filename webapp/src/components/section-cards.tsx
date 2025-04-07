@@ -3,7 +3,7 @@ import { BarChart, Flame, HeartPulse, Snowflake } from 'lucide-react';
 interface SectionCardsProps {
   data: {
     _id: string;
-    timestamp: number;
+    timestamp: number; // should be in milliseconds
     heartrate: number;
   }[];
 }
@@ -22,18 +22,46 @@ export function SectionCards({ data }: SectionCardsProps) {
   const minBPM = heartRates.length ? Math.round(Math.min(...heartRates)) : NaN;
   const maxBPM = heartRates.length ? Math.round(Math.max(...heartRates)) : NaN;
 
-  const mean = heartRates.length
-    ? heartRates.reduce((sum, hr) => sum + hr, 0) / heartRates.length
-    : NaN;
+  // Calculate deep sleep hours
+  const sortedData = [...data]
+    .filter((item) => !isNaN(Number(item.heartrate)))
+    .sort((a, b) => a.timestamp - b.timestamp);
 
-  const variance = heartRates.length
-    ? heartRates.reduce((sum, hr) => sum + Math.pow(hr - mean, 2), 0) /
-      heartRates.length
-    : NaN;
+  const DEEP_SLEEP_THRESHOLD = 60; // heart rate below this means "deep sleep"
+  const MIN_DEEP_SLEEP_DURATION = 5 * 60 * 1000; // 5 minutes in ms
 
-  const stdDeviation = heartRates.length
-    ? Math.round(Math.sqrt(variance))
-    : NaN;
+  let deepSleepMinutes = 0;
+  let inDeepSleep = false;
+  let startTimestamp = 0;
+
+  for (let i = 0; i < sortedData.length; i++) {
+    const { heartrate, timestamp } = sortedData[i];
+    const hr = Number(heartrate);
+
+    if (hr < DEEP_SLEEP_THRESHOLD) {
+      if (!inDeepSleep) {
+        inDeepSleep = true;
+        startTimestamp = timestamp;
+      }
+    } else if (inDeepSleep) {
+      const duration = timestamp - startTimestamp;
+      if (duration >= MIN_DEEP_SLEEP_DURATION) {
+        deepSleepMinutes += duration / 1000 / 60;
+      }
+      inDeepSleep = false;
+    }
+  }
+
+  // Handle case where we ended still in deep sleep
+  if (inDeepSleep && sortedData.length > 0) {
+    const duration =
+      sortedData[sortedData.length - 1].timestamp - startTimestamp;
+    if (duration >= MIN_DEEP_SLEEP_DURATION) {
+      deepSleepMinutes += duration / 1000 / 60;
+    }
+  }
+
+  const deepSleepHours = heartRates.length ? deepSleepMinutes / 60 : NaN;
 
   const stats = [
     {
@@ -52,8 +80,10 @@ export function SectionCards({ data }: SectionCardsProps) {
       icon: <Snowflake className="w-6 h-6 text-gray-500" />,
     },
     {
-      label: 'Standard Deviation',
-      value: stdDeviation,
+      label: 'Hours in Deep Sleep',
+      value: !isNaN(deepSleepHours)
+        ? Math.round(deepSleepHours * 10) / 10
+        : NaN,
       icon: <BarChart className="w-6 h-6 text-gray-500" />,
     },
   ];

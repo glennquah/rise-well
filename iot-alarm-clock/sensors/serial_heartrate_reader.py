@@ -9,10 +9,10 @@ import sys
 
 # MongoDB Setup
 # MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017/")
-MONGO_URI = os.getenv("MONGO_URI", "mongodb://192.168.137.1:27017/")
+MONGO_URI = os.getenv("MONGO_URI", "mongodb://172.25.100.179:27017/")
 
 DB_NAME = os.getenv("MONGO_DB", "rise-well")
-COLLECTION_NAME = os.getenv("MONGO_COLLECTION", "heartrate")
+COLLECTION_NAME = os.getenv("MONGO_COLLECTION", "alarm-history")#heartrate
 
 client = pymongo.MongoClient(MONGO_URI)
 db = client[DB_NAME]
