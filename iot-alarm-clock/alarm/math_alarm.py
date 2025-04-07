@@ -7,6 +7,35 @@ from services.sleep_detection.sleep_detection import checks_if_user_is_awake
 from utils import play_alarm_sound, stop_alarm_sound
 from apis.api_client import post_alarm_history
 
+def poll_user_awake_status(root, result_label, alarm, go_back_callback):
+    countdown_seconds = 15  # Set to 300 for production
+
+    def update_countdown(time_left):
+        if time_left > 0:
+            result_label.config(
+                text=f"⏳ Checking if you're still awake in {time_left} seconds...",
+                fg="blue"
+            )
+            root.update()
+            root.after(1000, update_countdown, time_left - 1)
+        else:
+            check_awake_status()
+
+    def check_awake_status():
+        result_label.config(text="Checking if you're awake using AI...", fg="blue")
+        root.update()
+
+        if checks_if_user_is_awake():
+            result_label.config(text="You're awake! Alarm complete.", fg="green")
+            root.update()
+            root.after(3000, root.quit)
+        else:
+            result_label.config(text="Still sleepy... Let's retry!", fg="orange")
+            root.update()
+            root.after(2000, lambda: trigger(alarm, root, go_back_callback, sentence))
+
+    update_countdown(countdown_seconds)
+
 
 def trigger(alarm, root, go_back_callback):
     root.configure(bg="white")
@@ -193,7 +222,12 @@ def trigger(alarm, root, go_back_callback):
             "numberOfQuestions": num_questions,
         }
         post_alarm_history(payload)
-        checks_if_user_is_awake()
+        def start_awake_check():
+            result_label.config(text="Now checking if you're awake...", fg="green")
+            root.update()
+            poll_user_awake_status(root, result_label, alarm, go_back_callback)
+
+        root.after(2000, start_awake_check)
 
     next_question()
 
