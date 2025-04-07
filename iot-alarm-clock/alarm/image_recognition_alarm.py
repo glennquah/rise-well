@@ -42,7 +42,7 @@ def preview_camera():
     return subprocess.Popen(["rpicam-still", "--preview", "0,0,640,480", "--timeout", "0"])
 
 def capture_image_with_preview(path):
-    cap = cv2.VideoCapture(0)  # USB webcam usually shows up as /dev/video0
+    cap = cv2.VideoCapture(2)  # USB webcam usually shows up as /dev/video0
     if not cap.isOpened():
         raise RuntimeError("Cannot open USB webcam")
 
