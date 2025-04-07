@@ -24,11 +24,18 @@ export function SectionCards({ data }: SectionCardsProps) {
 
   // Calculate deep sleep hours
   const sortedData = [...data]
-    .filter((item) => !isNaN(Number(item.heartrate)))
-    .sort((a, b) => a.timestamp - b.timestamp);
+  .filter((item) => !isNaN(Number(item.heartrate)))
+  .map((item) => ({
+    ...item,
+    // Convert seconds to milliseconds
+    timestamp: item.timestamp * 1000,
+  }))
+  .sort((a, b) => a.timestamp - b.timestamp);
 
-  const DEEP_SLEEP_THRESHOLD = 60; // heart rate below this means "deep sleep"
-  const MIN_DEEP_SLEEP_DURATION = 5 * 60 * 1000; // 5 minutes in ms
+    
+
+  const DEEP_SLEEP_THRESHOLD = 100; // heart rate below this means "deep sleep"
+  const MIN_DEEP_SLEEP_DURATION = 0;
 
   let deepSleepMinutes = 0;
   let inDeepSleep = false;
@@ -42,11 +49,14 @@ export function SectionCards({ data }: SectionCardsProps) {
       if (!inDeepSleep) {
         inDeepSleep = true;
         startTimestamp = timestamp;
+        console.log(`Entering deep sleep at ${new Date(timestamp).toISOString()} with HR ${hr}`);
       }
     } else if (inDeepSleep) {
       const duration = timestamp - startTimestamp;
       if (duration >= MIN_DEEP_SLEEP_DURATION) {
-        deepSleepMinutes += duration / 1000 / 60;
+        const mins = duration / 1000 / 60; // ✅ Convert ms to minutes
+        deepSleepMinutes += mins;
+        console.log(`Exiting deep sleep at ${new Date(timestamp).toISOString()} — duration: ${mins.toFixed(2)} mins`);
       }
       inDeepSleep = false;
     }
@@ -54,14 +64,16 @@ export function SectionCards({ data }: SectionCardsProps) {
 
   // Handle case where we ended still in deep sleep
   if (inDeepSleep && sortedData.length > 0) {
-    const duration =
-      sortedData[sortedData.length - 1].timestamp - startTimestamp;
+    const duration = sortedData[sortedData.length - 1].timestamp - startTimestamp;
     if (duration >= MIN_DEEP_SLEEP_DURATION) {
-      deepSleepMinutes += duration / 1000 / 60;
+      const mins = duration / 1000 / 60;
+      deepSleepMinutes += mins;
+      console.log(`Still in deep sleep at end — duration: ${mins.toFixed(2)} mins`);
     }
   }
-
   const deepSleepHours = heartRates.length ? deepSleepMinutes / 60 : NaN;
+  console.log('Deep sleep minutes:', deepSleepMinutes);
+
 
   const stats = [
     {
@@ -80,12 +92,21 @@ export function SectionCards({ data }: SectionCardsProps) {
       icon: <Snowflake className="w-6 h-6 text-gray-500" />,
     },
     {
-      label: 'Hours in Deep Sleep',
-      value: !isNaN(deepSleepHours)
-        ? Math.round(deepSleepHours * 10) / 10
-        : NaN,
+      label: 'Deep Sleep',
+      value: !isNaN(deepSleepMinutes)
+        ? `${Math.round(deepSleepMinutes)} min`
+        : 'N/A',
       icon: <BarChart className="w-6 h-6 text-gray-500" />,
     },
+    
+    // {
+    //   label: 'Hours in Deep Sleep',
+    //   value: !isNaN(deepSleepHours)
+    //     ? Math.round(deepSleepHours * 10) / 10
+    //     : NaN,
+    //   icon: <BarChart className="w-6 h-6 text-gray-500" />,
+    // },
+
   ];
 
   return (
@@ -103,7 +124,7 @@ export function SectionCards({ data }: SectionCardsProps) {
               {stat.icon}
             </div>
             <div className="py-4 h-full w-full flex justify-center items-center text-4xl font-semibold">
-              {isNaN(stat.value) ? 'N/A' : stat.value}
+            {typeof stat.value === 'number' && isNaN(stat.value) ? 'N/A' : stat.value}
             </div>
           </div>
         </div>

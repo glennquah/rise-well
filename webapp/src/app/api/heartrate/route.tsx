@@ -9,16 +9,24 @@ export async function GET() {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
 
-  const heartrateCollection = await getCollection("heartrate");
+  const heartrateCollection = await getCollection("alarm-history");
   const heartRates = await heartrateCollection.find({}).toArray();
 
-  const plainHeartRates = heartRates.map((item) => ({
+  const filteredHeartRates = heartRates
+  .filter((item) => item.heartrate !== undefined && item.heartrate !== null)
+  .map((item) => ({
     _id: item._id.toString(),
     timestamp: item.timestamp,
     heartrate: item.heartrate,
   }));
 
-  return new Response(JSON.stringify(plainHeartRates), {
+  // const plainHeartRates = heartRates.map((item) => ({
+  //   _id: item._id.toString(),
+  //   timestamp: item.timestamp,
+  //   heartrate: item.heartrate,
+  // }));
+
+  return new Response(JSON.stringify(filteredHeartRates), {
     status: 200,
     headers: { "Content-Type": "application/json" },
   });
