@@ -13,7 +13,7 @@ export async function GET() {
 
   try {
     const collection = await getCollection(COLLECTION_NAME);
-    
+
     // Find the most recent alarm for the user (i.e., latest day)
     const latestDateDoc = await collection
       .find({ userId })
@@ -28,15 +28,23 @@ export async function GET() {
     const lastAlarmDate = new Date(latestDateDoc[0].alarmTime);
     const dateKey = format(lastAlarmDate, 'yyyy-MM-dd');
 
+    // const sameDayAlarms = await collection
+    //   .find({
+    //     userId,
+    //     alarmTime: {
+    //       $gte: new Date(`${dateKey}T00:00:00.000Z`),
+    //       $lte: new Date(`${dateKey}T23:59:59.999Z`),
+    //     },
+    //   })
+    //   .toArray();
+
     const sameDayAlarms = await collection
       .find({
-        userId,
-        alarmTime: {
-          $gte: new Date(`${dateKey}T00:00:00.000Z`),
-          $lte: new Date(`${dateKey}T23:59:59.999Z`),
-        },
+
+        heartrate: { $exists: true },
       })
       .toArray();
+
 
     if (!sameDayAlarms.length) {
       return NextResponse.json(
@@ -46,19 +54,24 @@ export async function GET() {
     }
 
     const first = sameDayAlarms.reduce(
-      (min, r) => (new Date(r.alarmTime) < new Date(min.alarmTime) ? r : min),
+      (min, r) => (r.timestamp < min.timestamp ? r : min),
       sameDayAlarms[0],
     );
     const last = sameDayAlarms.reduce(
-      (max, r) =>
-        new Date(r.resolvedTime) > new Date(max.resolvedTime) ? r : max,
+      (max, r) => (r.timestamp > max.timestamp ? r : max),
       sameDayAlarms[0],
     );
 
-    const mins = differenceInMinutes(
-      new Date(last.resolvedTime),
-      new Date(first.alarmTime),
-    );
+    const firstTime = new Date(first.timestamp * 1000);
+    const lastTime = new Date(last.timestamp * 1000);
+
+    const mins = differenceInMinutes(lastTime, firstTime);
+
+
+    // const mins = differenceInMinutes(
+    //   new Date(last.resolvedTime),
+    //   new Date(first.alarmTime),
+    // );
 
     const hours = Math.floor(mins / 60);
     const minutes = mins % 60;
