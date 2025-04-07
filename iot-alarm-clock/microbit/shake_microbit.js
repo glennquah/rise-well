@@ -24,36 +24,16 @@ bluetooth.onUartDataReceived(serial.delimiters(Delimiters.NewLine), function () 
 
     if (incomingMessage === "Easy") {
         difficulty = "Easy";
-        // bluetooth.uartWriteString("Easy level start!\n");
     }
     if (incomingMessage === "Medium") {
         difficulty = "Medium";
-        // bluetooth.uartWriteString("Medium level start!\n");
     }
     if (incomingMessage === "Hard") {
         difficulty = "Hard";
-        // bluetooth.uartWriteString("Hard level start!\n");
     }
     selectedThreshold = shakeThresholds.find(threshold => threshold.type === difficulty).code;
     shakeCount = selectedThreshold;
 });
-
-
-// bluetooth.onUartDataReceived(serial.delimiters(Delimiters.NewLine), function () {
-//     let incomingMessage = bluetooth.uartReadUntil(serial.delimiters(Delimiters.NewLine));
-//     incomingMessage = incomingMessage.substr(0, incomingMessage.length - 1)
-//     basic.showString(incomingMessage)
-//     if (incomingMessage === "Easy") {
-//         difficulty = "Easy";
-//         bluetooth.uartWriteString("Easy level selected\n");
-//     } else if (incomingMessage === "Medium") {
-//         difficulty = "Medium";
-//         bluetooth.uartWriteString("Medium level selected\n");
-//     } else if (incomingMessage === "Hard") {
-//         difficulty = "Hard";
-//         bluetooth.uartWriteString("Hard level selected\n");
-//     }
-// });
 
 input.onGesture(Gesture.Shake, function () {
     if (gameOver) {
@@ -61,12 +41,10 @@ input.onGesture(Gesture.Shake, function () {
     };
 
     selectedThreshold--;
-    // bluetooth.uartWriteString(shakeCount.toString());
     basic.showNumber(selectedThreshold);
 
     if (selectedThreshold === 0) {
         gameOver = true;
-        // bluetooth.uartWriteString("Game Over\n");
         bluetooth.uartWriteString(shakeCount.toString());
         basic.showString("END");
     }
