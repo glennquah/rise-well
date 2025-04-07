@@ -18,6 +18,7 @@ export async function GET() {
     _id: item._id.toString(),
     timestamp: item.timestamp,
     heartrate: item.heartrate,
+    userId: item.userId,
   }));
 
   // const plainHeartRates = heartRates.map((item) => ({

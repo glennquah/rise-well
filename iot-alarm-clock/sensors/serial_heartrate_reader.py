@@ -21,10 +21,11 @@ collection = db[COLLECTION_NAME]
 def upload_to_mongo(data):
     data_encapsulated = {
         "timestamp": time.time(),
-        "heartrate": data
+        "heartrate": data,
+        "userId": "user_2uLEgW40wSAAR9BWMfSDX5cue22",
     }
     collection.insert_one(data_encapsulated)
-    print(f"Value {data} added to MongoDB")
+    print(f"Value {data_encapsulated} added to MongoDB")
 
 def get_serial_ports():
     system_os = platform.system()
@@ -45,7 +46,8 @@ def get_serial_ports():
     return None
 
 def start_serial_listener():
-    SERIAL_PORT = get_serial_ports()
+    # SERIAL_PORT = get_serial_ports()
+    SERIAL_PORT = "/dev/ttyACM0"
     if not SERIAL_PORT:
         print("No serial ports found. Check your connection.")
         return

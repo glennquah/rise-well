@@ -40,7 +40,7 @@ export async function GET() {
 
     const sameDayAlarms = await collection
       .find({
-
+        userId,
         heartrate: { $exists: true },
       })
       .toArray();
