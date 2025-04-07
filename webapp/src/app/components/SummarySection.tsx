@@ -7,6 +7,7 @@ import CardStats from './CardStats';
 export default function SummarySection() {
   const [wakeUpTime, setWakeUpTime] = useState<string | null>(null);
   const [timeToWakeup, setTimeToWakeup] = useState<string | null>(null);
+  const [sleepDuration, setSleepDuration] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchWakeUpData = async () => {
@@ -22,6 +23,17 @@ export default function SummarySection() {
         });
         const wakeupTimeData = await wakeupTimeRes.json();
         setTimeToWakeup(wakeupTimeData.timeToWake);
+
+        //sleep duration
+        const sleepDurationRes = await fetch(
+          '/api/heartrate/sleep-duration',
+          {
+            credentials: 'include',
+          },
+        );
+        const sleepDurationData = await sleepDurationRes.json();
+        setSleepDuration(sleepDurationData.sleepDuration);
+
       } catch (error) {
         console.error('Error fetching summary data:', error);
       }
@@ -46,7 +58,7 @@ export default function SummarySection() {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.6, delay: 0.2 }}
       >
-        <h2 className="section-title">Todays Summary</h2>
+        <h2 className="section-title">Today's Summary</h2>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 py-2">
           <motion.div
@@ -77,7 +89,9 @@ export default function SummarySection() {
           >
             <CardStats
               title="Sleep Duration"
-              value={'8h 30m'} // TODO: Replace with actual API call
+              //value={'8h 30m'} // TODO: Replace with actual API call
+              ///value={sleepDuration ?? 'Loading...'}
+              value={formatTimeToWake(sleepDuration)}
               icon={<Moon className="h-5 w-5" />}
             />
           </motion.div>
