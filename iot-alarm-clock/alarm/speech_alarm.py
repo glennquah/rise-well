@@ -3,6 +3,9 @@ import tkinter as tk
 from tkinter import ttk
 import datetime
 import re
+import threading
+import time
+from services.sleep_detection.sleep_detection import checks_if_user_is_awake
 from difflib import SequenceMatcher
 from utils import play_alarm_sound, stop_alarm_sound
 from apis.api_client import post_alarm_history
@@ -200,13 +203,6 @@ def trigger(alarm, root, go_back_callback, sentence):
             font=("Arial", 24),
         ).pack(pady=10)
 
-        ttk.Button(
-            root,
-            text="Back",
-            command=go_back_callback,
-            style="Big.TButton",
-        ).pack(pady=20)
-
         payload = {
             "userId": alarm.get("userId"),
             "alarmType": "Speech",
@@ -218,6 +214,7 @@ def trigger(alarm, root, go_back_callback, sentence):
             "givenWords": sentence["sentence"],
         }
         post_alarm_history(payload)
+
 
         def start_awake_check():
             result_label.config(text="Now checking if you're awake...", fg="green")
