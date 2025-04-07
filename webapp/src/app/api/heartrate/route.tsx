@@ -9,7 +9,7 @@ export async function GET() {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
 
-  const heartrateCollection = await getCollection("alarm-history");
+  const heartrateCollection = await getCollection("heartrate");
   const heartRates = await heartrateCollection.find({}).toArray();
 
   const filteredHeartRates = heartRates

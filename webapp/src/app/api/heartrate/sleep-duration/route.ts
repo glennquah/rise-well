@@ -3,7 +3,7 @@ import { differenceInMinutes, format } from 'date-fns';
 import { NextResponse } from 'next/server';
 import { getCollection } from '../../../lib/mongodb';
 
-const COLLECTION_NAME = 'alarm-history';
+const COLLECTION_NAME = 'heartrate';
 
 export async function GET() {
   const { userId } = await auth();
