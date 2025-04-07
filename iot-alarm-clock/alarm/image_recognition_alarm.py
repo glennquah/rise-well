@@ -89,13 +89,13 @@ def detect_objects(image_path):
     results = model(image)
     return [model.names[int(obj[5])] for obj in results[0].boxes.data.cpu().numpy()]
 
-def poll_user_awake_status(root, label, alarm_data, go_back_callback):
-    countdown_seconds = 15  # Set to 300 for 5 minutes in real usage
+def poll_user_awake_status(root, result_label, alarm, go_back_callback):
+    countdown_seconds = 15  # Set to 300 for production
 
     def update_countdown(time_left):
         if time_left > 0:
-            label.config(
-                text=f"⏳ Checking if you're still awake in {time_left} seconds...",
+            result_label.config(
+                text=f"⏳ Alarm retriggering detection ends in {time_left} seconds...",
                 fg="blue"
             )
             root.update()
@@ -104,18 +104,17 @@ def poll_user_awake_status(root, label, alarm_data, go_back_callback):
             check_awake_status()
 
     def check_awake_status():
-        label.config(text="Checking if you're awake using AI...", fg="blue")
+        result_label.config(text="Checking if you're awake using AI...", fg="blue")
         root.update()
 
         if checks_if_user_is_awake():
-            label.config(text="You're awake! Alarm complete.", fg="green")
+            result_label.config(text="You're awake! Alarm complete.", fg="green")
             root.update()
-            GPIO.cleanup()
-            root.after(3000, root.quit)  # Quit after 3s
+            root.after(3000, go_back_callback)
         else:
-            label.config(text="Still sleepy... Let's play again!", fg="orange")
+            result_label.config(text="Still sleepy... Let's retry!", fg="orange")
             root.update()
-            root.after(2000, lambda: trigger(alarm_data, root, go_back_callback))
+            root.after(2000, lambda: trigger(alarm, root, go_back_callback))
 
     update_countdown(countdown_seconds)
 
@@ -218,7 +217,9 @@ def trigger(alarm_data, root, go_back_callback):
             
             imageUrl = upload_image_to_cloudinary(comp_path)
             score = compute_similarity(ref_path, comp_path)
-            success = score >= 0.75
+            print("score: " + str(score))
+            success = score >= 0.50
+            
 
             handle_alarm_result(
             success=success,
