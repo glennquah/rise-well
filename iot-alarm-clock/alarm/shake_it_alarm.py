@@ -20,7 +20,7 @@ def poll_user_awake_status(root, result_label, alarm, go_back_callback):
     def update_countdown(time_left):
         if time_left > 0:
             result_label.config(
-                text=f"⏳ Checking if you're still awake in {time_left} seconds...",
+                text=f"Checking if you're still awake in {time_left} seconds...",
                 fg="blue"
             )
             root.update()

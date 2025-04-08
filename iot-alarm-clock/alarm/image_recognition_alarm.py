@@ -95,7 +95,7 @@ def poll_user_awake_status(root, result_label, alarm, go_back_callback):
     def update_countdown(time_left):
         if time_left > 0:
             result_label.config(
-                text=f"⏳ Alarm retriggering detection ends in {time_left} seconds...",
+                text=f"Alarm retriggering detection ends in {time_left} seconds...",
                 fg="blue"
             )
             root.update()
@@ -174,6 +174,7 @@ def handle_alarm_result(success, mode, refImageUrl, imageUrl, target_object, sta
 
 def trigger(alarm_data, root, go_back_callback):
     root.configure(bg="white")
+    root.attributes("-fullscreen", True)  # Make full screen
     for widget in root.winfo_children():
         widget.destroy()
 

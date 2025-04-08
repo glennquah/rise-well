@@ -152,7 +152,7 @@ def add_alarm_window(root: tk.Tk, userId):
         elif alarm_type.get() == "Speech":
             speech_window(root, alarm_data, go_back)
         elif alarm_type.get() == "Image Recognition":
-            image_recognition_window(root, alarm_data, lambda: go_back(root, userId))
+            image_recognition_window(root, alarm_data)
         elif alarm_type.get() == "Nothing":
             count_down_window(root, alarm_data, go_back)
         else:
