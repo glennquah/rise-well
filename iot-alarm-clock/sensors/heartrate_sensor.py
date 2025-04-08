@@ -12,7 +12,7 @@ import sys
 # =============================================
 
 # MongoDB configuration
-MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017/")#"mongodb://localhost:27017/"
+MONGO_URI = os.getenv("MONGO_URI", "mongodb+srv://glennquah:rise-well@rise-well-prod-db.jyjhxad.mongodb.net/?retryWrites=true&w=majority&appName=rise-well-prod-db")
 DB_NAME = os.getenv("MONGO_DB", "rise-well")#"mqtt_data"
 COLLECTION_NAME = os.getenv("MONGO_COLLECTION", "heartrate")#"heartrate"
 
