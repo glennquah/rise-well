@@ -63,48 +63,48 @@ const renderAlarmDetailsContent = (alarm: FullAlarmHistoryDto) => {
           </p>
         </div>
       );
-    
-      case 'Image Recognition':
-        return (
-          <div className="space-y-2">
+
+    case 'Image Recognition':
+      return (
+        <div className="space-y-2">
+          <p>
+            <strong>Mode:</strong> {alarm.mode}
+          </p>
+
+          {alarm.mode === 'category' && (
             <p>
-              <strong>Mode:</strong> {alarm.mode}
+              <strong>Target Object:</strong> {alarm.target_object ?? 'N/A'}
             </p>
-      
-            {alarm.mode === 'category' && (
-              <p>
-                <strong>Target Object:</strong> {alarm.target_object ?? 'N/A'}
+          )}
+
+          {alarm.mode === 'reference' && alarm.refImageUrl && (
+            <div>
+              <p className="mb-1">
+                <strong>Reference Image:</strong>
               </p>
-            )}
-      
-            {alarm.mode === 'reference' && alarm.refImageUrl && (
-              <div>
-                <p className="mb-1">
-                  <strong>Reference Image:</strong>
-                </p>
-                <img
-                  src={alarm.refImageUrl}
-                  alt="Reference"
-                  className="max-w-xs max-h-60 object-contain border rounded shadow"
-                />
-              </div>
-            )}
-      
-            {alarm.imageUrl && (
-              <div>
-                <p className="mb-1">
-                  <strong>Captured Image:</strong>
-                </p>
-                <img
-                  src={alarm.imageUrl}
-                  alt="Captured"
-                  className="max-w-xs max-h-60 object-contain border rounded shadow"
-                />
-              </div>
-            )}
-          </div>
-        );
-      }
+              <img
+                src={alarm.refImageUrl}
+                alt="Reference"
+                className="max-w-xs max-h-60 object-contain border rounded shadow"
+              />
+            </div>
+          )}
+
+          {alarm.imageUrl && (
+            <div>
+              <p className="mb-1">
+                <strong>Captured Image:</strong>
+              </p>
+              <img
+                src={alarm.imageUrl}
+                alt="Captured"
+                className="max-w-xs max-h-60 object-contain border rounded shadow"
+              />
+            </div>
+          )}
+        </div>
+      );
+  }
 };
 
 interface AlarmTableProps {
@@ -177,10 +177,20 @@ const AlarmTable = ({ data }: AlarmTableProps) => {
                   <React.Fragment key={alarm._id}>
                     <TableRow className="hover:bg-blue-50/50 transition-colors">
                       <TableCell className="font-medium">
-                        {triggered.toLocaleDateString()}
+                        {triggered.toLocaleDateString('en-SG', {
+                          timeZone: 'Asia/Singapore',
+                        })}
                       </TableCell>
-                      <TableCell>{triggered.toLocaleTimeString()}</TableCell>
-                      <TableCell>{deactivated.toLocaleTimeString()}</TableCell>
+                      <TableCell>
+                        {triggered.toLocaleTimeString('en-SG', {
+                          timeZone: 'Asia/Singapore',
+                        })}
+                      </TableCell>
+                      <TableCell>
+                        {deactivated.toLocaleTimeString('en-SG', {
+                          timeZone: 'Asia/Singapore',
+                        })}
+                      </TableCell>
                       <TableCell>
                         {formatTimeDifference(triggered, deactivated)}
                       </TableCell>
