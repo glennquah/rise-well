@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 import datetime
 import alarm.math_alarm as math_alarm
-from alarm.image_recognition_alarm import trigger as image_trigger
+import alarm.image_recognition_alarm as image_recognition_alarm
 from apis.api_client import post_alarm_history
 import time
 import alarm.speech_alarm as speech_alarm
@@ -77,11 +77,14 @@ def count_down_window(root, alarm_data, go_back_callback):
         }
         post_alarm_history(payload)
 
+
         # Route to the corresponding alarm type after triggering
         if alarm_data["type"] == "Math":
             math_alarm.trigger(alarm_data, root, go_back_callback)
         elif alarm_data["type"] == "Shake It":
             shake_it_alarm.trigger(alarm_data, root, go_back_callback)
+        elif alarm_data["type"] == "Image Recognition":
+            image_recognition_alarm.trigger(alarm_data, root, go_back_callback)
         elif alarm_data["type"] == "Nothing":
             post_alarm_history(payload)
         elif alarm_data["type"] == "Speech":

@@ -14,7 +14,7 @@ def poll_user_awake_status(root, result_label, alarm, go_back_callback):
     def update_countdown(time_left):
         if time_left > 0:
             result_label.config(
-                text=f"⏳ Checking if you're still awake in {time_left} seconds...",
+                text=f"⏳ Alarm retriggering detection ends in {time_left} seconds...",
                 fg="blue"
             )
             root.update()
@@ -29,11 +29,11 @@ def poll_user_awake_status(root, result_label, alarm, go_back_callback):
         if checks_if_user_is_awake():
             result_label.config(text="You're awake! Alarm complete.", fg="green")
             root.update()
-            root.after(3000, root.quit)
+            root.after(3000, go_back_callback)
         else:
             result_label.config(text="Still sleepy... Let's retry!", fg="orange")
             root.update()
-            root.after(2000, lambda: trigger(alarm, root, go_back_callback, sentence))
+            root.after(2000, lambda: trigger(alarm, root, go_back_callback))
 
     update_countdown(countdown_seconds)
 

@@ -23,7 +23,7 @@ CATEGORIES = {
 CATEGORY_OPTIONS = list(CATEGORIES.keys())
 
 def preview_camera_and_capture(image_path):
-    cap = cv2.VideoCapture(0)  # /dev/video0
+    cap = cv2.VideoCapture(2)  # /dev/video0
     if not cap.isOpened():
         raise RuntimeError("Cannot open webcam")
 
