@@ -1,22 +1,48 @@
 import tkinter as tk
 from tkinter import ttk
+from bluetooth import ble
+from bleuartlib import BleUartDevice
 import time
 import datetime
 import threading
-
-from services.sleep_detection.sleep_detection import checks_if_user_is_awake
 from utils import stop_alarm_sound
 from apis.api_client import post_alarm_history
-import serial  
-
+from services.sleep_detection.sleep_detection import checks_if_user_is_awake
 
 stop_flag = False 
 start_time = datetime.datetime.now()
 total_score = 0
 message = ''
 
-#TODO: Change serial port accordingly (use command: `ls /dev/ttyUSB* /dev/ttyACM* /dev/serial/by-id/` )
-ser = serial.Serial(port='/dev/ttyACM0', baudrate=115200, timeout=1)
+def poll_user_awake_status(root, result_label, alarm, go_back_callback):
+    countdown_seconds = 15  # Set to 300 for production
+
+    def update_countdown(time_left):
+        if time_left > 0:
+            result_label.config(
+                text=f"⏳ Checking if you're still awake in {time_left} seconds...",
+                fg="blue"
+            )
+            root.update()
+            root.after(1000, update_countdown, time_left - 1)
+        else:
+            check_awake_status()
+
+    def check_awake_status():
+        result_label.config(text="Checking if you're awake using AI...", fg="blue")
+        root.update()
+
+        if checks_if_user_is_awake():
+            result_label.config(text="You're awake! Alarm complete.", fg="green")
+            root.update()
+            root.after(3000, root.quit)
+        else:
+            result_label.config(text="Still sleepy... Let's retry!", fg="orange")
+            root.update()
+            root.after(2000, lambda: trigger(alarm, root, go_back_callback, sentence))
+
+    update_countdown(countdown_seconds)
+
 
 def trigger(alarm, root: tk.Tk, go_back_callback): 
     root.configure(bg="white")
@@ -26,7 +52,6 @@ def trigger(alarm, root: tk.Tk, go_back_callback):
 
     config = alarm.get("config", {})
     difficulty = config.get("difficulty", "Easy")
-    print(f"difficulty: {difficulty}")
 
     display_label = tk.Label(root, text="", font=("Arial", 14), bg="white")
     display_label.pack(pady=10)
@@ -40,13 +65,12 @@ def trigger(alarm, root: tk.Tk, go_back_callback):
             global message
             end_time = datetime.datetime.now()
             time_taken = end_time - start_time
-            print("ending")
+            print(f"updating{total_score}")
             message = "\n".join([
                 "Challenge completed!",
                 f"Shake it count: {total_score}",
                 f"Time taken: {str(time_taken).split('.')[0]}"
             ])
-            display_label.after(0, lambda: display_label.config(text=message))
             stop_alarm_sound()
             payload = {
                 "userId": alarm.get("userId"),
@@ -56,31 +80,22 @@ def trigger(alarm, root: tk.Tk, go_back_callback):
                 "resolvedTime": end_time.isoformat(),
                 "shakeCount": total_score,
             }
+            
             post_alarm_history(payload)
             stop_flag = True
+            def start_awake_check():
+                display_label.config(text="Now checking if you're awake...", fg="green")
+                root.update()
+                poll_user_awake_status(root, display_label, alarm, go_back_callback)
 
-            def post_challenge_check():
-                time.sleep(10)  # Wait 10 seconds before re-checking
-                print("Checking if user is still awake...")
-                if checks_if_user_is_awake():
-                    print("User is awake!")
-                    back_button = tk.Button(root, text="Back", command=go_back_callback, bg="white")
-                    back_button.pack(pady=10)
-                else:
-                    display_label.after(0, lambda: display_label.config(text="Still Asleep! Restarting challenge..."))
-                    time.sleep(2)
-                    trigger(alarm, root, go_back_callback)
-
-            threading.Thread(target=post_challenge_check, daemon=True).start()
+            root.after(2000, start_awake_check)
 
         try:
             cleaned_data = data.strip().replace('\x00', '')
-            print(f"data:{cleaned_data} ")
-            if cleaned_data != 'm2':
-                print(f"shake count: {cleaned_data}")
-                score = int(cleaned_data)
-                total_score = score
-                update_display()
+            score = int(cleaned_data)
+            print(f"score:{score} ")
+            total_score = score
+            update_display()
         except Exception as e:
             print(f"Error: {e}")
 
@@ -88,27 +103,53 @@ def trigger(alarm, root: tk.Tk, go_back_callback):
         global stop_flag
         global start_time
         stop_flag = False 
-        print(f"Shake it level: {difficulty}\n Initiating shake...")
-        
+        display_label.config(text=f"Shake it level: {difficulty}\n Initiating shake...")
+
         try:
-            ser.write(difficulty.encode() + b"\n")
-            
-            display_label.config(text="Start shaking!")
-            start_time = datetime.datetime.now()
+            bleUartDevice1 = None
+            found_microbit = False
 
-            while not stop_flag:
-                print("hello")
-                if ser.in_waiting > 0:
-                    print("received data")
-                    data = ser.readline().decode().strip()
-                    if data:
-                        uart_callback(data)
-                time.sleep(0.1)
+            service = ble.DiscoveryService()
+            devices = service.discover(5)
 
-        except serial.SerialException as e:
-            print(f"Serial connection error: {e}")
-            display_label.config(text="Failed to connect via USB.")
+            print('********** Initiating device discovery......')
+
+            for address, name in devices.items():
+                if address == 'E5:AA:61:83:73:1F':  # Ensure this matches your micro:bit's address
+                    print(f'Found BBC micro:bit [vavet]: {address}')
+                    found_microbit = True
+                    break
+
+            if found_microbit:
+                bleUartDevice1 = BleUartDevice(address)
+                bleUartDevice1.connect()
+                print('connected to micro:bit')
+                display_label.config(text="Start shaking!")
+                start_time = datetime.datetime.now()
+
+                # Enable UART receiving with callback function
+                bleUartDevice1.enable_uart_receive(uart_callback)
+
+                # Send difficulty directly
+                bleUartDevice1.send(difficulty)
+
+                while not stop_flag:
+                    time.sleep(1)  # Keep script alive to process callbacks
+
+        except KeyboardInterrupt:
+            print('********** END **********')
+
+        except Exception as e:
+            print(f'********** UNKNOWN ERROR: {e}')
+
+        finally:
+            if bleUartDevice1:
+                bleUartDevice1.disconnect()
+                display_label.config(text=message)
+                back_button = tk.Button(root, text="Back", command=go_back_callback, bg="white")
+                back_button.pack(pady=10)
 
     def run_game(): 
-        shake_game(difficulty)
+        shake_game(difficulty) 
+
     threading.Thread(target=run_game, daemon=True).start()
