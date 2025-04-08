@@ -14,31 +14,32 @@ export async function GET() {
   try {
     const collection = await getCollection(COLLECTION_NAME);
 
-    // Find the most recent alarm for the user (i.e., latest day).
-    const latestDateDoc = await collection
-      .find({ userId })
-      .sort({ alarmTime: -1 }) // <-- change from 1 to -1 for descending
+    // Get the most recent alarm entry for the user
+    const [latestEntry] = await collection
+      .find({ userId, heartrate: { $exists: true } })
+      .sort({ alarmTime: -1 })
       .limit(1)
       .toArray();
 
-    if (!latestDateDoc.length) {
+    if (!latestEntry) {
       return NextResponse.json({ message: 'No alarms found' }, { status: 404 });
     }
 
-    // const sameDayAlarms = await collection
-    //   .find({
-    //     userId,
-    //     alarmTime: {
-    //       $gte: new Date(`${dateKey}T00:00:00.000Z`),
-    //       $lte: new Date(`${dateKey}T23:59:59.999Z`),
-    //     },
-    //   })
-    //   .toArray();
+    const alarmDate = new Date(latestEntry.alarmTime);
+    const startOfDay = new Date(alarmDate);
+    startOfDay.setUTCHours(0, 0, 0, 0);
+    const endOfDay = new Date(alarmDate);
+    endOfDay.setUTCHours(23, 59, 59, 999);
 
+    // Fetch all alarms for the same day
     const sameDayAlarms = await collection
       .find({
         userId,
         heartrate: { $exists: true },
+        alarmTime: {
+          $gte: startOfDay,
+          $lte: endOfDay,
+        },
       })
       .toArray();
 
@@ -62,12 +63,6 @@ export async function GET() {
     const lastTime = new Date(last.timestamp * 1000);
 
     const mins = differenceInMinutes(lastTime, firstTime);
-
-    // const mins = differenceInMinutes(
-    //   new Date(last.resolvedTime),
-    //   new Date(first.alarmTime),
-    // );
-
     const hours = Math.floor(mins / 60);
     const minutes = mins % 60;
 
@@ -75,9 +70,7 @@ export async function GET() {
       .toString()
       .padStart(2, '0')}`;
 
-    return NextResponse.json({
-      sleepDuration,
-    });
+    return NextResponse.json({ sleepDuration });
   } catch (error) {
     console.error('Error getting sleep duration:', error);
     return NextResponse.json(
