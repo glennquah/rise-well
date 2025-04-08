@@ -70,42 +70,41 @@ const renderAlarmDetailsContent = (alarm: FullAlarmHistoryDto) => {
             <p>
               <strong>Mode:</strong> {alarm.mode}
             </p>
-            <p>
-              <strong>
-                {alarm.mode === 'reference' ? 'Target Object' : 'Category'}:
-              </strong>{' '}
-              {alarm.mode === 'reference'
-                ? alarm.target_object ?? 'N/A'
-                : alarm.category ?? 'N/A'}
-            </p>
-            {(alarm.imageUrl || alarm.refImageUrl) && (
+      
+            {alarm.mode === 'category' && (
+              <p>
+                <strong>Target Object:</strong> {alarm.target_object ?? 'N/A'}
+              </p>
+            )}
+      
+            {alarm.mode === 'reference' && alarm.refImageUrl && (
+              <div>
+                <p className="mb-1">
+                  <strong>Reference Image:</strong>
+                </p>
+                <img
+                  src={alarm.refImageUrl}
+                  alt="Reference"
+                  className="max-w-xs max-h-60 object-contain border rounded shadow"
+                />
+              </div>
+            )}
+      
+            {alarm.imageUrl && (
               <div>
                 <p className="mb-1">
                   <strong>Captured Image:</strong>
                 </p>
                 <img
-                  src={alarm.imageUrl ?? alarm.refImageUrl!}
-                  alt="Alarm capture"
+                  src={alarm.imageUrl}
+                  alt="Captured"
                   className="max-w-xs max-h-60 object-contain border rounded shadow"
                 />
               </div>
             )}
-            <div>
-              <p>
-                <strong>Alarm Time:</strong>{' '}
-                {new Date(alarm.alarmTime).toLocaleString()}
-              </p>
-              <p>
-                <strong>Resolved Time:</strong>{' '}
-                {new Date(alarm.resolvedTime).toLocaleString()}
-              </p>
-            </div>
           </div>
         );
-      
-    default:
-      return 'N/A';
-  }
+      }
 };
 
 interface AlarmTableProps {
