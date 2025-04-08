@@ -177,17 +177,17 @@ const AlarmTable = ({ data }: AlarmTableProps) => {
                   <React.Fragment key={alarm._id}>
                     <TableRow className="hover:bg-blue-50/50 transition-colors">
                       <TableCell className="font-medium">
-                        {triggered.toLocaleDateString('en-SG', {
+                        {new Date(triggered).toLocaleDateString('en-SG', {
                           timeZone: 'Asia/Singapore',
                         })}
                       </TableCell>
                       <TableCell>
-                        {triggered.toLocaleTimeString('en-SG', {
+                        {new Date(triggered).toLocaleTimeString('en-SG', {
                           timeZone: 'Asia/Singapore',
                         })}
                       </TableCell>
                       <TableCell>
-                        {deactivated.toLocaleTimeString('en-SG', {
+                        {new Date(deactivated).toLocaleTimeString('en-SG', {
                           timeZone: 'Asia/Singapore',
                         })}
                       </TableCell>
