@@ -34,7 +34,7 @@ export function SectionCards({ data }: SectionCardsProps) {
 
     
 
-  const DEEP_SLEEP_THRESHOLD = 100; // heart rate below this means "deep sleep"
+  const DEEP_SLEEP_THRESHOLD = 60; // https://www.health.harvard.edu/blog/how-does-sleep-affect-your-heart-rate-2021012921846
   const MIN_DEEP_SLEEP_DURATION = 0;
 
   let deepSleepMinutes = 0;
