@@ -6,7 +6,7 @@ This repository is split into two main folders:
 
 - **`iot-alarm-clock`**: Contains Python scripts designed to run on the Raspberry Pi OS.
 - **`webapp`**: Includes both the frontend and backend (server APIs) built using Next.js, TypeScript, TailwindCSS, and Shadcn.
-
+- **`AI_sleep_detection`**: Contains python scripts for processing raw files and training the sleep detection model.
 ---
 
 ##  Setup & Running Instructions
