@@ -6,7 +6,7 @@ This repository is split into two main folders:
 
 - **`iot-alarm-clock`**: Contains Python scripts designed to run on the Raspberry Pi OS.
 - **`webapp`**: Includes both the frontend and backend (server APIs) built using Next.js, TypeScript, TailwindCSS, and Shadcn.
-
+- **`AI_sleep_detection`**: Contains python scripts for processing raw files and training the sleep detection model.
 ---
 
 ##  Setup & Running Instructions
@@ -15,13 +15,17 @@ This repository is split into two main folders:
 
 1. SSH into your Raspberry Pi via VNC.
 2. Transfer the entire `iot-alarm-clock` folder to the Raspberry Pi.
-3. Navigate into the folder:
+3. Create a virtual environment and source into the virtual environment.
+4. Navigate into the folder:
 
 ```bash
 cd iot-alarm-clock
 ```
-
-4. Run the script:
+5. Install the pip modules
+```bash
+pip3 install -r requirements.txt
+```
+6. Run the script:
 
 ```bash
 sudo python3 main.py
