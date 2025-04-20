@@ -80,35 +80,6 @@ localhost:3000/api/{folder}
 1. Postman
 2. Call it thru your frontend
 
-**Example: Calling an API (GET) from frontend using useEffect:**
-```tsx
-useEffect(() => {
-  const fetchAlarms = async () => {
-    try {
-      const res = await fetch('/api/alarm-history', {
-        credentials: 'include',
-      });
-      const data = await res.json();
-      const alarms = data.alarms as AlarmHistoryDto[];
-      if (!res.ok) {
-        setError(data.message || 'Error fetching alarms');
-      } else {
-        setAlarms(alarms);
-      }
-    } catch (err) {
-      console.error('Error fetching alarms:', err);
-      setError('Error fetching alarms');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  fetchAlarms();
-}, []);
-```
-
-Ensure DTOs (schemas) are created for your APIs and imported into the frontend for type safety.
-
 ---
 
 ## Auth
@@ -117,13 +88,6 @@ Authentication is managed through **Clerk**:
 
 - User data is stored securely in Clerk.
 - Use provided Clerk API keys in your `.env` file.
-
-Get current user details:
-
-```typescript
-import { currentUser } from '@clerk/nextjs/server';
-const user = await currentUser();
-```
 
 ---
 
@@ -143,9 +107,6 @@ Current implementation uses OpenAI API to generate sentences for recitation prac
 
 - Next.js (React + TypeScript)
 - TailwindCSS
-- [Shadcn UI Components](https://ui.shadcn.com/)
-
-> **Important:** Pls type everything & avoid using `any` if not i will find u ;p
 
 ---
 
@@ -161,11 +122,3 @@ OPENAI_API_KEY=<<INSERT YOUR OPENAI API KEY>>
 ```
 
 ---
-
-## NOTE
-
-- Maintain folder structure clearly: separate concerns (IoT scripts, frontend, backend).
-- Type everything strictly (TypeScript DTOs/schema).
-- Clearly separate reusable logic (API calls, OpenAI, auth handling).
-- Regularly test API endpoints with Postman or frontend hooks.
-- To get local ip address: `ipconfig getifaddr en0`
