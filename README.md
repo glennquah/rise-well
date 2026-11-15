@@ -37,6 +37,34 @@ flowchart LR
 | `AI_sleep_detection/` | Training notebooks, processed landmark data, and camera experiments |
 | `docker-compose.yml` | Optional local RabbitMQ experiment; does not run the web app or MongoDB |
 
+## Web app screenshots
+
+Screenshots from the original IS4151 prototype report, showing the interface and example readings at the time of the project.
+
+### Home dashboard
+
+Daily summary and quick access to sleep and alarm analytics.
+
+![RiseWell home dashboard](docs/images/home.png)
+
+### Sleep analytics
+
+Heart-rate summary cards and a time-series chart.
+
+![RiseWell sleep analytics dashboard](docs/images/sleep-analytics.png)
+
+### Alarm history
+
+Alarm sessions with challenge types, resolution times, and expandable details.
+
+![RiseWell alarm history](docs/images/alarm-analytics.png)
+
+### AI-generated alarm report
+
+A sample report describing wake-up patterns and suggestions.
+
+![RiseWell alarm analytics report](docs/images/alarm-report.png)
+
 ## Run the web app locally
 
 You need Node.js 22 LTS with npm, a running MongoDB instance (local or Atlas), a Clerk application, and an OpenAI API key for AI features. Create your own service accounts; no shared demo account is provided.
