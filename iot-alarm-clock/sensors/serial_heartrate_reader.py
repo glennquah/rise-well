@@ -7,9 +7,9 @@ import platform
 import glob
 import sys
 
-# MongoDB Setup
-# MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017/")
-MONGO_URI = os.getenv("MONGO_URI", "mongodb+srv://glennquah:rise-well@rise-well-prod-db.jyjhxad.mongodb.net/?retryWrites=true&w=majority&appName=rise-well-prod-db")
+# Configure a database you control; never commit credentials.
+MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017/")
+DEVICE_USER_ID = os.environ["RISEWELL_USER_ID"]
 
 DB_NAME = os.getenv("MONGO_DB", "rise-well")
 COLLECTION_NAME = os.getenv("MONGO_COLLECTION", "heartrate")#heartrate
@@ -22,7 +22,7 @@ def upload_to_mongo(data):
     data_encapsulated = {
         "timestamp": time.time(),
         "heartrate": data,
-        "userId": "user_2v1pIUBGclM9GPclE6jaYXI2E1o",
+        "userId": DEVICE_USER_ID,
     }
     collection.insert_one(data_encapsulated)
     print(f"Value {data_encapsulated} added to MongoDB2")

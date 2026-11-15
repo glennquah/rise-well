@@ -1,3 +1,4 @@
+import os
 import tkinter as tk
 from tkinter import ttk
 from PIL import Image, ImageTk
@@ -53,7 +54,7 @@ def start_window(root: tk.Tk):
     )
     guide_label.pack(pady=10)
 
-    userId = "user_2uLEgW40wSAAR9BWMfSDX5cue22"  # FIXME: Change this when needed
+    userId = os.getenv("RISEWELL_USER_ID", "")
 
     user_id_label = tk.Label(
         content_frame,
