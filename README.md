@@ -124,7 +124,7 @@ This starts the Next.js server on port 3000. For a remote instance, configure HT
 
 ## Development and limitations
 
-Run `npx tsc --noEmit` and `npm run lint` in `webapp/` before submitting changes. For a production build, also run `npm run build` with your service configuration available. Hardware workflows must be checked on the Pi; there is no automated hardware test suite.
+After starting Next.js once to generate `next-env.d.ts`, run `npx tsc --noEmit` and `npm run lint` in `webapp/` before submitting changes. For a production build, also run `npm run build` with your service configuration available. Hardware workflows must be checked on the Pi; there is no automated hardware test suite.
 
 The optional RabbitMQ service can be started with `docker compose up -d`. It is unrelated to the main setup above and uses development credentials; keep it on a trusted local machine.
 
