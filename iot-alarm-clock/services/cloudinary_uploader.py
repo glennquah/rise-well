@@ -1,7 +1,8 @@
+import os
 import requests
 
-CLOUD_NAME = "dzugjvg67"
-UPLOAD_PRESET = "liftlogic"
+CLOUD_NAME = os.getenv("CLOUDINARY_CLOUD_NAME", "")
+UPLOAD_PRESET = os.getenv("CLOUDINARY_UPLOAD_PRESET", "")
 CLOUDINARY_URL = f"https://api.cloudinary.com/v1_1/{CLOUD_NAME}/auto/upload"
 
 def upload_image_to_cloudinary(image_path):

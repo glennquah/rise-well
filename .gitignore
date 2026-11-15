@@ -1,0 +1,20 @@
+# Local configuration and credentials
+.env
+.env.*
+!.env.example
+*.pem
+
+# Generated files
+.DS_Store
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+node_modules/
+.next/
+*.tsbuildinfo
+*.log
+
+# Device captures and recordings
+iot-alarm-clock/data/
+iot-alarm-clock/image.jpg

@@ -1,12 +1,13 @@
+import os
 import requests
 
 # Your Cloudinary credentials
-CLOUD_NAME = "dzugjvg67"
-UPLOAD_PRESET = "liftlogic"
+CLOUD_NAME = os.getenv("CLOUDINARY_CLOUD_NAME", "")
+UPLOAD_PRESET = os.getenv("CLOUDINARY_UPLOAD_PRESET", "")
 UPLOAD_URL = f"https://api.cloudinary.com/v1_1/{CLOUD_NAME}/auto/upload"
 
 # Replace with an existing image path on your Pi
-TEST_IMAGE = "/home/pi/Documents/temp/iot-alarm-clock/data/references/ophe_ref.jpg" # CHANGE THIS WITH ANY ABSOLUTE IAMGE PATH
+TEST_IMAGE = os.getenv("TEST_IMAGE", "test-image.jpg")
 def upload_image(path):
     with open(path, "rb") as f:
         files = {"file": f}

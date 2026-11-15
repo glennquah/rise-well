@@ -1,13 +1,7 @@
+import os
 import requests
 
-# Change here to your own local ip address
-# Glenn's Mac Address: "http://192.168.23.239:3000/api/alarm-history"
-# Emily's Mac Address: "http://192.168.1.6:3000/api/alarm-history"
-# Jordan
-# Hamzah
-# Ophe's WINDOWS Address: http://172.25.107.114:3000/api/alarm-history
-
-API_ENDPOINT = "https://rise-well.vercel.app"
+API_ENDPOINT = os.getenv("RISEWELL_API_URL", "http://localhost:3000").rstrip("/")
 
 
 def post_alarm_history(payload):
